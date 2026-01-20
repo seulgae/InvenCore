@@ -3,42 +3,66 @@ package com.inven.core.backend.sample.member;
 import com.inven.core.backend.sample.member.dto.LoginRequest;
 import com.inven.core.backend.sample.member.dto.MemberResponse;
 import com.inven.core.backend.sample.member.dto.RegisterRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor // final 필드에 대한 생성자를 자동으로 생성합니다.
 public class MemberService {
+
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 회원 로그인 처리
-     * 실제 구현에서는 데이터베이스 조회, 비밀번호 암호화 비교, JWT 토큰 생성 등의 로직이 들어갑니다.
+     * 데이터베이스에서 사용자를 조회하고, 비밀번호를 비교합니다.
      *
      * @param request 로그인 요청 DTO
      * @return 로그인 응답 DTO
      */
+    @Transactional(readOnly = true)
     public MemberResponse login(LoginRequest request) {
-        // 여기서는 간단한 더미 로직을 사용합니다.
-        if ("testuser".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-            // 실제로는 사용자 ID, 역할 등에 기반한 JWT 토큰을 생성하여 반환합니다.
-            String dummyToken = "dummy-jwt-token-for-" + request.getUsername();
-            return new MemberResponse(request.getUsername(), "로그인 성공!", dummyToken, true);
-        } else {
-            return new MemberResponse(null, "아이디 또는 비밀번호가 올바르지 않습니다.", null, false);
-        }
+        return memberRepository.findByUsername(request.getUsername())
+                .map(member -> {
+                    // 데이터베이스에 저장된 암호화된 비밀번호와 사용자가 입력한 비밀번호를 비교합니다.
+                    if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+                        // 실제로는 사용자 ID, 역할 등에 기반한 JWT 토큰을 생성하여 반환합니다.
+                        String dummyToken = "dummy-jwt-token-for-" + request.getUsername();
+                        return new MemberResponse(request.getUsername(), "로그인 성공!", dummyToken, true);
+                    }
+                    // 비밀번호가 일치하지 않는 경우
+                    return new MemberResponse(null, "아이디 또는 비밀번호가 올바르지 않습니다.", null, false);
+                })
+                // 사용자를 찾을 수 없는 경우
+                .orElse(new MemberResponse(null, "아이디 또는 비밀번호가 올바르지 않습니다.", null, false));
     }
 
     /**
      * 회원가입 처리
-     * 실제 구현에서는 데이터베이스에 사용자 정보 저장, 비밀번호 암호화 등의 로직이 들어갑니다.
+     * 사용자 정보를 데이터베이스에 저장하고, 비밀번호를 암호화합니다.
      *
      * @param request 회원가입 요청 DTO
      * @return 회원가입 응답 DTO
      */
+    @Transactional
     public MemberResponse register(RegisterRequest request) {
-        // 여기서는 간단한 더미 로직을 사용합니다.
-        // 실제로는 중복 아이디 체크, 비밀번호 암호화 후 저장 등의 로직이 필요합니다.
-        if ("newuser".equals(request.getUsername())) {
+        // 이미 존재하는 아이디인지 확인합니다.
+        if (memberRepository.findByUsername(request.getUsername()).isPresent()) {
             return new MemberResponse(null, "이미 존재하는 아이디입니다.", null, false);
         }
+
+        // 비밀번호를 암호화합니다.
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        // Member 엔티티를 생성하고 저장합니다.
+        Member newMember = Member.builder()
+                .username(request.getUsername())
+                .password(encodedPassword)
+                .build();
+        memberRepository.save(newMember);
+
         return new MemberResponse(request.getUsername(), "회원가입 성공!", null, true);
     }
 }
