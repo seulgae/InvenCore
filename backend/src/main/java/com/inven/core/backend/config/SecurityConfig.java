@@ -22,12 +22,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // REST API이므로 CSRF 보안 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 사용하지 않음
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {}) // WebConfig에서 정의한 CORS 적용
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/members/**").permitAll() // '/api/members/'로 시작하는 모든 요청은 인증 없이 허용
-                        .anyRequest().permitAll() // TODO: 향후 다른 API들은 .authenticated()로 보호해야 합니다.
+                        .requestMatchers("/api/members/**").permitAll()
+                        .anyRequest().permitAll()
                 );
+
         return http.build();
     }
+
 }

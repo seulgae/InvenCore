@@ -10,7 +10,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 애플리케이션의 모든 엔드포인트에 CORS 설정을 적용합니다.
-                .allowedOrigins("http://localhost:5173") // 로컬 개발서버(3000, 5173)에서의 요청을 허용합니다.
+                .allowedOrigins(
+                        "http://localhost:5173",
+                        "http://52.78.176.155:5173",
+                        "https://invencore.com"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // 허용할 HTTP 메서드를 지정합니다.
                 .allowedHeaders("*") // 모든 헤더를 허용합니다.
                 .allowCredentials(true) // 쿠키 등 인증 정보를 포함한 요청을 허용합니다.
