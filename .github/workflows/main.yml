@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ec2-user-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -24,7 +24,7 @@ jobs:
 
     - name: Deploy on Lightsail
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@52.78.176.155 << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 << 'EOF'
         cd /home/ec2-user/app
         # 예: 백엔드 실행 (jar 파일 기준)
         # ./gradlew build
