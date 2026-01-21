@@ -1,32 +1,33 @@
-name: InvenCore Deploy (prod)
+name: Deploy to Lightsail
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types:
-      - closed
+      - main  # main 브랜치 푸시 시 배포
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: ec2-user-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.LS_SSH_KEY }}
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
 
-      - name: Deploy to Lightsail
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.LS_HOST }}
-          username: ${{ secrets.LS_USER }}
-          key: ${{ secrets.LS_SSH_KEY }}
-          script: |
-            cd /home/ec2-user/app
-            ./deploy.sh
+    - name: Copy files to Lightsail
+      run: |
+        scp -o StrictHostKeyChecking=no -r ./ ec2-user@52.78.176.155:/home/ec2-user/app
+
+    - name: Deploy on Lightsail
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@52.78.176.155 << 'EOF'
+        cd /home/ec2-user/app
+        # 예: 백엔드 실행 (jar 파일 기준)
+        # ./gradlew build
+        # nohup java -jar build/libs/your-app.jar &
+        echo "Deployment completed"
+        EOF
