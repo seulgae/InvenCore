@@ -24,7 +24,7 @@ jobs:
 
     - name: Copy files to Lightsail
       run: |
-        scp -o StrictHostKeyChecking=no -r ./ ec2-user@52.78.176.155:/home/ec2-user/app
+        rsync -av --exclude='.git' ./ ec2-user@52.78.176.155:/home/ec2-user/app
 
     - name: Deploy on Lightsail
       run: |
