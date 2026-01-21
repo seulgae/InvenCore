@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/InvenCore.iml" filepath="$PROJECT_DIR$/.idea/InvenCore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inven-core-backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/inven-core-backend.main.iml" />
     </modules>
   </component>
 </project>

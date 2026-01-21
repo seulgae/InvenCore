@@ -4,7 +4,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+/**
+ * Spring Security를 사용하는 경우 SecurityConfig에서 CORS를 관리합니다.
+ * 이 WebConfig는 SecurityConfig와 충돌을 방지하기 위해 비활성화합니다.
+ * 필요시 @Configuration 어노테이션을 주석 해제하여 활성화할 수 있습니다.
+ */
+// @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
