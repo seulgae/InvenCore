@@ -3,6 +3,7 @@ package com.inven.core.backend.sample.member;
 import com.inven.core.backend.sample.member.dto.LoginRequest;
 import com.inven.core.backend.sample.member.dto.MemberResponse;
 import com.inven.core.backend.sample.member.dto.RegisterRequest;
+import com.inven.core.backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     /**
      * 회원 로그인 처리
@@ -28,9 +30,9 @@ public class MemberService {
                 .map(member -> {
                     // 데이터베이스에 저장된 암호화된 비밀번호와 사용자가 입력한 비밀번호를 비교합니다.
                     if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-                        // 실제로는 사용자 ID, 역할 등에 기반한 JWT 토큰을 생성하여 반환합니다.
-                        String dummyToken = "dummy-jwt-token-for-" + request.getUsername();
-                        return new MemberResponse(request.getUsername(), "로그인 성공!", dummyToken, true);
+                        // JWT 토큰 생성
+                        String token = jwtUtil.generateToken(request.getUsername());
+                        return new MemberResponse(request.getUsername(), "로그인 성공!", token, true);
                     }
                     // 비밀번호가 일치하지 않는 경우
                     return new MemberResponse(null, "아이디 또는 비밀번호가 올바르지 않습니다.", null, false);

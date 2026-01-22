@@ -38,21 +38,37 @@ function ItemsPage() {
     };
 
     if (loading) {
-        return <div>데이터를 불러오는 중...</div>;
+        return (
+            <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <span>데이터를 불러오는 중...</span>
+            </div>
+        );
     }
 
     if (error) {
-        return <div style={{ color: 'red' }}>{error}</div>;
+        return (
+            <div className="items-container">
+                <div className="error-message" style={{ textAlign: 'center', padding: '2rem' }}>
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     return ( 
-        <div> 
-            <h1>재고 목록</h1> 
-            <button onClick={handleLogout} style={{ marginBottom: '20px' }}>로그아웃</button> 
+        <div className="items-container"> 
+            <div className="items-header">
+                <h2>재고 목록</h2>
+                <button onClick={handleLogout} className="logout-button">로그아웃</button>
+            </div>
+            
             {items.length === 0 ? (
-                <p>등록된 재고가 없습니다.</p>
+                <div className="empty-state">
+                    <p>등록된 재고가 없습니다.</p>
+                </div>
             ) : (
-                <table>
+                <table className="items-table">
                     <thead>
                         <tr>
                             <th>ID</th>

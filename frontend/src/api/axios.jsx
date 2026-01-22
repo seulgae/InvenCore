@@ -40,9 +40,20 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        // 네트워크 에러 또는 서버 연결 실패
+        if (!error.response) {
+            console.error('서버에 연결할 수 없습니다. 서버 상태를 확인해주세요.');
+            // 네트워크 에러는 그대로 전달하여 컴포넌트에서 처리하도록 함
+            return Promise.reject(error);
+        }
+
         // 에러가 발생했는데, 상태 코드가 401(Unauthorized)이고
         // 아직 재시도를 안 한 요청이라면 (무한 루프 방지)
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+        // 단, 로그인/회원가입 요청은 제외 (무한 루프 방지)
+        if (error.response.status === 401 && 
+            !originalRequest._retry && 
+            !originalRequest.url?.includes('/login') &&
+            !originalRequest.url?.includes('/register')) {
             originalRequest._retry = true;
 
             console.warn('인증이 만료되어 로그아웃 처리됩니다.');
