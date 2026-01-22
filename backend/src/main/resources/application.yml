@@ -52,7 +52,7 @@ logging:
 app:
   cors:
     # SecurityConfig?? ???? ?? ??? ?? (??? ??)
-    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://52.78.176.155:5173,https://invencore.com"
+    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://52.78.176.155,https://52.78.176.155,http://52.78.176.155:5173,https://invencore.com,http://invencore.com"
 
 jwt:
   # HS256 ??? ? (??? ? ???)
