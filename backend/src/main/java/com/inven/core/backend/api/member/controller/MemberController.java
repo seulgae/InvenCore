@@ -1,8 +1,9 @@
-package com.inven.core.backend.sample.member;
+package com.inven.core.backend.api.member.controller;
 
-import com.inven.core.backend.sample.member.dto.LoginRequest;
-import com.inven.core.backend.sample.member.dto.MemberResponse;
-import com.inven.core.backend.sample.member.dto.RegisterRequest;
+import com.inven.core.backend.api.member.dto.LoginRequest;
+import com.inven.core.backend.api.member.dto.MemberResponse;
+import com.inven.core.backend.api.member.service.MemberService;
+import com.inven.core.backend.api.member.dto.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
