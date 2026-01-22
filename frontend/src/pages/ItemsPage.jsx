@@ -22,7 +22,7 @@ function ItemsPage() {
                     handleLogout(); // 로그아웃 처리 후 리디렉션
                 } else {
                     setError('데이터를 불러오는 데 실패했습니다.');
-                    console.error(err);
+                    console.error(err);np
                 }
             } finally {
                 setLoading(false);

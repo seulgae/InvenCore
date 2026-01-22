@@ -43,3 +43,15 @@ export const join = async (username, password) => {
         throw error; // UI 컴포넌트에서 에러를 직접 처리할 수 있도록 에러를 다시 던집니다.
     }
 };
+
+// 아이디 중복 확인 함수 추가
+export const checkUsernameAvailability = async (username) => {
+    try {
+        // 백엔드의 /api/members/check-username 엔드포인트로 GET 요청
+        const response = await apiClient.get(`/members/check-username?username=${username}`);
+        return response.data; // { isAvailable: boolean } 형태의 응답을 기대
+    } catch (error) {
+        console.error('아이디 중복 확인 실패:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
