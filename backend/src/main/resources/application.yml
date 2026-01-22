@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: InvenCore
+
+  # ==========================================
+  # ?????? ?? (PostgreSQL)
+  # ==========================================
+  datasource:
+    url: jdbc:postgresql://52.78.176.155:5432/invencore
+    username: invenmaster
+    password: invencore123
+    driver-class-name: org.postgresql.Driver
+
+  # ==========================================
+  # JPA / Hibernate ??
+  # ==========================================
+  jpa:
+    # OSIV ???? (DB ??? ???, ?? ?? ?? ??)
+    open-in-view: false
+    show-sql: true
+    
+    hibernate:
+      # ?? ??? update (??? ?? ??), ?? ??? validate ?? none ??
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        default_schema: inven_schema
+        format_sql: true
+
+# ==========================================
+# ?? ? ??? ??
+# ==========================================
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+# ==========================================
+# ?? ??
+# ==========================================
+logging:
+  level:
+    # SQL ?? ? '?'? ???? ?? ?? ??? ?? (????)
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# ==========================================
+# ??? ?? (Custom Props)
+# ==========================================
+app:
+  cors:
+    # SecurityConfig?? ???? ?? ??? ?? (??? ??)
+    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://52.78.176.155:5173,https://invencore.com"
+
+jwt:
+  # HS256 ??? ? (??? ? ???)
+  secret: v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s
+  # ?? ?? ?? (ms ??, 1??)
+  expiration: 3600000
