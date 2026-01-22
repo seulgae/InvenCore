@@ -10,25 +10,32 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.inven.core.backend.security.JwtAuthenticationFilter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // application.yml에서 CORS 허용 리스트를 관리한다고 가정
-    // 예: app.cors.allowed-origins=http://localhost:5173,https://invencore.com
+    // application.yml에서 CORS 허용 리스트를 관리
+    // 문자열로 받아서 쉼표로 분리하여 List로 변환
     @Value("${app.cors.allowed-origins:http://localhost:5173}")
-    private List<String> allowedOrigins;
+    private String allowedOriginsString;
 
-    // 만약 JWT 필터를 만드셨다면 주입받아야 합니다.
-    // private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -39,6 +46,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // 문자열을 쉼표로 분리하여 List로 변환
+        List<String> allowedOrigins = Stream.of(allowedOriginsString.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+        
         // yml 설정값 사용 (없으면 기본값)
         configuration.setAllowedOrigins(allowedOrigins);
 
@@ -68,18 +81,22 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
 
-                        // 2. 인증 없이 접근 가능한 공개 API (로그인, 회원가입, 공개 게시판 조회 등)
-                        .requestMatchers("/api/auth/**", "/api/members/signup").permitAll()
+                        // 2. Health Check 엔드포인트 허용
+                        .requestMatchers("/api/health", "/actuator/health").permitAll()
 
-                        // 3. Swagger 문서 (사용한다면)
+                        // 3. 인증 없이 접근 가능한 공개 API (로그인, 회원가입)
+                        .requestMatchers("/api/members/login", "/api/members/register").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // 4. Swagger 문서 (사용한다면)
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // 4. 그 외 모든 요청은 인증 필요 (개발 중이라도 이 설정 권장)
+                        // 5. 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 );
 
         // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 앞에서 실행)
-        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
