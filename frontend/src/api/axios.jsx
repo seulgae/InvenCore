@@ -3,7 +3,7 @@ import axios from 'axios';
 // 1. 환경 변수 설정
 // 개발(.env)과 배포(.env.production) 환경에 따라 주소가 자동으로 바뀝니다.
 // 빌드 시점에 환경변수가 번들에 포함되므로, 배포 시 .env.production 파일이 반드시 필요합니다.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE_URL = '/api';
 
 // 디버깅: 빌드된 환경변수 확인 (개발 환경에서만)
 if (import.meta.env.DEV) {
@@ -12,11 +12,10 @@ if (import.meta.env.DEV) {
 }
 
 const apiClient = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
     },
-    // 백엔드 SecurityConfig에서 .allowCredentials(true)를 설정했으므로 필수입니다.
     withCredentials: true,
 });
 
