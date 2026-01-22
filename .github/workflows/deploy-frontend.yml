@@ -1,0 +1,55 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'frontend/**' # frontend 폴더가 변경되었을 때만 실행
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # 모든 명령어를 frontend 폴더 기준으로 실행
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Node.js 세팅
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install & Build
+        run: |
+          npm install
+          npm run build
+          # 빌드 결과물은 frontend/dist 폴더에 생김
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          # 1. 서버의 /var/www/invencore 폴더 권한을 잠시 ec2-user에게 부여 (파일 전송을 위해)
+          ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 "sudo chown -R ec2-user:ec2-user /var/www/invencore"
+          
+          # 2. 빌드된 파일 전송 (dist 폴더 내용물을 서버로)
+          # scp -r (폴더복사) 사용
+          scp -r -o StrictHostKeyChecking=no dist/* ec2-user@52.78.176.155:/var/www/invencore/
+          
+          # 3. 보안을 위해 소유권을 다시 nginx로 변경하고, SELinux 컨텍스트 복구
+          ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 << 'EOF'
+            sudo chown -R nginx:nginx /var/www/invencore
+            sudo chmod -R 755 /var/www/invencore
+            sudo restorecon -R /var/www/invencore 
+            # restorecon은 chcon 설정을 기본값(혹은 설정된 정책)으로 복구/적용해주는 명령어입니다.
+            # 혹시 아까 chcon 수동으로 한 게 풀릴까 걱정되시면 
+            # sudo chcon -R -t httpd_sys_content_t /var/www/invencore 이 줄을 대신 넣으셔도 됩니다.
+            sudo systemctl reload nginx
+            echo "Frontend Deployed!"
+          EOF
