@@ -3,7 +3,7 @@ import apiClient from '../api/axios';
 export const login = async (username, password) => {
     try {
         // 백엔드의 /api/members/login 엔드포인트로 POST 요청
-        const response = await apiClient.post('/api/members/login', {
+        const response = await apiClient.post('/members/login', {
             username,
             password,
         });
@@ -34,7 +34,7 @@ export const logout = () => {
 export const join = async (username, password) => {
     try {
         // 백엔드의 /api/members/register 엔드포인트로 POST 요청
-        await apiClient.post('/api/members/register', {
+        await apiClient.post('/members/register', {
             username,
             password,
         });

@@ -2,7 +2,7 @@ import apiClient from '../api/axios';
 
 export const checkServerHealth = async () => {
     try {
-        const response = await apiClient.get('/api/health');
+        const response = await apiClient.get('/health');
         return {
             success: true,
             data: response.data
