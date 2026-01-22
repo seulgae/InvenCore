@@ -45,9 +45,9 @@ function MainPage() {
     <div className="page-wrapper">
       <nav className="navbar">
         <div className="navbar-logo">
-          {/* public 폴더의 이미지는 절대 경로로 참조 */}
-          <img src="/logo.svg" alt="InvenCore Logo" /> {/* .png에서 .svg로 변경 */}
-          <span>InvenCore</span>
+            <a href="/">
+              <span>InvenCore</span>
+            </a>
         </div>
         <div className="navbar-auth">
           {isLoggedIn ? (
@@ -72,18 +72,16 @@ function MainPage() {
 
       <div className="main-page-container">
         <div className="sidebar">
-          <h3>메뉴</h3>
           <ul>
-            <li><Link to="/items">상품 관리</Link></li>
-            <li><Link to="/items/new">상품 등록</Link></li>
-            <li><a href="#">메뉴 항목 2</a></li>
-            <li><a href="#">메뉴 항목 3</a></li>
+            <li><a href="#">SpringBoot</a></li>
+            <li><a href="#">Kafka</a></li>
+            <li><a href="#">RDBMS</a></li>
+            <li><a href="#">Java</a></li>
           </ul>
         </div>
 
         <div className="main-content">
-          <h1>안녕하세요 슬기로운 개발자 슬개 입니다.</h1>
-          <p>This is your new main page component.</p>
+          <h1>안녕하세요 사이트의 메인 페이지 입니다.</h1>
         </div>
       </div>
 

@@ -44,3 +44,12 @@
     opacity: 1;
   }
 }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .modal-close-button {
+    font-size: 1.5rem; /* 모바일에서 닫기 버튼 크기 줄임 */
+    top: 10px;
+    right: 10px;
+  }
+}
