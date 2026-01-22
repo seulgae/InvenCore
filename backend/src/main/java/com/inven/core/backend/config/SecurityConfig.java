@@ -1,5 +1,6 @@
 package com.inven.core.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,14 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // application.yml에서 CORS 허용 리스트를 관리한다고 가정
+    // 예: app.cors.allowed-origins=http://localhost:5173,https://invencore.com
+    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private List<String> allowedOrigins;
+
+    // 만약 JWT 필터를 만드셨다면 주입받아야 합니다.
+    // private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -29,33 +38,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 허용할 Origin 설정
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://52.78.176.155:5173",
-                "https://invencore.com"
-        ));
-        
-        // 허용할 HTTP 메서드
+
+        // yml 설정값 사용 (없으면 기본값)
+        configuration.setAllowedOrigins(allowedOrigins);
+
+        // 보안상 필요한 메서드만 허용하는 것이 좋음
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        
-        // 허용할 헤더
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        // 인증 정보 포함 허용 (쿠키 등)
         configuration.setAllowCredentials(true);
-        
-        // preflight 요청 캐시 시간 (초)
         configuration.setMaxAge(3600L);
-        
-        // 노출할 헤더 (클라이언트에서 접근 가능한 헤더)
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type")); // 클라이언트가 토큰을 읽으려면 필수
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
         return source;
     }
 
@@ -63,15 +58,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화 (JWT 사용 시)
+                .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // preflight 요청 허용
-                        .requestMatchers("/api/members/**").permitAll() // 회원 관련 API 허용
-                        .requestMatchers("/", "/error", "/favicon.ico").permitAll() // 루트 및 에러 페이지 허용
-                        .requestMatchers("/api/**").permitAll() // 개발 단계: 모든 API 허용 (추후 인증 추가 필요)
-                        .anyRequest().permitAll() // 개발 단계: 모든 요청 허용 (추후 authenticated()로 변경)
+                        // 1. 정적 리소스 및 Preflight 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/", "/error", "/favicon.ico").permitAll()
+
+                        // 2. 인증 없이 접근 가능한 공개 API (로그인, 회원가입, 공개 게시판 조회 등)
+                        .requestMatchers("/api/auth/**", "/api/members/signup").permitAll()
+
+                        // 3. Swagger 문서 (사용한다면)
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // 4. 그 외 모든 요청은 인증 필요 (개발 중이라도 이 설정 권장)
+                        .anyRequest().authenticated()
                 );
+
+        // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 앞에서 실행)
+        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

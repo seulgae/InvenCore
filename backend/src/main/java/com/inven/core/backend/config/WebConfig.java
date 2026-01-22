@@ -1,28 +1,31 @@
 package com.inven.core.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+
 /**
- * Spring Security를 사용하는 경우 SecurityConfig에서 CORS를 관리합니다.
- * 이 WebConfig는 SecurityConfig와 충돌을 방지하기 위해 비활성화합니다.
- * 필요시 @Configuration 어노테이션을 주석 해제하여 활성화할 수 있습니다.
+ * [주의] Spring Security를 사용하는 경우, 이 설정 대신 SecurityConfig의 CORS 설정을 사용해야 합니다.
+ * 중복 설정을 방지하기 위해 이 클래스는 비활성화(주석 처리) 상태로 유지하거나 삭제하는 것을 권장합니다.
  */
 // @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    // application.yml에서 관리하는 허용 Origin 목록을 주입받음
+    // 예: app.cors.allowed-origins=http://localhost:5173,https://invencore.com
+    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private List<String> allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 애플리케이션의 모든 엔드포인트에 CORS 설정을 적용합니다.
-                .allowedOrigins(
-                        "http://localhost:5173",
-                        "http://52.78.176.155:5173",
-                        "https://invencore.com"
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // 허용할 HTTP 메서드를 지정합니다.
-                .allowedHeaders("*") // 모든 헤더를 허용합니다.
-                .allowCredentials(true) // 쿠키 등 인증 정보를 포함한 요청을 허용합니다.
-                .maxAge(3600); // pre-flight 요청의 결과를 캐시할 시간을 초 단위로 설정합니다.
+        registry.addMapping("/**")
+                .allowedOrigins(allowedOrigins.toArray(new String[0])) // List를 배열로 변환하여 설정
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }
