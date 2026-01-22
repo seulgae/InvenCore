@@ -69,4 +69,15 @@ public class MemberService {
 
         return new MemberResponse(request.getUsername(), "회원가입 성공!", null, true);
     }
+
+    /**
+     * 아이디 사용 가능 여부 확인
+     * @param username 확인할 아이디
+     * @return 사용 가능하면 true, 아니면 false
+     */
+    @Transactional(readOnly = true)
+    public boolean checkUsernameAvailability(String username) {
+        // 해당 아이디를 가진 회원이 존재하지 않으면 true (사용 가능)
+        return !memberRepository.findByUsername(username).isPresent();
+    }
 }
