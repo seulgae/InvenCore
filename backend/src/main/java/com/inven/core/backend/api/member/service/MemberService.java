@@ -1,8 +1,10 @@
-package com.inven.core.backend.sample.member;
+package com.inven.core.backend.api.member.service;
 
-import com.inven.core.backend.sample.member.dto.LoginRequest;
-import com.inven.core.backend.sample.member.dto.MemberResponse;
-import com.inven.core.backend.sample.member.dto.RegisterRequest;
+import com.inven.core.backend.api.member.dto.LoginRequest;
+import com.inven.core.backend.api.member.dto.MemberResponse;
+import com.inven.core.backend.api.member.dto.RegisterRequest;
+import com.inven.core.backend.api.member.entity.Member;
+import com.inven.core.backend.api.member.repository.MemberRepository;
 import com.inven.core.backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

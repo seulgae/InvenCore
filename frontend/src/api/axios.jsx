@@ -56,8 +56,8 @@ apiClient.interceptors.response.use(
         // 에러가 발생했는데, 상태 코드가 401(Unauthorized)이고
         // 아직 재시도를 안 한 요청이라면 (무한 루프 방지)
         // 단, 로그인/회원가입 요청은 제외 (무한 루프 방지)
-        if (error.response.status === 401 && 
-            !originalRequest._retry && 
+        if (error.response.status === 401 &&
+            !originalRequest._retry &&
             !originalRequest.url?.includes('/login') &&
             !originalRequest.url?.includes('/register')) {
             originalRequest._retry = true;

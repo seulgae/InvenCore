@@ -1,4 +1,4 @@
-package com.inven.core.backend.sample.member;
+package com.inven.core.backend.api.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

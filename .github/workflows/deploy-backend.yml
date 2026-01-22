@@ -37,11 +37,11 @@ jobs:
         run: |
           # scp는 working-directory 영향을 받지 않는 경우가 많아 전체 경로로 지정
           # backend/build/libs/ 아래의 jar 파일을 서버로 전송
-          scp -o StrictHostKeyChecking=no build/libs/*.jar ec2-user@52.78.176.155:/home/ec2-user/app/app.jar
+          scp -o StrictHostKeyChecking=no build/libs/*.jar ec2-user@13.124.177.193:/home/ec2-user/app/app.jar
 
       - name: Restart Backend
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
             # 기존 자바 프로세스 종료
             pgrep -f app.jar | xargs -r kill -9
             sleep 2

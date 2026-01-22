@@ -1,9 +1,9 @@
-package com.inven.core.backend.sample.member.dto;
+package com.inven.core.backend.api.member.dto;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class RegisterRequest {
     private String username;
     private String password;
 

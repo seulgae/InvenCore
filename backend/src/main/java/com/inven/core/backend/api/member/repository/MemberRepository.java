@@ -1,5 +1,6 @@
-package com.inven.core.backend.sample.member;
+package com.inven.core.backend.api.member.repository;
 
+import com.inven.core.backend.api.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

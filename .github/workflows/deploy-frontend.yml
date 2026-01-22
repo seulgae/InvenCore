@@ -44,14 +44,14 @@ jobs:
       - name: Deploy to Server
         run: |
           # 1. 서버의 /var/www/invencore 폴더 권한을 잠시 ec2-user에게 부여 (파일 전송을 위해)
-          ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 "sudo chown -R ec2-user:ec2-user /var/www/invencore"
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 "sudo chown -R ec2-user:ec2-user /var/www/invencore"
           
           # 2. 빌드된 파일 전송 (dist 폴더 내용물을 서버로)
           # scp -r (폴더복사) 사용
-          scp -r -o StrictHostKeyChecking=no dist/* ec2-user@52.78.176.155:/var/www/invencore/
+          scp -r -o StrictHostKeyChecking=no dist/* ec2-user@13.124.177.193:/var/www/invencore/
           
           # 3. 보안을 위해 소유권을 다시 nginx로 변경하고, SELinux 컨텍스트 복구
-          ssh -o StrictHostKeyChecking=no ec2-user@52.78.176.155 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
             sudo chown -R nginx:nginx /var/www/invencore
             sudo chmod -R 755 /var/www/invencore
             sudo restorecon -R /var/www/invencore 
