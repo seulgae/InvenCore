@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
-import { join, checkUsernameAvailability } from '../services/authService'; // checkUsernameAvailability 임포트
+import React, { useState, useEffect, useRef } from 'react';
+import { join, checkUsernameAvailability } from '../services/authService';
 import { checkServerHealth } from '../services/healthService';
 import '../styles/Modal.css';
 import '../styles/Auth.css';
@@ -9,13 +9,13 @@ function JoinPage({ onClose, onJoinSuccess }) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    const [usernameError, setUsernameError] = useState(''); // 아이디 관련 에러 상태 추가
+    const [usernameError, setUsernameError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const [serverStatus, setServerStatus] = useState(null);
 
-    // 아이디 유효성 검사 정규표현식 (영문, 숫자만 허용)
     const usernameRegex = /^[a-zA-Z0-9]*$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
 
-    // 디바운싱을 위한 ref
     const usernameCheckTimeout = useRef(null);
 
     useEffect(() => {
@@ -29,27 +29,32 @@ function JoinPage({ onClose, onJoinSuccess }) {
         verifyServer();
     }, []);
 
-    // 아이디 입력 변경 핸들러
     const handleUsernameChange = (e) => {
-        const newUsername = e.target.value;
-        setUsername(newUsername);
-        setUsernameError(''); // 새로운 입력 시 에러 초기화
+        // 1. 입력 값에서 공백을 제거하고 20자로 자릅니다.
+        const processedUsername = e.target.value.replace(/\s/g, '').slice(0, 20);
+        setUsername(processedUsername);
+        setUsernameError('');
 
-        if (newUsername && !usernameRegex.test(newUsername)) {
+        // 2. 정규식 검사 (영문/숫자)
+        if (processedUsername && !usernameRegex.test(processedUsername)) {
             setUsernameError('아이디는 영문과 숫자만 포함할 수 있습니다.');
             return;
         }
 
-        // 디바운싱: 이전 타이머가 있으면 클리어
+        // 3. 길이 검사 (실시간 피드백)
+        if (processedUsername && (processedUsername.length < 4 || processedUsername.length > 20)) {
+            setUsernameError('아이디는 4자 이상 20자 이하로 입력해주세요.');
+        }
+
+        // 4. 디바운싱으로 중복 확인
         if (usernameCheckTimeout.current) {
             clearTimeout(usernameCheckTimeout.current);
         }
 
-        // 500ms 후에 중복 확인 실행 (아이디가 비어있지 않을 때만)
-        if (newUsername) {
+        if (processedUsername && processedUsername.length >= 4) {
             usernameCheckTimeout.current = setTimeout(async () => {
                 try {
-                    const response = await checkUsernameAvailability(newUsername);
+                    const response = await checkUsernameAvailability(processedUsername);
                     if (!response.isAvailable) {
                         setUsernameError('이미 사용하고 있는 아이디 입니다.');
                     }
@@ -60,29 +65,57 @@ function JoinPage({ onClose, onJoinSuccess }) {
         }
     };
 
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value.replace(/\s/g, '').slice(0, 20);
+        setPassword(newPassword);
+        
+        if (newPassword && !passwordRegex.test(newPassword)) {
+            setPasswordError('비밀번호는 8~20자, 영문 대/소문자, 숫자, 특수기호를 포함해야 합니다.');
+        } else {
+            setPasswordError('');
+        }
+
+        if (confirmPassword && newPassword !== confirmPassword) {
+            setPasswordError('비밀번호가 일치하지 않습니다.');
+        }
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        const newConfirmPassword = e.target.value.replace(/\s/g, '').slice(0, 20);
+        setConfirmPassword(newConfirmPassword);
+
+        if (password !== newConfirmPassword) {
+            setPasswordError('비밀번호가 일치하지 않습니다.');
+        } else {
+            setPasswordError('');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        // 폼 제출 전에 최종적으로 아이디 유효성 및 중복 확인
-        if (usernameError) {
-            return; // 아이디 관련 에러가 있으면 제출 방지
+        if (usernameError || passwordError) {
+            return;
         }
         if (!username || !password || !confirmPassword) {
             setError('모든 항목을 입력해주세요.');
             return;
         }
-        if (!usernameRegex.test(username)) {
-            setUsernameError('아이디는 영문과 숫자만 포함할 수 있습니다.');
+        if (username.length < 4 || username.length > 20 || !usernameRegex.test(username)) {
+            setUsernameError('아이디는 4~20자의 영문과 숫자만 사용 가능합니다.');
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setPasswordError('비밀번호는 8~20자, 영문 대/소문자, 숫자, 특수기호를 포함해야 합니다.');
             return;
         }
         if (password !== confirmPassword) {
-            setError('비밀번호가 일치하지 않습니다.');
+            setPasswordError('비밀번호가 일치하지 않습니다.');
             return;
         }
 
         try {
-            // 최종 중복 확인
             const response = await checkUsernameAvailability(username);
             if (!response.isAvailable) {
                 setUsernameError('이미 사용하고 있는 아이디 입니다.');
@@ -133,10 +166,11 @@ function JoinPage({ onClose, onJoinSuccess }) {
                                 type="text"
                                 id="username"
                                 value={username}
-                                onChange={handleUsernameChange} // 변경된 핸들러 사용
-                                placeholder="아이디를 입력하세요 (영문, 숫자만)"
+                                onChange={handleUsernameChange}
+                                placeholder="4~20자, 영문/숫자"
+                                autoComplete="off"
                             />
-                            {usernameError && <div className="error-message">{usernameError}</div>} {/* 아이디 에러 메시지 */}
+                            {usernameError && <div className="error-message">{usernameError}</div>}
                         </div>
                         <div className="form-group">
                             <label htmlFor="password">비밀번호</label>
@@ -144,8 +178,9 @@ function JoinPage({ onClose, onJoinSuccess }) {
                                 type="password"
                                 id="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="비밀번호를 입력하세요"
+                                onChange={handlePasswordChange}
+                                placeholder="8~20자, 대/소문자, 숫자, 특수기호 포함"
+                                autoComplete="new-password"
                             />
                         </div>
                         <div className="form-group">
@@ -154,11 +189,13 @@ function JoinPage({ onClose, onJoinSuccess }) {
                                 type="password"
                                 id="confirmPassword"
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={handleConfirmPasswordChange}
                                 placeholder="비밀번호를 다시 입력하세요"
+                                autoComplete="new-password"
                             />
+                            {passwordError && <div className="error-message">{passwordError}</div>}
                         </div>
-                        {error && <div className="error-message">{error}</div>} {/* 일반 에러 메시지 */}
+                        {error && <div className="error-message">{error}</div>}
                         <button type="submit" style={{ marginTop: '0.5rem' }}>회원가입</button>
                     </form>
                 </div>

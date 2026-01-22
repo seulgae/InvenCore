@@ -1,9 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-// import LoginPage from './pages/LoginPage'; // LoginPage 임포트 제거
-import ItemsPage from './pages/ItemsPage';
-// import JoinPage from './pages/JoinPage';   // JoinPage 임포트 제거
 import MainPage from './pages/MainPage';
 
 // 로그인이 필요한 페이지를 감싸는 PrivateRoute 컴포넌트
@@ -21,39 +18,7 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* 앱의 기본 경로(/)로 접속 시 MainPage를 렌더링합니다. */}
                 <Route path="/" element={<MainPage />} />
-
-                {/* 로그인 페이지 경로 및 회원가입 페이지 경로 제거 */}
-                {/* <Route path="/login" element={<LoginPage />} */}
-                {/* <Route path="/join" element={<JoinPage />} */}
-
-                {/* '/items' 경로는 PrivateRoute로 보호됩니다. */}
-                <Route
-                    path="/items"
-                    element={
-                        <PrivateRoute>
-                            <ItemsPage />
-                        </PrivateRoute>
-                    }
-                />
-                {/* '/items/new' 경로는 PrivateRoute로 보호됩니다. */}
-                {/* ProductRegistrationPage는 아직 App.jsx에 추가되지 않았지만,
-                    MainPage.jsx에서 Link to="/items/new"로 연결될 예정이므로
-                    여기에 라우트를 추가해야 합니다. */}
-                <Route
-                    path="/items/new"
-                    element={
-                        <PrivateRoute>
-                            {/* ProductRegistrationPage 임포트 추가 */}
-                            {/* import ProductRegistrationPage from './pages/ProductRegistrationPage'; */}
-                            {/* <ProductRegistrationPage /> */}
-                            {/* 이 부분은 다음 단계에서 ProductRegistrationPage를 App.jsx에 추가할 때 처리하겠습니다. */}
-                            {/* 현재는 MainPage에서 모달을 띄우는 것에 집중합니다. */}
-                            <ItemsPage /> {/* 임시로 ItemsPage로 대체 */}
-                        </PrivateRoute>
-                    }
-                />
             </Routes>
         </Router>
     );

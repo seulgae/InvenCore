@@ -89,3 +89,39 @@
   color: #667eea;
   font-weight: 600;
 }
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .auth-card {
+    max-width: 95%; /* 모바일 화면에 꽉 차도록 */
+    padding: 2rem; /* 패딩 줄임 */
+  }
+
+  .auth-form {
+    gap: 1rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .status-message {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .error-message {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+
+  button[type="submit"] {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}

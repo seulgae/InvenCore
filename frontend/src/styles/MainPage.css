@@ -101,6 +101,9 @@
   font-size: 2rem; /* 글씨 크기 더 키움 */
   font-weight: bold;
 }
+.navbar-logo span{
+    color: white;
+}
 
 .navbar-logo img {
   height: 50px; /* 로고 이미지 크기 더 키움 */
@@ -134,4 +137,69 @@
 
 .nav-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 5px 15px;
+    height: 50px;
+  }
+
+  .navbar-logo {
+    font-size: 1.5rem;
+    gap: 5px;
+  }
+
+  .navbar-logo img {
+    height: 35px;
+  }
+
+  .navbar-auth {
+    gap: 10px;
+  }
+
+  .navbar-welcome {
+    font-size: 0.9rem;
+  }
+
+  .nav-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .sidebar {
+    width: 200px; /* 모바일 사이드바 너비 */
+    left: -195px; /* 5px만 보이도록 조정 */
+    top: 50px; /* 헤더 높이에 맞춰 조정 */
+    height: calc(100vh - 50px); /* 헤더를 제외한 높이 */
+    padding: 15px;
+  }
+
+  .sidebar:hover ~ .main-content {
+    margin-left: 200px; /* 사이드바 너비만큼 밀어내기 */
+  }
+
+  .sidebar h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .sidebar a {
+    font-size: 1rem;
+    padding: 4px 8px;
+  }
+
+  .main-content {
+    padding: 20px;
+    margin-left: 5px; /* 사이드바 트리거 영역만큼 여백 유지 */
+  }
+
+  .main-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .main-content p {
+    font-size: 0.9rem;
+  }
 }

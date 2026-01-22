@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { login } from '../services/authService';
 import { checkServerHealth } from '../services/healthService';
-import '../styles/Modal.css'; // 모달 스타일 임포트
-import '../styles/Auth.css';  // 인증 폼 스타일 임포트
+import '../styles/Modal.css';
+import '../styles/Auth.css';
 
 function LoginPage({ onClose, onLoginSuccess }) {
     const [username, setUsername] = useState('');
@@ -20,6 +20,20 @@ function LoginPage({ onClose, onLoginSuccess }) {
         };
         verifyServer();
     }, []);
+
+    const handleUsernameChange = (e) => {
+        let newUsername = e.target.value;
+        newUsername = newUsername.replace(/\s/g, ''); // 공백 제거
+        newUsername = newUsername.slice(0, 20); // 20자 제한
+        setUsername(newUsername);
+    };
+
+    const handlePasswordChange = (e) => {
+        let newPassword = e.target.value;
+        newPassword = newPassword.replace(/\s/g, ''); // 공백 제거
+        newPassword = newPassword.slice(0, 20); // 20자 제한
+        setPassword(newPassword);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,8 +92,8 @@ function LoginPage({ onClose, onLoginSuccess }) {
                                 type="text"
                                 id="username"
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                autoComplete="username"
+                                onChange={handleUsernameChange}
+                                autoComplete="off"
                                 placeholder="아이디를 입력하세요"
                             />
                         </div>
@@ -89,8 +103,8 @@ function LoginPage({ onClose, onLoginSuccess }) {
                                 type="password"
                                 id="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="current-password"
+                                onChange={handlePasswordChange}
+                                autoComplete="new-password"
                                 placeholder="비밀번호를 입력하세요"
                             />
                         </div>
