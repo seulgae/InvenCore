@@ -25,6 +25,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
+          set -euo pipefail
           chmod +x gradlew
           ./gradlew clean build -x test
 
@@ -33,9 +34,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
 
-      # 1) 서버에 app 디렉토리 보장 + app.jar가 디렉토리로 꼬인 경우 정리
       - name: Prepare remote directory
         run: |
+          set -euo pipefail
           ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
             set -euo pipefail
             APP_DIR="/home/ec2-user/app"
@@ -45,24 +46,24 @@ jobs:
             # app.jar가 "디렉토리"로 잘못 만들어졌으면 백업 후 제거
             if [ -d "$APP_DIR/app.jar" ]; then
               mv "$APP_DIR/app.jar" "$APP_DIR/app.jar_dir_backup_$(date +%Y%m%d_%H%M%S)"
-              echo "WARN: app.jar was a directory. Backed up and removed."
+              echo "WARN: app.jar was a directory. moved to backup."
             fi
           EOF
 
-      # 2) scp는 디렉토리로 업로드 후 서버에서 app.jar.new로 rename (경로 꼬임 방지)
       - name: Upload Jar (to app.jar.new)
         run: |
-          JAR_FILE=$(ls build/libs/*.jar | grep -v plain | head -n 1)
+          set -euo pipefail
+          JAR_FILE="$(ls build/libs/*.jar | grep -v plain | head -n 1)"
           echo "Deploying: $JAR_FILE"
 
           scp -o StrictHostKeyChecking=no "$JAR_FILE" ec2-user@13.124.177.193:/home/ec2-user/app/
-
-          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 "mv -f /home/ec2-user/app/$(basename "$JAR_FILE") /home/ec2-user/app/app.jar.new"
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 \
+            "mv -f /home/ec2-user/app/$(basename "$JAR_FILE") /home/ec2-user/app/app.jar.new"
 
       - name: Swap + Restart + Healthcheck + Rollback
         run: |
+          set -euo pipefail
           ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
-<<<<<<< HEAD
             set -euo pipefail
 
             APP_DIR="/home/ec2-user/app"
@@ -96,7 +97,7 @@ jobs:
             fi
 
             # 새 jar 교체(원자적 mv)
-            mv "$NEW_JAR" "$CUR_JAR"
+            mv -f "$NEW_JAR" "$CUR_JAR"
             echo "Swapped in new jar."
 
             # 기존 프로세스 종료 (CUR_JAR 기준)
@@ -142,7 +143,7 @@ jobs:
 
               # 롤백 (백업 있으면)
               if [ -n "$ROLLBACK_FROM" ] && [ -f "$ROLLBACK_FROM" ]; then
-                mv "$CUR_JAR" "$OLD_DIR/failed_$TS.jar" || true
+                mv -f "$CUR_JAR" "$OLD_DIR/failed_$TS.jar" || true
                 cp "$ROLLBACK_FROM" "$CUR_JAR"
                 nohup java -jar "$CUR_JAR" > "$APP_DIR/app.log" 2>&1 &
                 echo "Rolled back to previous jar."
@@ -154,12 +155,4 @@ jobs:
             fi
 
             echo "Backend Deployed Successfully!"
-=======
-            # 기존 자바 프로세스 종료
-            pgrep -f app.jar | xargs -r kill -9
-            sleep 2
-            # 백그라운드 실행
-            nohup java -jar /home/ec2-user/app/app.jar > /home/ec2-user/app/app.log 2>&1 &
-            echo "Backend Deployed!"
->>>>>>> 5d6c04a3db5add70eed49daf10c413b4e23eca23
           EOF
