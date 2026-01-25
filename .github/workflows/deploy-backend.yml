@@ -33,11 +33,31 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
 
+      # 1) 서버에 app 디렉토리 보장 + app.jar가 디렉토리로 꼬인 경우 정리
+      - name: Prepare remote directory
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
+            set -euo pipefail
+            APP_DIR="/home/ec2-user/app"
+            mkdir -p "$APP_DIR"
+            chown -R ec2-user:ec2-user "$APP_DIR"
+
+            # app.jar가 "디렉토리"로 잘못 만들어졌으면 백업 후 제거
+            if [ -d "$APP_DIR/app.jar" ]; then
+              mv "$APP_DIR/app.jar" "$APP_DIR/app.jar_dir_backup_$(date +%Y%m%d_%H%M%S)"
+              echo "WARN: app.jar was a directory. Backed up and removed."
+            fi
+          EOF
+
+      # 2) scp는 디렉토리로 업로드 후 서버에서 app.jar.new로 rename (경로 꼬임 방지)
       - name: Upload Jar (to app.jar.new)
         run: |
           JAR_FILE=$(ls build/libs/*.jar | grep -v plain | head -n 1)
           echo "Deploying: $JAR_FILE"
-          scp -o StrictHostKeyChecking=no "$JAR_FILE" ec2-user@13.124.177.193:/home/ec2-user/app/app.jar.new
+
+          scp -o StrictHostKeyChecking=no "$JAR_FILE" ec2-user@13.124.177.193:/home/ec2-user/app/
+
+          ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 "mv -f /home/ec2-user/app/$(basename "$JAR_FILE") /home/ec2-user/app/app.jar.new"
 
       - name: Swap + Restart + Healthcheck + Rollback
         run: |
