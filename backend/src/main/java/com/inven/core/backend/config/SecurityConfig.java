@@ -75,10 +75,18 @@ public class SecurityConfig {
                         .requestMatchers(
                             "/api/members/login", 
                             "/api/members/register", 
-                            "/api/members/check-username" // 수정된 부분
+                            "/api/members/check-username"
                         ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        
+                        // ✅ 게시판 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
+                        .requestMatchers(HttpMethod.GET, "/api/boards", "/api/boards/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/boards").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/boards/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated()
+
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 );
 

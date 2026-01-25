@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, Outlet } from 'react-router-dom'; // ✅ Outlet 임포트
 import '../styles/MainPage.css';
 import LoginPage from './LoginPage';
 import JoinPage from './JoinPage';
@@ -8,8 +9,6 @@ function MainPage() {
     const [username, setUsername] = useState('');
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showJoinModal, setShowJoinModal] = useState(false);
-
-    // ✅ 사이드바 토글 상태
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
@@ -22,7 +21,6 @@ function MainPage() {
         }
     }, []);
 
-    // ✅ 사이드바 열려있을 때 스크롤 잠금(모바일 UX)
     useEffect(() => {
         if (isSidebarOpen) document.body.style.overflow = 'hidden';
         else document.body.style.overflow = 'auto';
@@ -57,14 +55,12 @@ function MainPage() {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-left">
-                    {/* ✅ 햄버거 버튼 */}
                     <button
                         className="menu-button"
                         onClick={toggleSidebar}
                         aria-label="메뉴 열기"
                         aria-expanded={isSidebarOpen}
                     >
-                        {/* 아이콘은 CSS로 그릴거라 span 3개 */}
                         <span />
                         <span />
                         <span />
@@ -98,7 +94,6 @@ function MainPage() {
                 </div>
             </nav>
 
-            {/* ✅ 오버레이: 사이드바 열렸을 때만 표시, 클릭하면 닫힘 */}
             <div
                 className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`}
                 onClick={closeSidebar}
@@ -106,19 +101,19 @@ function MainPage() {
             />
 
             <div className="main-page-container">
-                {/* ✅ sidebar: hover 제거하고 open 상태로 제어 */}
                 <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
                     <ul>
-                        <li><a href="#" onClick={closeSidebar}>SpringBoot</a></li>
-                        <li><a href="#" onClick={closeSidebar}>Kafka</a></li>
-                        <li><a href="#" onClick={closeSidebar}>RDBMS</a></li>
-                        <li><a href="#" onClick={closeSidebar}>Java</a></li>
+                        <li><Link to="/board" onClick={closeSidebar}>요청 게시판</Link></li>
                     </ul>
                 </aside>
 
-                {/* ✅ main-content: 사이드바 열리면 밀리도록 클래스 */}
                 <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                    <h1>안녕하세요 사이트의 메인 페이지 입니다.</h1>
+                    {/* ✅ Outlet에 context로 필요한 값들을 전달 */}
+                    <Outlet context={{ 
+                        isLoggedIn, 
+                        openLoginModal: () => setShowLoginModal(true),
+                        openJoinModal: () => setShowJoinModal(true) 
+                    }} />
                 </div>
             </div>
 
