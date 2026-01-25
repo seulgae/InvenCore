@@ -8,6 +8,7 @@ import apiClient from '../api/axios';
 function MainPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
+    const [role, setRole] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,10 +21,12 @@ function MainPage() {
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
         const storedUsername = localStorage.getItem('username');
+        const storedRole = localStorage.getItem('role');
 
-        if (accessToken && storedUsername) {
+        if (accessToken && storedUsername && storedRole) {
             setIsLoggedIn(true);
             setUsername(storedUsername);
+            setRole(parseInt(storedRole, 10));
         }
     }, []);
 
@@ -37,7 +40,7 @@ function MainPage() {
     const fetchBoards = async () => {
         try {
             const response = await apiClient.get('/requestboards');
-            setBoards(response.data.slice(0, 5)); // 최신 5개만
+            setBoards(response.data.slice(0, 5));
         } catch (err) {
             console.error('게시글 목록을 불러오는 데 실패했습니다.', err);
         }
@@ -46,7 +49,7 @@ function MainPage() {
     const fetchNotices = async () => {
         try {
             const response = await apiClient.get('/notices');
-            setNotices(response.data.slice(0, 5)); // 최신 5개만
+            setNotices(response.data.slice(0, 5));
         } catch (err) {
             console.error('공지사항 목록을 불러오는 데 실패했습니다.', err);
         }
@@ -63,14 +66,17 @@ function MainPage() {
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('username');
+        localStorage.removeItem('role');
         setIsLoggedIn(false);
         setUsername('');
+        setRole(null);
         window.location.reload();
     };
 
-    const handleLoginSuccess = (loggedInUsername) => {
+    const handleLoginSuccess = (loggedInUsername, loggedInRole) => {
         setIsLoggedIn(true);
         setUsername(loggedInUsername);
+        setRole(loggedInRole);
         setShowLoginModal(false);
     };
 
@@ -149,7 +155,7 @@ function MainPage() {
                                 </div>
                                 <div className="board-list-preview">
                                     {notices.length === 0 ? (
-                                        <p className="empty-message">공지사항이 없습니다.</p>
+                                        <p className="home-empty-message">공지사항이 없습니다.</p>
                                     ) : (
                                         notices.map(notice => (
                                             <div key={notice.id} className="board-item-preview" onClick={() => navigate(`/notice/${notice.id}`)}>
@@ -171,7 +177,7 @@ function MainPage() {
                                 </div>
                                 <div className="board-list-preview">
                                     {boards.length === 0 ? (
-                                        <p className="empty-message">게시글이 없습니다.</p>
+                                        <p className="home-empty-message">게시글이 없습니다.</p>
                                     ) : (
                                         boards.map(board => (
                                             <div key={board.id} className="board-item-preview" onClick={() => navigate(`/requestboard/${board.id}`)}>
@@ -189,6 +195,7 @@ function MainPage() {
                     ) : (
                         <Outlet context={{ 
                             isLoggedIn, 
+                            userRole: role,
                             openLoginModal: () => setShowLoginModal(true),
                             openJoinModal: () => setShowJoinModal(true) 
                         }} />

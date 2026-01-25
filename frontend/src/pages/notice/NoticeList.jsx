@@ -7,7 +7,7 @@ function NoticeList() {
     const [notices, setNotices] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { isLoggedIn, openLoginModal } = useOutletContext();
+    const { isLoggedIn, userRole, openLoginModal } = useOutletContext(); // ✅ userRole 가져오기
 
     useEffect(() => {
         fetchNotices();
@@ -24,11 +24,11 @@ function NoticeList() {
     };
 
     const handleCreateClick = () => {
-        if (isLoggedIn) {
+        // 이 함수는 이제 버튼이 보일 때만 호출되므로, isLoggedIn 체크는 사실상 중복이지만 안전을 위해 유지합니다.
+        if (isLoggedIn && (userRole === 2 || userRole === 3)) {
             navigate('/notice/regist');
         } else {
-            alert('로그인이 필요합니다.');
-            openLoginModal();
+            alert('등록 권한이 없습니다.');
         }
     };
 
@@ -36,7 +36,10 @@ function NoticeList() {
         <div className="notice-container">
             <div className="notice-header">
                 <h1>공지사항</h1>
-                <button onClick={handleCreateClick} className="create-button">등록</button>
+                {/* ✅ userRole이 2 또는 3일 때만 등록 버튼 표시 */}
+                {isLoggedIn && (userRole === 2 || userRole === 3) && (
+                    <button onClick={handleCreateClick} className="create-button">등록</button>
+                )}
             </div>
             
             {error && <p className="error-message">{error}</p>}

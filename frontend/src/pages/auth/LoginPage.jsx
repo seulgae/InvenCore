@@ -47,7 +47,8 @@ function LoginPage({ onClose, onLoginSuccess }) {
         try {
             const result = await login(username, password);
             if (result.success) {
-                onLoginSuccess(result.username);
+                // ✅ username과 role을 함께 전달
+                onLoginSuccess(result.username, result.role);
             } else {
                 setError('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
             }

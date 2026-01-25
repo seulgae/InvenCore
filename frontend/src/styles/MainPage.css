@@ -324,7 +324,7 @@
 
 .empty-message {
     text-align: center;
-    color: rgba(255, 255, 255, 0.6);
+    color: white; /* ✅ 색상 변경 */
     padding: 2rem;
     font-style: italic;
 }
