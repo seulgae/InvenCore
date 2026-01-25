@@ -49,13 +49,13 @@ jobs:
             NEW_JAR="$APP_DIR/app.jar.new"
             CUR_JAR="$APP_DIR/app.jar"
 
-            HEALTH_URL="http://13.124.177.193:80/actuator/health"
+            # 내부 헬스체크(외부/NGINX 영향 X)
+            HEALTH_URL="http://127.0.0.1:8080/actuator/health"
             HEALTH_TRIES=20
             HEALTH_SLEEP=2
 
             mkdir -p "$OLD_DIR"
 
-            # 새 jar가 실제로 존재하는지 확인
             if [ ! -f "$NEW_JAR" ]; then
               echo "ERROR: new jar not found: $NEW_JAR"
               exit 1
@@ -67,18 +67,18 @@ jobs:
 
             # 기존 jar 백업
             if [ -f "$CUR_JAR" ]; then
-              mv "$CUR_JAR" "$BACKUP_JAR"
+              cp "$CUR_JAR" "$BACKUP_JAR"
               echo "Backed up current jar to $BACKUP_JAR"
               ROLLBACK_FROM="$BACKUP_JAR"
             else
               echo "No existing app.jar found. Fresh deploy."
             fi
 
-            # 새 jar를 current로 교체(원자적 mv)
+            # 새 jar 교체(원자적 mv)
             mv "$NEW_JAR" "$CUR_JAR"
             echo "Swapped in new jar."
 
-            # 기존 프로세스 종료(정상 종료 → 필요 시 강제)
+            # 기존 프로세스 종료 (CUR_JAR 기준)
             PID=$(pgrep -f "$CUR_JAR" || true)
             if [ -n "$PID" ]; then
               echo "Stopping PID=$PID"
@@ -96,10 +96,10 @@ jobs:
             nohup java -jar "$CUR_JAR" > "$APP_DIR/app.log" 2>&1 &
             echo "Started new version."
 
-            # 헬스체크
+            # 헬스체크: status=UP 확인
             OK=0
             for i in $(seq 1 $HEALTH_TRIES); do
-              if curl -fsS "$HEALTH_URL" > /dev/null; then
+              if curl -fsS "$HEALTH_URL" | grep -q '"status":"UP"'; then
                 OK=1
                 echo "Healthcheck OK"
                 break
@@ -119,12 +119,12 @@ jobs:
                 kill -9 "$PID2" || true
               fi
 
-              # 롤백할 백업이 있으면 되돌림
+              # 롤백 (백업 있으면)
               if [ -n "$ROLLBACK_FROM" ] && [ -f "$ROLLBACK_FROM" ]; then
                 mv "$CUR_JAR" "$OLD_DIR/failed_$TS.jar" || true
-                mv "$ROLLBACK_FROM" "$CUR_JAR"
+                cp "$ROLLBACK_FROM" "$CUR_JAR"
                 nohup java -jar "$CUR_JAR" > "$APP_DIR/app.log" 2>&1 &
-                echo "Rolled back to $CUR_JAR"
+                echo "Rolled back to previous jar."
               else
                 echo "No backup jar to rollback to."
               fi
