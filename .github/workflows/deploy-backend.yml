@@ -2,16 +2,16 @@ name: Deploy Backend
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
-      - 'backend/**'  # backend 폴더가 변경되었을 때만 실행
+      - "backend/**"
 
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend  # 모든 명령어를 backend 폴더 기준으로 실행
+        working-directory: ./backend
 
     steps:
       - name: Checkout
@@ -20,32 +20,117 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
 
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew build -x test
+          ./gradlew clean build -x test
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
 
-      - name: Copy Jar to Server
+      - name: Upload Jar (to app.jar.new)
         run: |
-          # scp는 working-directory 영향을 받지 않는 경우가 많아 전체 경로로 지정
-          # backend/build/libs/ 아래의 jar 파일을 서버로 전송
-          scp -o StrictHostKeyChecking=no build/libs/*.jar ec2-user@13.124.177.193:/home/ec2-user/app/app.jar
+          JAR_FILE=$(ls build/libs/*.jar | grep -v plain | head -n 1)
+          echo "Deploying: $JAR_FILE"
+          scp -o StrictHostKeyChecking=no "$JAR_FILE" ec2-user@13.124.177.193:/home/ec2-user/app/app.jar.new
 
-      - name: Restart Backend
+      - name: Swap + Restart + Healthcheck + Rollback
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
-            # 기존 자바 프로세스 종료
-            pgrep -f app.jar | xargs -r kill -9
-            sleep 2
-            # 백그라운드 실행
-            nohup java -jar /home/ec2-user/app/app.jar > /home/ec2-user/app/app.log 2>&1 &
-            echo "Backend Deployed!"
+            set -euo pipefail
+
+            APP_DIR="/home/ec2-user/app"
+            OLD_DIR="$APP_DIR/old"
+            NEW_JAR="$APP_DIR/app.jar.new"
+            CUR_JAR="$APP_DIR/app.jar"
+
+            HEALTH_URL="http://13.124.177.193:80/actuator/health"
+            HEALTH_TRIES=20
+            HEALTH_SLEEP=2
+
+            mkdir -p "$OLD_DIR"
+
+            # 새 jar가 실제로 존재하는지 확인
+            if [ ! -f "$NEW_JAR" ]; then
+              echo "ERROR: new jar not found: $NEW_JAR"
+              exit 1
+            fi
+
+            TS=$(date +%Y%m%d_%H%M%S)
+            BACKUP_JAR="$OLD_DIR/app_$TS.jar"
+            ROLLBACK_FROM=""
+
+            # 기존 jar 백업
+            if [ -f "$CUR_JAR" ]; then
+              mv "$CUR_JAR" "$BACKUP_JAR"
+              echo "Backed up current jar to $BACKUP_JAR"
+              ROLLBACK_FROM="$BACKUP_JAR"
+            else
+              echo "No existing app.jar found. Fresh deploy."
+            fi
+
+            # 새 jar를 current로 교체(원자적 mv)
+            mv "$NEW_JAR" "$CUR_JAR"
+            echo "Swapped in new jar."
+
+            # 기존 프로세스 종료(정상 종료 → 필요 시 강제)
+            PID=$(pgrep -f "$CUR_JAR" || true)
+            if [ -n "$PID" ]; then
+              echo "Stopping PID=$PID"
+              kill "$PID" || true
+              for i in {1..15}; do
+                if ps -p "$PID" > /dev/null; then sleep 1; else break; fi
+              done
+              if ps -p "$PID" > /dev/null; then
+                echo "Force killing PID=$PID"
+                kill -9 "$PID" || true
+              fi
+            fi
+
+            # 실행
+            nohup java -jar "$CUR_JAR" > "$APP_DIR/app.log" 2>&1 &
+            echo "Started new version."
+
+            # 헬스체크
+            OK=0
+            for i in $(seq 1 $HEALTH_TRIES); do
+              if curl -fsS "$HEALTH_URL" > /dev/null; then
+                OK=1
+                echo "Healthcheck OK"
+                break
+              fi
+              echo "Healthcheck not ready ($i/$HEALTH_TRIES)..."
+              sleep "$HEALTH_SLEEP"
+            done
+
+            if [ "$OK" -ne 1 ]; then
+              echo "Healthcheck FAILED. Rolling back..."
+
+              # 새 프로세스 종료
+              PID2=$(pgrep -f "$CUR_JAR" || true)
+              if [ -n "$PID2" ]; then
+                kill "$PID2" || true
+                sleep 2
+                kill -9 "$PID2" || true
+              fi
+
+              # 롤백할 백업이 있으면 되돌림
+              if [ -n "$ROLLBACK_FROM" ] && [ -f "$ROLLBACK_FROM" ]; then
+                mv "$CUR_JAR" "$OLD_DIR/failed_$TS.jar" || true
+                mv "$ROLLBACK_FROM" "$CUR_JAR"
+                nohup java -jar "$CUR_JAR" > "$APP_DIR/app.log" 2>&1 &
+                echo "Rolled back to $CUR_JAR"
+              else
+                echo "No backup jar to rollback to."
+              fi
+
+              exit 1
+            fi
+
+            echo "Backend Deployed Successfully!"
           EOF

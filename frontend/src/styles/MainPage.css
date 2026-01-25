@@ -1,205 +1,244 @@
 /* frontend/src/styles/MainPage.css */
 
 .page-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
 }
 
 .main-page-container {
-  display: flex;
-  flex-grow: 1;
+    display: flex;
+    flex-grow: 1;
 }
 
-.sidebar {
-  width: 300px; /* 너비 증가 */
-  background-color: rgba(255, 255, 255, 0.15); /* 글래스모피즘 배경 */
-  backdrop-filter: blur(10px); /* 블러 효과 */
-  border-right: 1px solid rgba(255, 255, 255, 0.2); /* 테두리 */
-  padding: 20px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  position: fixed;
-  top: 60px;
-  left: -295px; /* 너비 증가에 맞춰 초기 위치 조정 (300px - 5px) */
-  height: calc(100vh - 60px);
-  z-index: 100;
-  transition: left 0.3s ease-out;
-}
-
-.sidebar:hover {
-  left: 0;
-}
-
-.sidebar:hover ~ .main-content {
-  margin-left: 300px; /* 사이드바 너비 증가에 맞춰 밀어내기 조정 */
-}
-
-.sidebar h3 {
-  color: #2c3e50; /* 어두운 텍스트 색상 */
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  width: 100%;
-}
-
-.sidebar li {
-  margin-bottom: 5px;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: #2c3e50; /* 어두운 텍스트 색상 */
-  display: block;
-  padding: 5px 10px;
-  font-weight: 500;
-  font-size: 1.3rem; /* 글씨 크기 더 키움 */
-  transition: color 0.2s ease;
-  border-radius: 5px;
-}
-
-.sidebar a:hover {
-  color: #667eea; /* 테마 색상으로 강조 */
-}
-
-.main-content {
-  flex-grow: 1;
-  padding: 40px;
-  margin-left: 5px;
-  transition: margin-left 0.3s ease-out;
-  color: white;
-}
-
-/* 내비게이션 바 스타일 */
+/* ✅ 내비게이션 바 */
 .navbar {
-  display: flex;
-  justify-content: space-between; /* 로고와 버튼 그룹을 양 끝으로 정렬 */
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.15); /* 글래스모피즘 배경 */
-  backdrop-filter: blur(10px); /* 블러 효과 */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 테두리 */
-  padding: 10px 40px;
-  height: 60px;
-  width: 100%;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  z-index: 101;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 40px;
+    height: 60px;
+    width: 100%;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    position: relative;
+}
+
+/* ✅ 왼쪽: 햄버거 + 로고 */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 5px; /* 간격 축소 */
-  color: white;
-  font-size: 2rem; /* 글씨 크기 더 키움 */
-  font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
 }
-.navbar-logo span{
+
+.navbar-logo span {
     color: white;
 }
 
-.navbar-logo img {
-  height: 50px; /* 로고 이미지 크기 더 키움 */
-  width: auto;
+/* ✅ 햄버거 버튼 */
+.menu-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 햄버거 줄 3개 */
+.menu-button span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 2px;
 }
 
 .navbar-auth {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* 버튼들 사이 간격 */
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-/* 새로 추가될 환영 메시지 스타일 */
 .navbar-welcome {
-  color: white;
-  font-weight: 500;
-  /* margin-right 속성 제거 */
+    color: white;
+    font-weight: 500;
 }
 
 .nav-button {
-  text-decoration: none;
-  color: #fff;
-  background-color: transparent;
-  padding: 8px 15px;
-  border-radius: 8px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.5); /* 테두리 색상 조정 */
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    text-decoration: none;
+    color: #fff;
+    background-color: transparent;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .nav-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* 모바일 반응형 */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 5px 15px;
-    height: 50px;
-  }
+/* ✅ 오버레이 */
+.sidebar-overlay {
+    position: fixed;
+    top: 60px;               /* navbar 아래부터 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 99;
+}
 
-  .navbar-logo {
-    font-size: 1.5rem;
-    gap: 5px;
-  }
+.sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-  .navbar-logo img {
-    height: 35px;
-  }
-
-  .navbar-auth {
-    gap: 10px;
-  }
-
-  .navbar-welcome {
-    font-size: 0.9rem;
-  }
-
-  .nav-button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-
-  .sidebar {
-    width: 200px; /* 모바일 사이드바 너비 */
-    left: -195px; /* 5px만 보이도록 조정 */
-    top: 50px; /* 헤더 높이에 맞춰 조정 */
-    height: calc(100vh - 50px); /* 헤더를 제외한 높이 */
-    padding: 15px;
-  }
-
-  .sidebar:hover ~ .main-content {
-    margin-left: 200px; /* 사이드바 너비만큼 밀어내기 */
-  }
-
-  .sidebar h3 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-  }
-
-  .sidebar a {
-    font-size: 1rem;
-    padding: 4px 8px;
-  }
-
-  .main-content {
+/* ✅ 사이드바: hover 제거, open 클래스에 의해 이동 */
+.sidebar {
+    width: 300px;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px;
-    margin-left: 5px; /* 사이드바 트리거 영역만큼 여백 유지 */
-  }
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 
-  .main-content h1 {
-    font-size: 1.8rem;
-  }
+    position: fixed;
+    top: 60px;
+    left: 0;
+    height: calc(100vh - 60px);
+    z-index: 100;
 
-  .main-content p {
-    font-size: 0.9rem;
-  }
+    /* ✅ 기본은 숨김 */
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-out;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar li {
+    margin-bottom: 5px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #2c3e50;
+    display: block;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    border-radius: 8px;
+}
+
+.sidebar a:hover {
+    color: #667eea;
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ✅ 메인 컨텐츠 */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    margin-left: 0; /* hover 밀기 제거 */
+    transition: margin-left 0.25s ease-out;
+    color: white;
+}
+
+/* ✅ 데스크탑에서 사이드바 열리면 컨텐츠를 밀어내기 */
+.main-content.sidebar-open {
+    margin-left: 300px;
+}
+
+/* ✅ 모바일 반응형 */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 5px 15px;
+        height: 50px;
+    }
+
+    .navbar-logo {
+        font-size: 1.5rem;
+    }
+
+    .menu-button {
+        width: 38px;
+        height: 38px;
+        padding: 9px;
+        border-radius: 10px;
+    }
+
+    .navbar-auth {
+        gap: 10px;
+    }
+
+    .navbar-welcome {
+        font-size: 0.9rem;
+    }
+
+    .nav-button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .sidebar {
+        width: 240px;
+        top: 50px;
+        height: calc(100vh - 50px);
+        padding: 15px;
+    }
+
+    .sidebar-overlay {
+        top: 50px;
+    }
+
+    /* ✅ 모바일은 컨텐츠 밀지 말고(공간 좁으니) 오버레이 방식 유지 */
+    .main-content.sidebar-open {
+        margin-left: 0;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .main-content h1 {
+        font-size: 1.8rem;
+    }
 }
