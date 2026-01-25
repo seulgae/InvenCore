@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { login } from '../services/authService';
-import { checkServerHealth } from '../services/healthService';
-import '../styles/Modal.css';
-import '../styles/Auth.css';
+import { login } from '../../services/authService';
+import { checkServerHealth } from '../../services/healthService';
+import '../../styles/Modal.css';
+import '../../styles/Auth.css';
 
 function LoginPage({ onClose, onLoginSuccess }) {
     const [username, setUsername] = useState('');
@@ -45,9 +45,9 @@ function LoginPage({ onClose, onLoginSuccess }) {
         }
 
         try {
-            const result = await login(username, password); // ✅ result 객체로 받음
+            const result = await login(username, password);
             if (result.success) {
-                onLoginSuccess(result.username); // ✅ result.username 전달
+                onLoginSuccess(result.username);
             } else {
                 setError('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
             }

@@ -2,10 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import MainPage from './pages/MainPage';
-import BoardList from './pages/BoardList';
-import BoardDetail from './pages/BoardDetail';
-import BoardEdit from './pages/BoardEdit';
-import BoardRegist from './pages/BoardRegist';
+import RequestBoardList from './pages/requestboard/RequestBoardList';
+import RequestBoardDetail from './pages/requestboard/RequestBoardDetail';
+import RequestBoardEdit from './pages/requestboard/RequestBoardEdit';
+import RequestBoardRegist from './pages/requestboard/RequestBoardRegist';
+import NoticeList from './pages/notice/NoticeList';
+import NoticeDetail from './pages/notice/NoticeDetail';
+import NoticeEdit from './pages/notice/NoticeEdit';
+import NoticeRegist from './pages/notice/NoticeRegist';
 
 function PrivateRoute({ children }) {
     const isAuthenticated = localStorage.getItem('accessToken') !== null;
@@ -22,11 +26,14 @@ function App() {
             <Routes>
                 {/* ✅ MainPage가 레이아웃 역할을 하도록 중첩 구조로 변경 */}
                 <Route path="/" element={<MainPage />}>
-                    {/* ✅ 게시판 라우트를 MainPage의 자식으로 설정 */}
-                    <Route path="board" element={<BoardList />} /> {/* ✅ PrivateRoute 제거 */}
-                    <Route path="board/regist" element={<PrivateRoute><BoardRegist /></PrivateRoute>} />
-                    <Route path="board/:id" element={<BoardDetail />} /> {/* ✅ PrivateRoute 제거 */}
-                    <Route path="board/edit/:id" element={<PrivateRoute><BoardEdit /></PrivateRoute>} />
+                    <Route path="requestboard" element={<RequestBoardList />} />
+                    <Route path="requestboard/regist" element={<PrivateRoute><RequestBoardRegist /></PrivateRoute>} />
+                    <Route path="requestboard/:id" element={<RequestBoardDetail />} />
+                    <Route path="requestboard/edit/:id" element={<PrivateRoute><RequestBoardEdit /></PrivateRoute>} />
+                    <Route path="notice" element={<NoticeList />} />
+                    <Route path="notice/regist" element={<PrivateRoute><NoticeRegist /></PrivateRoute>} />
+                    <Route path="notice/:id" element={<NoticeDetail />} />
+                    <Route path="notice/edit/:id" element={<PrivateRoute><NoticeEdit /></PrivateRoute>} />
                 </Route>
             </Routes>
         </Router>

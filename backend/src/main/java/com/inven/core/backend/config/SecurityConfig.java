@@ -80,11 +80,23 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         
-                        // ✅ 게시판 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
-                        .requestMatchers(HttpMethod.GET, "/api/boards", "/api/boards/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/boards").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/boards/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated()
+                        // ✅ 요청 게시판 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
+                        .requestMatchers(HttpMethod.GET, "/api/requestboards", "/api/requestboards/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/requestboards").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/requestboards/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/requestboards/**").authenticated()
+
+                        // ✅ 댓글 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
+                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/comments").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
+
+                        // ✅ 공지사항 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
+                        .requestMatchers(HttpMethod.GET, "/api/notices", "/api/notices/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/notices").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/notices/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/notices/**").authenticated()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()

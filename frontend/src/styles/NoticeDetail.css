@@ -1,0 +1,158 @@
+/* styles/NoticeDetail.css */
+.notice-container {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    color: #333;
+}
+
+.notice-detail {
+    padding: 1rem;
+}
+
+.notice-detail h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    word-break: break-word;
+}
+
+.detail-meta {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.detail-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    min-height: 200px;
+    padding: 1rem;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    color: #333;
+    word-break: break-word;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.item-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.edit-button, .delete-button, .back-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #3498db;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.back-button {
+    background-color: #34495e;
+    color: white;
+}
+
+.back-button:hover {
+    background-color: #2c3e50;
+}
+
+.error-message {
+    color: #e74c3c;
+    padding: 1rem;
+    background-color: #fee;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .notice-container {
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 8px;
+    }
+
+    .notice-detail {
+        padding: 0.5rem;
+    }
+
+    .notice-detail h1 {
+        font-size: 1.5rem;
+        padding-bottom: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .detail-meta {
+        flex-direction: column;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-content {
+        font-size: 1rem;
+        padding: 0.8rem;
+        min-height: 150px;
+    }
+
+    .detail-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .back-button {
+        width: 100%;
+    }
+
+    .item-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .edit-button, .delete-button {
+        flex: 1;
+    }
+}
