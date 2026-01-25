@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { join, checkUsernameAvailability } from '../services/authService';
-import { checkServerHealth } from '../services/healthService';
-import '../styles/Modal.css';
-import '../styles/Auth.css';
+import { join, checkUsernameAvailability } from '../../services/authService';
+import { checkServerHealth } from '../../services/healthService';
+import '../../styles/Modal.css';
+import '../../styles/Auth.css';
 
 function JoinPage({ onClose, onJoinSuccess }) {
     const [username, setUsername] = useState('');
@@ -30,23 +30,19 @@ function JoinPage({ onClose, onJoinSuccess }) {
     }, []);
 
     const handleUsernameChange = (e) => {
-        // 1. 입력 값에서 공백을 제거하고 20자로 자릅니다.
         const processedUsername = e.target.value.replace(/\s/g, '').slice(0, 20);
         setUsername(processedUsername);
         setUsernameError('');
 
-        // 2. 정규식 검사 (영문/숫자)
         if (processedUsername && !usernameRegex.test(processedUsername)) {
             setUsernameError('아이디는 영문과 숫자만 포함할 수 있습니다.');
             return;
         }
 
-        // 3. 길이 검사 (실시간 피드백)
         if (processedUsername && (processedUsername.length < 4 || processedUsername.length > 20)) {
             setUsernameError('아이디는 4자 이상 20자 이하로 입력해주세요.');
         }
 
-        // 4. 디바운싱으로 중복 확인
         if (usernameCheckTimeout.current) {
             clearTimeout(usernameCheckTimeout.current);
         }

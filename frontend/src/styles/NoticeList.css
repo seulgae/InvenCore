@@ -1,5 +1,5 @@
-/* styles/BoardList.css */
-.board-container {
+/* styles/NoticeList.css */
+.notice-container {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
@@ -9,7 +9,7 @@
     color: #333;
 }
 
-.board-header {
+.notice-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -18,7 +18,7 @@
     padding-bottom: 1rem;
 }
 
-.board-header h1 {
+.notice-header h1 {
     color: #2c3e50;
     margin: 0;
 }
@@ -31,15 +31,20 @@
     cursor: pointer;
     background-color: #3498db;
     color: white;
+    transition: background-color 0.3s ease;
 }
 
-.board-list {
+.create-button:hover {
+    background-color: #2980b9;
+}
+
+.notice-list {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.board-item {
+.notice-item {
     background: #fff;
     border: 1px solid #eee;
     padding: 1.5rem;
@@ -48,18 +53,18 @@
     cursor: pointer;
 }
 
-.board-item:hover {
+.notice-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-.board-item h2 {
+.notice-item h2 {
     margin: 0 0 0.5rem 0;
     color: #333;
     font-size: 1.3rem;
 }
 
-.board-item p {
+.notice-item p {
     margin: 0 0 1rem 0;
     color: #555;
     white-space: pre-wrap;
@@ -70,7 +75,7 @@
     text-overflow: ellipsis;
 }
 
-.board-item .item-footer {
+.notice-item .item-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -98,20 +103,20 @@
 
 /* 모바일 반응형 */
 @media (max-width: 768px) {
-    .board-container {
+    .notice-container {
         padding: 1rem;
         margin: 1rem;
         border-radius: 8px;
     }
 
-    .board-header {
+    .notice-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
         padding-bottom: 1rem;
     }
 
-    .board-header h1 {
+    .notice-header h1 {
         font-size: 1.5rem;
     }
 
@@ -120,23 +125,19 @@
         padding: 0.7rem;
     }
 
-    .board-list {
-        gap: 1rem;
-    }
-
-    .board-item {
+    .notice-item {
         padding: 1rem;
     }
 
-    .board-item h2 {
+    .notice-item h2 {
         font-size: 1.1rem;
     }
 
-    .board-item p {
+    .notice-item p {
         font-size: 0.9rem;
     }
 
-    .board-item .item-footer {
+    .notice-item .item-footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;

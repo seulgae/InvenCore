@@ -1,5 +1,5 @@
-/* styles/BoardEdit.css */
-.board-container {
+/* styles/RequestBoardEdit.css */
+.request-board-container {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
@@ -9,12 +9,12 @@
     color: #333;
 }
 
-.board-container h1 {
+.request-board-container h1 {
     text-align: center;
     color: #2c3e50;
 }
 
-.board-form {
+.request-board-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -23,25 +23,26 @@
     border-radius: 8px;
 }
 
-.board-form .form-group {
+.request-board-form .form-group {
     display: flex;
     flex-direction: column;
 }
 
-.board-form label {
+.request-board-form label {
     margin-bottom: 0.5rem;
     font-weight: 600;
 }
 
-.board-form input,
-.board-form textarea {
+.request-board-form input,
+.request-board-form textarea {
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
+    font-family: inherit;
 }
 
-.board-form textarea {
+.request-board-form textarea {
     min-height: 200px;
     resize: vertical;
 }
@@ -50,32 +51,35 @@
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.cancel-button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+.form-actions button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     font-weight: 500;
-    background-color: #95a5a6;
-    color: white;
     transition: background-color 0.3s ease;
-}
-
-.cancel-button:hover {
-    background-color: #7f8c8d;
 }
 
 .form-actions button[type="submit"] {
     background-color: #3498db;
     color: white;
-    transition: background-color 0.3s ease;
 }
 
 .form-actions button[type="submit"]:hover {
     background-color: #2980b9;
+}
+
+.cancel-button {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #7f8c8d;
 }
 
 .char-count {
@@ -93,27 +97,27 @@
 
 /* 모바일 반응형 */
 @media (max-width: 768px) {
-    .board-container {
+    .request-board-container {
         padding: 1rem;
         margin: 1rem;
         border-radius: 8px;
     }
 
-    .board-container h1 {
+    .request-board-container h1 {
         font-size: 1.5rem;
     }
 
-    .board-form {
+    .request-board-form {
         padding: 1rem;
     }
 
-    .board-form input,
-    .board-form textarea {
+    .request-board-form input,
+    .request-board-form textarea {
         padding: 0.7rem;
         font-size: 0.95rem;
     }
 
-    .board-form textarea {
+    .request-board-form textarea {
         min-height: 150px;
     }
 

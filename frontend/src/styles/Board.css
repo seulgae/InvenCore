@@ -179,4 +179,126 @@
     margin-top: 2rem;
     border-top: 1px solid #f0f0f0;
     padding-top: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.char-count {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.3rem;
+}
+
+.error-message {
+    color: #e74c3c;
+    padding: 0.8rem;
+    background-color: #fee;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.empty-message {
+    text-align: center;
+    color: #888;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .board-container {
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 8px;
+    }
+
+    .board-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .board-form {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .board-form h2 {
+        font-size: 1.1rem;
+    }
+
+    .board-form input,
+    .board-form textarea {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+    .board-form textarea {
+        min-height: 100px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+        padding: 0.7rem;
+    }
+
+    .board-list {
+        gap: 1rem;
+    }
+
+    .board-item {
+        padding: 1rem;
+    }
+
+    .board-item h2 {
+        font-size: 1.1rem;
+    }
+
+    .board-item p {
+        font-size: 0.9rem;
+    }
+
+    .board-item .item-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .board-detail h1 {
+        font-size: 1.5rem;
+        word-break: break-word;
+    }
+
+    .detail-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .detail-content {
+        font-size: 1rem;
+        padding: 0.8rem;
+        word-break: break-word;
+    }
+
+    .detail-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .back-button {
+        width: 100%;
+    }
+
+    .item-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .edit-button, .delete-button {
+        flex: 1;
+    }
 }
