@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault; // ✅ ColumnDefault 임포트
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter

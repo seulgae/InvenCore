@@ -324,7 +324,15 @@
 
 .empty-message {
     text-align: center;
-    color: white; /* ✅ 색상 변경 */
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* ✅ 메인 페이지 전용 '게시글 없음' 메시지 스타일 */
+.home-empty-message {
+    text-align: center;
+    color: white; /* ✅ 흰색으로 변경 */
     padding: 2rem;
     font-style: italic;
 }

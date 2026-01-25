@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp; // ✅ 임포트
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,8 +26,9 @@ public class RequestBoard {
     @Column(nullable = false, length = 50)
     private String author;
 
-    // ✅ 수정된 createdAt 필드
-    @Column(nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    // ✅ @CreationTimestamp로 복원
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
