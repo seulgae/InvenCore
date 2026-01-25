@@ -8,17 +8,18 @@ export const login = async (username, password) => {
             password,
         });
 
-        // 응답 본문에서 토큰 추출
-        const { success, token } = response.data;
+        // 응답 본문에서 토큰과 사용자 이름 추출
+        const { success, token, username: loggedInUsername } = response.data;
 
         if (success && token) {
-            // 토큰을 로컬 스토리지에 저장
+            // 토큰과 사용자 이름을 로컬 스토리지에 저장
             localStorage.setItem('accessToken', token);
+            localStorage.setItem('username', loggedInUsername);
 
-            console.log('로그인 성공 및 토큰 저장 완료!');
-            return true;
+            console.log('로그인 성공 및 토큰/사용자 이름 저장 완료!');
+            return { success: true, username: loggedInUsername }; // ✅ 객체로 반환
         }
-        return false;
+        return { success: false };
     } catch (error) {
         console.error('로그인 실패:', error.response ? error.response.data : error.message);
         throw error; // UI 컴포넌트에서 에러를 직접 처리할 수 있도록 에러를 다시 던집니다.
@@ -26,8 +27,9 @@ export const login = async (username, password) => {
 };
 
 export const logout = () => {
-    // 로컬 스토리지에서 토큰 제거
+    // 로컬 스토리지에서 토큰과 사용자 이름 제거
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('username');
     console.log('로그아웃 완료!');
 };
 
