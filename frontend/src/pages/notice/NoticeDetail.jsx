@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom'; // ✅ useOutletContext 임포트
 import apiClient from '../../api/axios';
 import '../../styles/NoticeDetail.css';
 
@@ -8,7 +8,7 @@ function NoticeDetail() {
     const [error, setError] = useState('');
     const { id } = useParams();
     const navigate = useNavigate();
-    const currentUsername = localStorage.getItem('username');
+    const { isLoggedIn, userRole } = useOutletContext(); // ✅ context에서 값 가져오기
 
     useEffect(() => {
         const fetchNotice = async () => {
@@ -62,7 +62,8 @@ function NoticeDetail() {
                 <div className="detail-actions">
                     <button onClick={() => navigate('/notice')} className="back-button">목록으로</button>
                     
-                    {currentUsername === notice.author && (
+                    {/* ✅ userRole이 2 또는 3일 때만 수정/삭제 버튼 표시 */}
+                    {isLoggedIn && (userRole === 2 || userRole === 3) && (
                         <div className="item-actions">
                             <button onClick={() => navigate(`/notice/edit/${id}`)} className="edit-button">수정</button>
                             <button onClick={handleDelete} className="delete-button">삭제</button>
