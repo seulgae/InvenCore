@@ -42,6 +42,7 @@ jobs:
       - name: Swap + Restart + Healthcheck + Rollback
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@13.124.177.193 << 'EOF'
+<<<<<<< HEAD
             set -euo pipefail
 
             APP_DIR="/home/ec2-user/app"
@@ -133,4 +134,12 @@ jobs:
             fi
 
             echo "Backend Deployed Successfully!"
+=======
+            # 기존 자바 프로세스 종료
+            pgrep -f app.jar | xargs -r kill -9
+            sleep 2
+            # 백그라운드 실행
+            nohup java -jar /home/ec2-user/app/app.jar > /home/ec2-user/app/app.log 2>&1 &
+            echo "Backend Deployed!"
+>>>>>>> 5d6c04a3db5add70eed49daf10c413b4e23eca23
           EOF
