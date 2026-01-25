@@ -72,7 +72,7 @@ jobs:
             CUR_JAR="$APP_DIR/app.jar"
 
             # 내부 헬스체크(외부/NGINX 영향 X)
-            HEALTH_URL="http://127.0.0.1:8080/healthz"
+            HEALTH_URL="http://127.0.0.1:8080/api/health"
             HEALTH_TRIES=20
             HEALTH_SLEEP=2
 
