@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils; // ✅ StringUtils 임포트
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,11 @@ public class RequestBoardService {
 
     @Transactional
     public RequestBoardDTO createRequestBoard(RequestBoardDTO requestBoardDTO, String username) {
+        // ✅ 백엔드에서 공백 유효성 검사 추가
+        if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
+            throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
+        }
+
         RequestBoard requestBoard = RequestBoard.builder()
                 .title(requestBoardDTO.getTitle())
                 .content(requestBoardDTO.getContent())
@@ -46,6 +52,11 @@ public class RequestBoardService {
     public RequestBoardDTO updateRequestBoard(Long id, RequestBoardDTO requestBoardDTO, String username) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
+
+        // ✅ 유효성 검사를 권한 확인보다 먼저 수행
+        if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
+            throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
+        }
 
         if (!requestBoard.getAuthor().equals(username)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");

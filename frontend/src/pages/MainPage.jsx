@@ -113,7 +113,7 @@ function MainPage() {
                 <div className="navbar-auth">
                     {isLoggedIn ? (
                         <>
-                            <span className="navbar-welcome">{username}님 안녕하세요.</span>
+                            <span className="navbar-welcome">{username}님 </span>
                             <button onClick={handleLogout} className="nav-button">
                                 로그아웃
                             </button>
