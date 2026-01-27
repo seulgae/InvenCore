@@ -1,69 +1,22 @@
 package com.inven.core.backend.api.notice.service;
 
 import com.inven.core.backend.api.notice.dto.NoticeDTO;
-import com.inven.core.backend.api.notice.entity.Notice;
-import com.inven.core.backend.api.notice.repository.NoticeRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
-@Service
-@RequiredArgsConstructor
-public class NoticeService {
+public interface NoticeService {
 
-    private final NoticeRepository noticeRepository;
+    NoticeDTO createNotice(NoticeDTO noticeDTO, String username);
 
-    @Transactional
-    public NoticeDTO createNotice(NoticeDTO noticeDTO, String username) {
-        Notice notice = Notice.builder()
-                .title(noticeDTO.getTitle())
-                .content(noticeDTO.getContent())
-                .author(username)
-                .build();
-        Notice savedNotice = noticeRepository.save(notice);
-        return new NoticeDTO(savedNotice.getId(), savedNotice.getTitle(), savedNotice.getContent(), savedNotice.getAuthor(), savedNotice.getCreatedAt());
-    }
+    NoticeDTO getNoticeById(Long id);
 
-    @Transactional(readOnly = true)
-    public NoticeDTO getNoticeById(Long id) {
-        Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid notice Id: " + id));
-        return new NoticeDTO(notice.getId(), notice.getTitle(), notice.getContent(), notice.getAuthor(), notice.getCreatedAt());
-    }
+    // 목록 조회 (프론트 NoticeList용)
+    List<NoticeDTO> getAllNotices();
 
-    @Transactional(readOnly = true)
-    public List<NoticeDTO> getAllNotices() {
-        return noticeRepository.findAll().stream()
-                .map(notice -> new NoticeDTO(notice.getId(), notice.getTitle(), notice.getContent(), notice.getAuthor(), notice.getCreatedAt()))
-                .collect(Collectors.toList());
-    }
+    // 페이징 + 검색
+    Page<NoticeDTO> getNotices(int page, int size, String keyword);
 
-    @Transactional
-    public NoticeDTO updateNotice(Long id, NoticeDTO noticeDTO, String username) {
-        Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid notice Id: " + id));
+    NoticeDTO updateNotice(Long id, NoticeDTO noticeDTO, String username);
 
-        if (!notice.getAuthor().equals(username)) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
-        }
-
-        notice.update(noticeDTO.getTitle(), noticeDTO.getContent());
-        return new NoticeDTO(notice.getId(), notice.getTitle(), notice.getContent(), notice.getAuthor(), notice.getCreatedAt());
-    }
-
-    @Transactional
-    public void deleteNotice(Long id, String username) {
-        Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid notice Id: " + id));
-
-        if (!notice.getAuthor().equals(username)) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
-
-        noticeRepository.delete(notice);
-    }
+    void deleteNotice(Long id, String username);
 }

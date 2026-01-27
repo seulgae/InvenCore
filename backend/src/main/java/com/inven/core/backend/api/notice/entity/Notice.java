@@ -1,11 +1,11 @@
 package com.inven.core.backend.api.notice.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

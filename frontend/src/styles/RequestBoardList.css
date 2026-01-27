@@ -2,7 +2,7 @@
 
 .rb-container {
     padding: 2rem;
-    max-width: 980px;
+    max-width: 1100px;
     margin: 2rem auto;
     background: #fff;
     border-radius: 12px;
@@ -69,10 +69,8 @@
 }
 
 /* ======================
-   Buttons (create-button 스타일)
+   Buttons
 ====================== */
-
-/* 전역 button 글자 숨김 방어 */
 .rb-header-actions button,
 .rb-header-actions button * {
     font-size: 0.9rem !important;
@@ -82,7 +80,6 @@
     opacity: 1 !important;
 }
 
-/* 공통 버튼 */
 .rb-btn {
     height: 40px;
     padding: 0.6rem 1.2rem;
@@ -92,12 +89,10 @@
     cursor: pointer;
     background-color: #3498db;
     color: #fff;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-
     transition: background-color 0.3s ease;
 }
 
@@ -108,18 +103,6 @@
 .rb-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
-}
-
-/* 의미상 클래스는 유지하지만 스타일은 동일 */
-.rb-btn-ghost,
-.rb-btn-primary {
-    background-color: #3498db;
-    color: #fff;
-}
-
-.rb-btn-ghost:hover,
-.rb-btn-primary:hover {
-    background-color: #2980b9;
 }
 
 /* ======================
@@ -142,10 +125,11 @@
     overflow: hidden;
 }
 
+/* 🔧 컬럼 고정 */
 .rb-list-head,
 .rb-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 140px 220px;
+    grid-template-columns: minmax(0, 1fr) 180px 260px;
     align-items: center;
 }
 
@@ -164,6 +148,16 @@
 .rb-col-center {
     justify-self: center;
     text-align: center;
+    white-space: nowrap;
+    color: #555;
+}
+
+/* ✅ 데스크톱에서 작성일 강제 표시 */
+.rb-list-head > :nth-child(3),
+.rb-row > :nth-child(3) {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .rb-row {
@@ -182,6 +176,14 @@
 
 .rb-row:hover {
     background: #fcfcff;
+}
+
+/* ✅ button 전역 스타일 영향 차단 */
+.rb-row,
+.rb-row * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #333 !important;
 }
 
 .rb-cell {
@@ -221,55 +223,58 @@
 }
 
 /* ======================
-   Pagination (버튼 동일 스타일)
+   Pagination (공지사항 NoticeList랑 동일 스타일)
 ====================== */
 .rb-pagination {
-    margin-top: 16px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0.4rem;
+    margin-top: 2.5rem;
+    align-items: center;
     flex-wrap: wrap;
 }
 
 .rb-page-btn,
 .rb-page-num {
-    min-width: 40px;
-    height: 40px;
-    padding: 0 10px;
-    border-radius: 5px;
-    border: none;
-    background-color: #3498db;
-    color: #fff;
+    min-width: 36px;
+    height: 36px;
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 0.85rem;
     cursor: pointer;
-
+    color: #333;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
 }
 
-.rb-page-btn:hover,
-.rb-page-num:hover {
-    background-color: #2980b9;
-}
-
-.rb-page-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
+/* 전역 button 스타일 때문에 숫자 안 보이는 현상 방어 */
+.rb-page-btn,
+.rb-page-num,
+.rb-page-btn *,
+.rb-page-num * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-indent: 0 !important;
+    letter-spacing: normal !important;
+    line-height: 1 !important;
+    color: #333 !important;
+    font-size: 0.85rem !important;
 }
 
 .rb-page-num.active {
-    background-color: #2980b9;
-    font-weight: 700;
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #fff !important;
+    font-weight: 600;
 }
 
-.rb-page-info {
-    color: #777;
-    font-size: 0.85rem;
-    padding: 0 0.25rem;
+.rb-page-btn:disabled,
+.rb-page-num:disabled {
+    cursor: not-allowed;
+    opacity: 0.5 !important;
 }
 
 /* ======================
@@ -299,15 +304,28 @@
 
     .rb-list-head,
     .rb-row {
-        grid-template-columns: minmax(0, 1fr) 110px;
+        grid-template-columns: minmax(0, 1fr) 120px;
     }
 
     .rb-list-head > :nth-child(3),
     .rb-row > :nth-child(3) {
-        display: none;
+        display: none !important;
     }
 
     .rb-row-preview {
         -webkit-line-clamp: 2;
+    }
+
+    .rb-row-fix,
+    .rb-row-fix * {
+        font-size: 0.95rem;
+        color: #333;
+        opacity: 1;
+        text-indent: 0;
+        line-height: 1.4;
+    }
+
+    .rb-col-center {
+        white-space: nowrap;
     }
 }
