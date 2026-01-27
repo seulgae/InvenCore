@@ -10,7 +10,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "request_boards")
+@Table(
+        name = "request_boards",
+        indexes = {
+                @Index(name = "idx_request_boards_created_at", columnList = "createdAt")
+        }
+)
 public class RequestBoard {
 
     @Id
@@ -26,7 +31,6 @@ public class RequestBoard {
     @Column(nullable = false, length = 50)
     private String author;
 
-    // ✅ @CreationTimestamp로 복원
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
