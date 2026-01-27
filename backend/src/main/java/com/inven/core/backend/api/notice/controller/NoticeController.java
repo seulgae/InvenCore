@@ -3,58 +3,62 @@ package com.inven.core.backend.api.notice.controller;
 import com.inven.core.backend.api.notice.dto.NoticeDTO;
 import com.inven.core.backend.api.notice.service.NoticeService;
 import jakarta.validation.Valid;
+import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
-import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/notices")
 @RequiredArgsConstructor
+@RequestMapping("/api/notices")
 public class NoticeController {
 
     private final NoticeService noticeService;
 
     @PostMapping
-    public ResponseEntity<NoticeDTO> createNotice(@Valid @RequestBody NoticeDTO noticeDTO, Principal principal) {
-        log.info("POST /api/notices 요청 수신");
-        NoticeDTO createdNotice = noticeService.createNotice(noticeDTO, principal.getName());
-        log.info("공지사항 생성 완료: {}", createdNotice.getTitle());
-        return new ResponseEntity<>(createdNotice, HttpStatus.CREATED);
+    public ResponseEntity<NoticeDTO> createNotice(
+            @Valid @RequestBody NoticeDTO noticeDTO,
+            Principal principal
+    ) {
+        String username = principal != null ? principal.getName() : null;
+        NoticeDTO created = noticeService.createNotice(noticeDTO, username);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<NoticeDTO> getNoticeById(@PathVariable Long id) {
-        log.info("GET /api/notices/{} 요청 수신", id);
-        NoticeDTO noticeDTO = noticeService.getNoticeById(id);
-        return ResponseEntity.ok(noticeDTO);
+        return ResponseEntity.ok(noticeService.getNoticeById(id));
     }
 
+    // ✅ 프론트에서 사용하는 목록 조회 (List 반환)
     @GetMapping
     public ResponseEntity<List<NoticeDTO>> getAllNotices() {
-        log.info("GET /api/notices 요청 수신");
-        List<NoticeDTO> notices = noticeService.getAllNotices();
-        log.info("공지사항 {}건 조회 완료", notices.size());
-        return ResponseEntity.ok(notices);
+        return ResponseEntity.ok(noticeService.getAllNotices());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NoticeDTO> updateNotice(@PathVariable Long id, @Valid @RequestBody NoticeDTO noticeDTO, Principal principal) {
-        log.info("PUT /api/notices/{} 요청 수신", id);
-        NoticeDTO updatedNotice = noticeService.updateNotice(id, noticeDTO, principal.getName());
-        log.info("공지사항 수정 완료: {}", updatedNotice.getTitle());
-        return ResponseEntity.ok(updatedNotice);
+    public ResponseEntity<NoticeDTO> updateNotice(
+            @PathVariable Long id,
+            @Valid @RequestBody NoticeDTO noticeDTO,
+            Principal principal
+    ) {
+        String username = principal != null ? principal.getName() : null;
+        return ResponseEntity.ok(
+                noticeService.updateNotice(id, noticeDTO, username)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotice(@PathVariable Long id, Principal principal) {
-        log.info("DELETE /api/notices/{} 요청 수신", id);
-        noticeService.deleteNotice(id, principal.getName());
-        log.info("공지사항 삭제 완료: id={}", id);
+    public ResponseEntity<Void> deleteNotice(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        String username = principal != null ? principal.getName() : null;
+        noticeService.deleteNotice(id, username);
         return ResponseEntity.noContent().build();
     }
 }

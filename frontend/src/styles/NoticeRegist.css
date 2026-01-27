@@ -1,11 +1,12 @@
 /* styles/NoticeRegist.css */
+
 .notice-container {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     color: #333;
 }
 
@@ -66,7 +67,7 @@
 
 .submit-button {
     background-color: #3498db;
-    color: white;
+    color: #fff;
 }
 
 .submit-button:hover {
@@ -75,7 +76,7 @@
 
 .cancel-button {
     background-color: #95a5a6;
-    color: white;
+    color: #fff;
 }
 
 .cancel-button:hover {

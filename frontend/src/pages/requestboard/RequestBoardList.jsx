@@ -15,20 +15,25 @@ function RequestBoardList() {
     const size = 10;
     const [totalPages, setTotalPages] = useState(1);
 
-    // 입력 중인 검색어 / 실제 적용된 검색어
     const [keyword, setKeyword] = useState('');
     const [appliedKeyword, setAppliedKeyword] = useState('');
 
-    // ✅ 한 곳에서만 서버 호출(파라미터 명확)
+    const formatDate = (v) => {
+        if (!v) return '-';
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return '-';
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
     const fetchPage = async ({ nextPage, keyword: kw }) => {
         const trimmed = (kw ?? '').trim();
 
         try {
             setLoading(true);
             setError('');
-
-            // 디버깅용(원하면 삭제)
-            // console.log('[RequestBoards] page=', nextPage, 'size=', size, 'keyword=', trimmed);
 
             const res = await apiClient.get('/requestboards', {
                 params: {
@@ -49,7 +54,6 @@ function RequestBoardList() {
         }
     };
 
-    // ✅ 첫 진입 시 “검색어 없이 0페이지”
     useEffect(() => {
         fetchPage({ nextPage: 0, keyword: '' });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +79,6 @@ function RequestBoardList() {
         fetchPage({ nextPage: 0, keyword: '' });
     };
 
-    // ✅ 페이지 이동은 항상 appliedKeyword 기준으로
     const goPage = (p) => {
         if (p < 0 || p > totalPages - 1) return;
         fetchPage({ nextPage: p, keyword: appliedKeyword });
@@ -129,7 +132,7 @@ function RequestBoardList() {
                     items.map((it) => (
                         <button
                             key={it.id}
-                            className="rb-row"
+                            className="rb-row rb-row-fix"
                             type="button"
                             onClick={() => navigate(`/requestboard/${it.id}`)}
                         >
@@ -138,42 +141,48 @@ function RequestBoardList() {
                                 <div className="rb-row-preview">{(it.content || '').replace(/\n/g, ' ')}</div>
                             </div>
 
-                            <div className="rb-cell rb-col-center">{it.author}</div>
+                            <div className="rb-cell rb-col-center">{it.author || '-'}</div>
 
-                            <div className="rb-cell rb-col-center">
-                                {it.createdAt ? new Date(it.createdAt).toLocaleString() : ''}
-                            </div>
+                            <div className="rb-cell rb-col-center">{formatDate(it.createdAt)}</div>
                         </button>
                     ))
                 )}
             </div>
 
             {totalPages > 0 && (
-                <div className="rb-pagination">
-                    <button className="rb-page-btn" type="button" onClick={() => goPage(0)} disabled={page === 0 || loading}>
+                <div className="pagination">
+                    <button
+                        className="page-button"
+                        type="button"
+                        onClick={() => goPage(0)}
+                        disabled={page === 0 || loading}
+                    >
                         «
                     </button>
 
-                    <button className="rb-page-btn" type="button" onClick={() => goPage(page - 1)} disabled={page === 0 || loading}>
+                    <button
+                        className="page-button"
+                        type="button"
+                        onClick={() => goPage(page - 1)}
+                        disabled={page === 0 || loading}
+                    >
                         ‹
                     </button>
 
-                    <div className="rb-page-numbers">
-                        {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
-                            <button
-                                key={p}
-                                className={`rb-page-num ${p === page ? 'active' : ''}`}
-                                type="button"
-                                onClick={() => goPage(p)}
-                                disabled={loading}
-                            >
-                                {p + 1}
-                            </button>
-                        ))}
-                    </div>
+                    {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
+                        <button
+                            key={p}
+                            className={`page-button ${p === page ? 'active' : ''}`}
+                            type="button"
+                            onClick={() => goPage(p)}
+                            disabled={loading}
+                        >
+                            {p + 1}
+                        </button>
+                    ))}
 
                     <button
-                        className="rb-page-btn"
+                        className="page-button"
                         type="button"
                         onClick={() => goPage(page + 1)}
                         disabled={page >= totalPages - 1 || loading}
@@ -182,17 +191,13 @@ function RequestBoardList() {
                     </button>
 
                     <button
-                        className="rb-page-btn"
+                        className="page-button"
                         type="button"
                         onClick={() => goPage(totalPages - 1)}
                         disabled={page >= totalPages - 1 || loading}
                     >
                         »
                     </button>
-
-                    <div className="rb-page-info">
-                        {page + 1} / {totalPages}
-                    </div>
                 </div>
             )}
         </div>

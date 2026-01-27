@@ -1,11 +1,12 @@
 /* styles/NoticeDetail.css */
+
 .notice-container {
     padding: 2rem;
     max-width: 900px;
     margin: 2rem auto;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     color: #333;
 }
 
@@ -62,7 +63,9 @@
     flex-wrap: wrap;
 }
 
-.edit-button, .delete-button, .back-button {
+.edit-button,
+.delete-button,
+.back-button {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
     border-radius: 5px;
@@ -74,7 +77,7 @@
 
 .edit-button {
     background-color: #3498db;
-    color: white;
+    color: #fff;
 }
 
 .edit-button:hover {
@@ -83,7 +86,7 @@
 
 .delete-button {
     background-color: #e74c3c;
-    color: white;
+    color: #fff;
 }
 
 .delete-button:hover {
@@ -92,7 +95,7 @@
 
 .back-button {
     background-color: #34495e;
-    color: white;
+    color: #fff;
 }
 
 .back-button:hover {
@@ -152,7 +155,8 @@
         justify-content: stretch;
     }
 
-    .edit-button, .delete-button {
+    .edit-button,
+    .delete-button {
         flex: 1;
     }
 }

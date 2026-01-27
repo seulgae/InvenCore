@@ -1,67 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import apiClient from '../../api/axios';
 import '../../styles/NoticeList.css';
 
 function NoticeList() {
+    const navigate = useNavigate();
+    const { isLoggedIn, userRole } = useOutletContext();
+
     const [notices, setNotices] = useState([]);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const { isLoggedIn, userRole, openLoginModal } = useOutletContext(); // ✅ userRole 가져오기
+
+    // ✅ 한 페이지당 5개
+    const [page, setPage] = useState(0);
+    const size = 5;
 
     useEffect(() => {
         fetchNotices();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchNotices = async () => {
         try {
-            const response = await apiClient.get('/notices');
-            setNotices(response.data);
+            const { data } = await apiClient.get('/notices'); // List<NoticeDTO>
+            setNotices(Array.isArray(data) ? data : []);
         } catch (err) {
-            setError('공지사항 목록을 불러오는 데 실패했습니다.');
             console.error(err);
+            setError('공지사항 목록을 불러오는 데 실패했습니다.');
         }
     };
 
-    const handleCreateClick = () => {
-        // 이 함수는 이제 버튼이 보일 때만 호출되므로, isLoggedIn 체크는 사실상 중복이지만 안전을 위해 유지합니다.
-        if (isLoggedIn && (userRole === 2 || userRole === 3)) {
-            navigate('/notice/regist');
-        } else {
-            alert('등록 권한이 없습니다.');
-        }
+    const canCreate = isLoggedIn && (userRole === 2 || userRole === 3);
+
+    // ✅ 페이지 계산
+    const totalPages = Math.ceil(notices.length / size);
+    const startIndex = page * size;
+    const currentNotices = notices.slice(startIndex, startIndex + size);
+
+    // ✅ 페이징 이동
+    const goPage = (p) => {
+        if (p < 0 || p > totalPages - 1) return;
+        setPage(p);
     };
 
     return (
         <div className="notice-container">
             <div className="notice-header">
                 <h1>공지사항</h1>
-                {/* ✅ userRole이 2 또는 3일 때만 등록 버튼 표시 */}
-                {isLoggedIn && (userRole === 2 || userRole === 3) && (
-                    <button onClick={handleCreateClick} className="create-button">등록</button>
+                {canCreate && (
+                    <button className="create-button" onClick={() => navigate('/notice/regist')}>
+                        등록
+                    </button>
                 )}
             </div>
-            
+
             {error && <p className="error-message">{error}</p>}
 
-            <div className="notice-list">
-                {notices.length === 0 ? (
+            <div className="notice-list one-row">
+                {currentNotices.length === 0 ? (
                     <p className="empty-message">공지사항이 없습니다.</p>
                 ) : (
-                    notices.map(notice => (
-                        <div key={notice.id} className="notice-item" onClick={() => navigate(`/notice/${notice.id}`)}>
-                            <div className="item-content">
-                                <h2>{notice.title}</h2>
-                                <p>{notice.content}</p>
-                            </div>
+                    currentNotices.map((notice) => (
+                        <div
+                            key={notice.id}
+                            className="notice-item"
+                            onClick={() => navigate(`/notice/${notice.id}`)}
+                        >
+                            <h2>{notice.title}</h2>
+                            <p>{notice.content}</p>
                             <div className="item-footer">
-                                <span>작성자: {notice.author}</span>
-                                <span>{new Date(notice.createdAt).toLocaleString()}</span>
+                                <span>{notice.author}</span>
+                                <span>{new Date(notice.createdAt).toLocaleDateString()}</span>
                             </div>
                         </div>
                     ))
                 )}
             </div>
+
+            {totalPages > 0 && (
+                <div className="pagination">
+                    <button className="page-button" type="button" onClick={() => goPage(0)} disabled={page === 0}>
+                        «
+                    </button>
+
+                    <button className="page-button" type="button" onClick={() => goPage(page - 1)} disabled={page === 0}>
+                        ‹
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
+                        <button
+                            key={p}
+                            className={`page-button ${p === page ? 'active' : ''}`}
+                            type="button"
+                            onClick={() => goPage(p)}
+                        >
+                            {p + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        className="page-button"
+                        type="button"
+                        onClick={() => goPage(page + 1)}
+                        disabled={page >= totalPages - 1}
+                    >
+                        ›
+                    </button>
+
+                    <button
+                        className="page-button"
+                        type="button"
+                        onClick={() => goPage(totalPages - 1)}
+                        disabled={page >= totalPages - 1}
+                    >
+                        »
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
