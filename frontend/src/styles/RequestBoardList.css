@@ -1,92 +1,131 @@
 /* styles/RequestBoardList.css */
-.request-board-container {
+
+.rb-container {
     padding: 2rem;
-    max-width: 900px;
+    max-width: 980px;
     margin: 2rem auto;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     color: #333;
 }
 
-.request-board-header {
+.rb-container * {
+    box-sizing: border-box;
+}
+
+/* ======================
+   Header
+====================== */
+.rb-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #f0f0f0;
+    align-items: flex-end;
+    gap: 1rem;
     padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 1.2rem;
 }
 
-.request-board-header h1 {
-    color: #2c3e50;
+.rb-title {
     margin: 0;
+    color: #2c3e50;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-.create-button {
+.rb-subtitle {
+    margin: 0.35rem 0 0;
+    color: #777;
+    font-size: 0.95rem;
+}
+
+.rb-header-actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* ======================
+   Search
+====================== */
+.rb-search-input {
+    width: 220px;
+    height: 40px;
+    padding: 0 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #e6e6e6;
+    outline: none;
+    background: #fff;
+    font-size: 0.9rem;
+}
+
+.rb-search-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+}
+
+/* ======================
+   Buttons (create-button 스타일)
+====================== */
+
+/* 전역 button 글자 숨김 방어 */
+.rb-header-actions button,
+.rb-header-actions button * {
+    font-size: 0.9rem !important;
+    text-indent: 0 !important;
+    letter-spacing: normal !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+}
+
+/* 공통 버튼 */
+.rb-btn {
+    height: 40px;
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     background-color: #3498db;
-    color: white;
+    color: #fff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+
     transition: background-color 0.3s ease;
 }
 
-.create-button:hover {
+.rb-btn:hover {
     background-color: #2980b9;
 }
 
-.request-board-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.rb-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
-.request-board-item {
-    background: #fff;
-    border: 1px solid #eee;
-    padding: 1.5rem;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
+/* 의미상 클래스는 유지하지만 스타일은 동일 */
+.rb-btn-ghost,
+.rb-btn-primary {
+    background-color: #3498db;
+    color: #fff;
 }
 
-.request-board-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+.rb-btn-ghost:hover,
+.rb-btn-primary:hover {
+    background-color: #2980b9;
 }
 
-.request-board-item h2 {
-    margin: 0 0 0.5rem 0;
-    color: #333;
-    font-size: 1.3rem;
-}
-
-.request-board-item p {
-    margin: 0 0 1rem 0;
-    color: #555;
-    white-space: pre-wrap;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.request-board-item .item-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    color: #888;
-    border-top: 1px solid #f0f0f0;
-    padding-top: 1rem;
-    margin-top: 1rem;
-}
-
-.error-message {
+/* ======================
+   Error
+====================== */
+.rb-error {
     color: #e74c3c;
     padding: 1rem;
     background-color: #fee;
@@ -94,57 +133,181 @@
     margin-bottom: 1rem;
 }
 
-.empty-message {
+/* ======================
+   List
+====================== */
+.rb-list {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.rb-list-head,
+.rb-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 140px 220px;
+    align-items: center;
+}
+
+.rb-list-head {
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.rb-col {
+    min-width: 0;
+}
+
+.rb-col-center {
+    justify-self: center;
+    text-align: center;
+}
+
+.rb-row {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: #fff;
+    padding: 0.95rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.rb-row:last-child {
+    border-bottom: none;
+}
+
+.rb-row:hover {
+    background: #fcfcff;
+}
+
+.rb-cell {
+    min-width: 0;
+}
+
+.rb-cell-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.rb-row-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rb-row-preview {
+    font-size: 0.92rem;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.rb-empty {
+    padding: 2rem;
     text-align: center;
     color: #888;
-    padding: 2rem;
     font-style: italic;
 }
 
-/* 모바일 반응형 */
+/* ======================
+   Pagination (버튼 동일 스타일)
+====================== */
+.rb-pagination {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rb-page-btn,
+.rb-page-num {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.rb-page-btn:hover,
+.rb-page-num:hover {
+    background-color: #2980b9;
+}
+
+.rb-page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.rb-page-num.active {
+    background-color: #2980b9;
+    font-weight: 700;
+}
+
+.rb-page-info {
+    color: #777;
+    font-size: 0.85rem;
+    padding: 0 0.25rem;
+}
+
+/* ======================
+   Responsive
+====================== */
 @media (max-width: 768px) {
-    .request-board-container {
+    .rb-container {
         padding: 1rem;
         margin: 1rem;
         border-radius: 8px;
     }
 
-    .request-board-header {
+    .rb-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
-        padding-bottom: 1rem;
     }
 
-    .request-board-header h1 {
-        font-size: 1.5rem;
-    }
-
-    .create-button {
+    .rb-header-actions {
         width: 100%;
-        padding: 0.7rem;
+        justify-content: stretch;
     }
 
-    .request-board-list {
-        gap: 1rem;
+    .rb-search-input,
+    .rb-btn {
+        width: 100%;
     }
 
-    .request-board-item {
-        padding: 1rem;
+    .rb-list-head,
+    .rb-row {
+        grid-template-columns: minmax(0, 1fr) 110px;
     }
 
-    .request-board-item h2 {
-        font-size: 1.1rem;
+    .rb-list-head > :nth-child(3),
+    .rb-row > :nth-child(3) {
+        display: none;
     }
 
-    .request-board-item p {
-        font-size: 0.9rem;
-    }
-
-    .request-board-item .item-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-        font-size: 0.8rem;
+    .rb-row-preview {
+        -webkit-line-clamp: 2;
     }
 }

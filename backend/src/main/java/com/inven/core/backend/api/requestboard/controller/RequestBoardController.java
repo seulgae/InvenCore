@@ -5,6 +5,7 @@ import com.inven.core.backend.api.requestboard.service.RequestBoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,8 +25,10 @@ public class RequestBoardController {
     private final RequestBoardService requestBoardService;
 
     @PostMapping
-    public ResponseEntity<RequestBoardDTO> createRequestBoard(@Valid @RequestBody RequestBoardDTO requestBoardDTO,
-                                                              Principal principal) {
+    public ResponseEntity<RequestBoardDTO> createRequestBoard(
+            @Valid @RequestBody RequestBoardDTO requestBoardDTO,
+            Principal principal
+    ) {
         log.info("POST /api/requestboards 요청 수신");
         RequestBoardDTO createdRequestBoard =
                 requestBoardService.createRequestBoard(requestBoardDTO, principal.getName());
@@ -40,18 +42,27 @@ public class RequestBoardController {
         return ResponseEntity.ok(requestBoardService.getRequestBoardById(id));
     }
 
+    /**
+     * ✅ 서버 페이징
+     * 예) GET /api/requestboards?page=0&size=10
+     * - page: 0부터 시작
+     * - size: 페이지당 개수
+     */
     @GetMapping
-    public ResponseEntity<List<RequestBoardDTO>> getAllRequestBoards() {
-        log.info("GET /api/requestboards 요청 수신");
-        List<RequestBoardDTO> requestBoards = requestBoardService.getAllRequestBoards();
-        log.info("요청 게시글 {}건 조회 완료", requestBoards.size());
-        return ResponseEntity.ok(requestBoards);
+    public ResponseEntity<Page<RequestBoardDTO>> getRequestBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword
+    ) {
+        return ResponseEntity.ok(requestBoardService.getRequestBoards(page, size, keyword));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RequestBoardDTO> updateRequestBoard(@PathVariable Long id,
-                                                              @Valid @RequestBody RequestBoardDTO requestBoardDTO,
-                                                              Principal principal) {
+    public ResponseEntity<RequestBoardDTO> updateRequestBoard(
+            @PathVariable Long id,
+            @Valid @RequestBody RequestBoardDTO requestBoardDTO,
+            Principal principal
+    ) {
         log.info("PUT /api/requestboards/{} 요청 수신", id);
         RequestBoardDTO updatedRequestBoard =
                 requestBoardService.updateRequestBoard(id, requestBoardDTO, principal.getName());
@@ -71,9 +82,7 @@ public class RequestBoardController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), err.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
 
         Map<String, Object> body = new HashMap<>();
         body.put("message", "Validation failed");

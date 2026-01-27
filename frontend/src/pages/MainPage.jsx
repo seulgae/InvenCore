@@ -12,7 +12,10 @@ function MainPage() {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [boards, setBoards] = useState([]);
+
+    // 요청 게시판 상태/호출 제거
+    // const [boards, setBoards] = useState([]);
+
     const [notices, setNotices] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
@@ -32,19 +35,20 @@ function MainPage() {
 
     useEffect(() => {
         if (isHomePage) {
-            fetchBoards();
+            // fetchBoards(); // 제거
             fetchNotices();
         }
     }, [isHomePage]);
 
-    const fetchBoards = async () => {
-        try {
-            const response = await apiClient.get('/requestboards');
-            setBoards(response.data.slice(0, 5));
-        } catch (err) {
-            console.error('게시글 목록을 불러오는 데 실패했습니다.', err);
-        }
-    };
+    // 요청 게시판 API 호출 제거
+    // const fetchBoards = async () => {
+    //     try {
+    //         const response = await apiClient.get('/requestboards');
+    //         setBoards(response.data.slice(0, 5));
+    //     } catch (err) {
+    //         console.error('게시글 목록을 불러오는 데 실패했습니다.', err);
+    //     }
+    // };
 
     const fetchNotices = async () => {
         try {
@@ -158,7 +162,11 @@ function MainPage() {
                                         <p className="home-empty-message">공지사항이 없습니다.</p>
                                     ) : (
                                         notices.map(notice => (
-                                            <div key={notice.id} className="board-item-preview" onClick={() => navigate(`/notice/${notice.id}`)}>
+                                            <div
+                                                key={notice.id}
+                                                className="board-item-preview"
+                                                onClick={() => navigate(`/notice/${notice.id}`)}
+                                            >
                                                 <h3>{notice.title}</h3>
                                                 <div className="item-meta">
                                                     <span>{notice.author}</span>
@@ -170,34 +178,14 @@ function MainPage() {
                                 </div>
                             </div>
 
-                            <div className="board-section">
-                                <div className="section-header">
-                                    <h2>요청 게시판</h2>
-                                    <button onClick={() => navigate('/requestboard')} className="more-button">더보기</button>
-                                </div>
-                                <div className="board-list-preview">
-                                    {boards.length === 0 ? (
-                                        <p className="home-empty-message">게시글이 없습니다.</p>
-                                    ) : (
-                                        boards.map(board => (
-                                            <div key={board.id} className="board-item-preview" onClick={() => navigate(`/requestboard/${board.id}`)}>
-                                                <h3>{board.title}</h3>
-                                                <div className="item-meta">
-                                                    <span>{board.author}</span>
-                                                    <span>{new Date(board.createdAt).toLocaleDateString()}</span>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
+                            {/* 요청 게시판 섹션 제거 */}
                         </div>
                     ) : (
-                        <Outlet context={{ 
-                            isLoggedIn, 
+                        <Outlet context={{
+                            isLoggedIn,
                             userRole: role,
                             openLoginModal: () => setShowLoginModal(true),
-                            openJoinModal: () => setShowJoinModal(true) 
+                            openJoinModal: () => setShowJoinModal(true)
                         }} />
                     )}
                 </div>
