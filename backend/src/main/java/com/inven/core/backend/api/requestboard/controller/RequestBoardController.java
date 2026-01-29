@@ -2,16 +2,24 @@ package com.inven.core.backend.api.requestboard.controller;
 
 import com.inven.core.backend.api.requestboard.dto.RequestBoardDTO;
 import com.inven.core.backend.api.requestboard.service.RequestBoardService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +34,13 @@ public class RequestBoardController {
 
     @PostMapping
     public ResponseEntity<RequestBoardDTO> createRequestBoard(
-            @Valid @RequestBody RequestBoardDTO requestBoardDTO,
+            @Valid @RequestPart("requestBoardDTO") RequestBoardDTO requestBoardDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal
     ) {
         log.info("POST /api/requestboards 요청 수신");
         RequestBoardDTO createdRequestBoard =
-                requestBoardService.createRequestBoard(requestBoardDTO, principal.getName());
+                requestBoardService.createRequestBoard(requestBoardDTO, principal.getName(), file);
         log.info("요청 게시글 생성 완료: {}", createdRequestBoard.getTitle());
         return new ResponseEntity<>(createdRequestBoard, HttpStatus.CREATED);
     }
@@ -42,12 +51,6 @@ public class RequestBoardController {
         return ResponseEntity.ok(requestBoardService.getRequestBoardById(id));
     }
 
-    /**
-     * ✅ 서버 페이징
-     * 예) GET /api/requestboards?page=0&size=10
-     * - page: 0부터 시작
-     * - size: 페이지당 개수
-     */
     @GetMapping
     public ResponseEntity<Page<RequestBoardDTO>> getRequestBoards(
             @RequestParam(defaultValue = "0") int page,
@@ -60,12 +63,13 @@ public class RequestBoardController {
     @PutMapping("/{id}")
     public ResponseEntity<RequestBoardDTO> updateRequestBoard(
             @PathVariable Long id,
-            @Valid @RequestBody RequestBoardDTO requestBoardDTO,
+            @Valid @RequestPart("requestBoardDTO") RequestBoardDTO requestBoardDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal
     ) {
         log.info("PUT /api/requestboards/{} 요청 수신", id);
         RequestBoardDTO updatedRequestBoard =
-                requestBoardService.updateRequestBoard(id, requestBoardDTO, principal.getName());
+                requestBoardService.updateRequestBoard(id, requestBoardDTO, principal.getName(), file);
         log.info("요청 게시글 수정 완료: {}", updatedRequestBoard.getTitle());
         return ResponseEntity.ok(updatedRequestBoard);
     }
@@ -78,10 +82,32 @@ public class RequestBoardController {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ Validation (400) 응답 포맷 통일: { message, errors }
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
+        Resource resource = requestBoardService.downloadFile(id);
+        String originalFileName = requestBoardService.getRequestBoardById(id).getFileName();
+
+        String encodedFileName = URLEncoder.encode(originalFileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        
+        String contentType;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            contentType = "application/octet-stream";
+        }
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                .body(resource);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+        Map<String, Object> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
 
         Map<String, Object> body = new HashMap<>();
@@ -91,7 +117,6 @@ public class RequestBoardController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // ✅ 권한 오류 (403): { message }
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -99,7 +124,6 @@ public class RequestBoardController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
-    // ✅ 서비스에서 던진 IllegalArgumentException (400): { message }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         Map<String, Object> body = new HashMap<>();

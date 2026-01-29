@@ -5,13 +5,24 @@ import com.inven.core.backend.api.requestboard.entity.RequestBoard;
 import com.inven.core.backend.api.requestboard.repository.RequestBoardRepository;
 import com.inven.core.backend.api.requestboard.service.RequestBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,18 +31,43 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
     private final RequestBoardRepository requestBoardRepository;
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @Override
     @Transactional
-    public RequestBoardDTO createRequestBoard(RequestBoardDTO requestBoardDTO, String username) {
-        // ✅ 백엔드 공백 유효성 검사
+    public RequestBoardDTO createRequestBoard(RequestBoardDTO requestBoardDTO, String username, MultipartFile file) {
         if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
             throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
+        }
+
+        String filePath = null;
+        String fileName = null;
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                File uploadDir = new File(this.uploadDir);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
+                Path destination = Paths.get(this.uploadDir, uniqueFileName);
+                Files.copy(file.getInputStream(), destination);
+
+                filePath = destination.toString();
+            } catch (IOException e) {
+                throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+            }
         }
 
         RequestBoard requestBoard = RequestBoard.builder()
                 .title(requestBoardDTO.getTitle())
                 .content(requestBoardDTO.getContent())
                 .author(username)
+                .filePath(filePath)
+                .fileName(fileName)
                 .build();
 
         RequestBoard saved = requestBoardRepository.save(requestBoard);
@@ -49,26 +85,17 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestBoardDTO> getAllRequestBoards() {
-        // ✅ 정렬 보장(최신순)
         return requestBoardRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * ✅ 서버 페이징(기본)
-     * 내부적으로 keyword 없는 검색 페이징 메서드 호출하도록 통일
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<RequestBoardDTO> getRequestBoards(int page, int size) {
         return getRequestBoards(page, size, null);
     }
 
-    /**
-     * ✅ 검색 + 서버 페이징
-     * keyword가 null/blank면 전체 조회와 동일
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<RequestBoardDTO> getRequestBoards(int page, int size, String keyword) {
@@ -92,11 +119,10 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
     @Override
     @Transactional
-    public RequestBoardDTO updateRequestBoard(Long id, RequestBoardDTO requestBoardDTO, String username) {
+    public RequestBoardDTO updateRequestBoard(Long id, RequestBoardDTO requestBoardDTO, String username, MultipartFile file) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
 
-        // ✅ 유효성 검사를 권한 확인보다 먼저 수행
         if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
             throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
         }
@@ -104,6 +130,9 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         if (!requestBoard.getAuthor().equals(username)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");
         }
+
+        // 파일 처리
+        handleFileUpdate(requestBoard, file, requestBoardDTO.isDeleteExistingFile());
 
         requestBoard.update(requestBoardDTO.getTitle(), requestBoardDTO.getContent());
         return toDTO(requestBoard);
@@ -119,8 +148,87 @@ public class RequestBoardServiceImpl implements RequestBoardService {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
 
+        // 파일 삭제
+        if (requestBoard.getFilePath() != null) {
+            try {
+                Files.deleteIfExists(Paths.get(requestBoard.getFilePath()));
+            } catch (IOException e) {
+                // 로그를 남기는 것이 좋습니다.
+                System.err.println("파일 삭제 실패: " + requestBoard.getFilePath());
+            }
+        }
+
         requestBoardRepository.delete(requestBoard);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Resource downloadFile(Long id) {
+        RequestBoard requestBoard = requestBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
+
+        String filePath = requestBoard.getFilePath();
+        if (!StringUtils.hasText(filePath)) {
+            throw new IllegalArgumentException("첨부파일이 존재하지 않습니다.");
+        }
+
+        try {
+            Path path = Paths.get(filePath);
+            Resource resource = new UrlResource(path.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("파일을 읽을 수 없습니다: " + filePath);
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("파일 경로가 올바르지 않습니다: " + filePath, e);
+        }
+    }
+
+    private void handleFileUpdate(RequestBoard requestBoard, MultipartFile newFile, boolean deleteExisting) {
+        String oldFilePath = requestBoard.getFilePath();
+
+        // 1. 기존 파일 삭제 플래그가 true인 경우
+        if (deleteExisting && oldFilePath != null) {
+            try {
+                Files.deleteIfExists(Paths.get(oldFilePath));
+                requestBoard.setFilePath(null);
+                requestBoard.setFileName(null);
+            } catch (IOException e) {
+                System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+            }
+        }
+
+        // 2. 새로운 파일이 업로드된 경우
+        if (newFile != null && !newFile.isEmpty()) {
+            // 새 파일이 있으니, 기존 파일은 무조건 삭제
+            if (oldFilePath != null) {
+                try {
+                    Files.deleteIfExists(Paths.get(oldFilePath));
+                } catch (IOException e) {
+                    System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+                }
+            }
+
+            // 새 파일 저장
+            try {
+                File uploadDir = new File(this.uploadDir);
+                if (!uploadDir.exists()) uploadDir.mkdirs();
+
+                String fileName = StringUtils.cleanPath(newFile.getOriginalFilename());
+                String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
+                Path destination = Paths.get(this.uploadDir, uniqueFileName);
+                Files.copy(newFile.getInputStream(), destination);
+
+                requestBoard.setFilePath(destination.toString());
+                requestBoard.setFileName(fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("새 파일 업로드에 실패했습니다.", e);
+            }
+        }
+    }
+
 
     private RequestBoardDTO toDTO(RequestBoard requestBoard) {
         return new RequestBoardDTO(
@@ -128,6 +236,8 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 requestBoard.getTitle(),
                 requestBoard.getContent(),
                 requestBoard.getAuthor(),
+                requestBoard.getFilePath(),
+                requestBoard.getFileName(),
                 requestBoard.getCreatedAt()
         );
     }

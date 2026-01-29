@@ -136,6 +136,15 @@ function RequestBoardDetail() {
                 <div className="detail-content">
                     <p>{requestBoard.content}</p>
                 </div>
+
+                {requestBoard.fileName && (
+                    <div className="detail-attachment">
+                        <strong>첨부파일: </strong>
+                        <a href={`/api/requestboards/download/${id}`} download={requestBoard.fileName}>
+                            {requestBoard.fileName}
+                        </a>
+                    </div>
+                )}
                 
                 <div className="detail-actions">
                     <button onClick={() => navigate('/requestboard')} className="back-button">목록으로</button>

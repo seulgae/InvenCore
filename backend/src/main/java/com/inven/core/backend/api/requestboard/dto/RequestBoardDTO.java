@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestBoardDTO {
@@ -28,5 +30,18 @@ public class RequestBoardDTO {
     private String content;
 
     private String author;
+    private String filePath;
+    private String fileName;
     private LocalDateTime createdAt;
+    private boolean deleteExistingFile; // 파일 삭제 여부 플래그
+
+    public RequestBoardDTO(Long id, String title, String content, String author, String filePath, String fileName, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.createdAt = createdAt;
+    }
 }

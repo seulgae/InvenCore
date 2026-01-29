@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp; // ✅ 임포트
+import lombok.Setter; // ✅ Setter 임포트
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter // ✅ Setter 추가
 @NoArgsConstructor
 @Table(
         name = "request_boards",
@@ -31,15 +33,23 @@ public class RequestBoard {
     @Column(nullable = false, length = 50)
     private String author;
 
+    @Column(length = 255)
+    private String filePath;
+
+    @Column(length = 255)
+    private String fileName;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public RequestBoard(String title, String content, String author) {
+    public RequestBoard(String title, String content, String author, String filePath, String fileName) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.filePath = filePath;
+        this.fileName = fileName;
     }
 
     public void update(String title, String content) {

@@ -1,36 +1,29 @@
+# ==========================================
+# 공통 설정 (모든 환경에 적용)
+# ==========================================
 spring:
   application:
     name: InvenCore
-
-  # ==========================================
-  # ?????? ?? (PostgreSQL)
-  # ==========================================
+  # 데이터베이스, JPA, 서버, 로깅 등 공통 설정은 여기에 유지
   datasource:
     url: jdbc:postgresql://13.124.177.193:5432/invencore
     username: invenmaster
     password: invencore123
     driver-class-name: org.postgresql.Driver
-
-  # ==========================================
-  # JPA / Hibernate ??
-  # ==========================================
   jpa:
-    # OSIV ???? (DB ??? ???, ?? ?? ?? ??)
     open-in-view: false
     show-sql: true
-    
     hibernate:
-      # ?? ??? update (??? ?? ??), ?? ??? validate ?? none ??
       ddl-auto: update
-
     properties:
       hibernate:
         default_schema: inven_schema
         format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
-# ==========================================
-# ?? ? ??? ??
-# ==========================================
 server:
   port: 8080
   servlet:
@@ -38,24 +31,40 @@ server:
       charset: UTF-8
       force: true
 
-# ==========================================
-# ?? ??
-# ==========================================
 logging:
   level:
-    # SQL ?? ? '?'? ???? ?? ?? ??? ?? (????)
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-# ==========================================
-# ??? ?? (Custom Props)
-# ==========================================
 app:
   cors:
-    # SecurityConfig?? ???? ?? ??? ?? (??? ??)
     allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://13.124.177.193,https://13.124.177.193,http://13.124.177.193:5173,https://invencore.io,http://invencore.io"
 
 jwt:
-  # HS256 ??? ? (??? ? ???)
   secret: v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s
-  # ?? ?? ?? (ms ??, 1??)
   expiration: 3600000
+
+---
+
+# ==========================================
+# 개발(dev) 환경 또는 기본(default) 프로필
+# ==========================================
+spring:
+  config:
+    activate:
+      on-profile: "default"
+
+file:
+  upload-dir: C:/uploads/
+
+---
+
+# ==========================================
+# 운영(prod) 환경 프로필
+# ==========================================
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+file:
+  upload-dir: /home/ec2-user/app/upload
