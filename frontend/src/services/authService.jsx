@@ -11,9 +11,9 @@ export const login = async (username, password) => {
         const { success, token, username: loggedInUsername, role } = response.data;
 
         if (success && token) {
-            localStorage.setItem('accessToken', token);
-            localStorage.setItem('username', loggedInUsername);
-            localStorage.setItem('role', role); // ✅ role 저장
+            sessionStorage.setItem('accessToken', token);
+            sessionStorage.setItem('username', loggedInUsername);
+            sessionStorage.setItem('role', role); // ✅ role 저장
 
             console.log('로그인 성공 및 토큰/사용자 정보 저장 완료!');
             // ✅ role도 함께 반환
@@ -27,9 +27,9 @@ export const login = async (username, password) => {
 };
 
 export const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('username');
-    localStorage.removeItem('role'); // ✅ 로그아웃 시 role도 제거
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('role'); // ✅ 로그아웃 시 role도 제거
     console.log('로그아웃 완료!');
 };
 

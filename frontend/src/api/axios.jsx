@@ -23,7 +23,7 @@ const apiClient = axios.create({
 // API 요청을 보낼 때마다 헤더에 토큰을 자동으로 실어 보냅니다.
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
 
         // 토큰이 존재하면 Authorization 헤더 추가
         if (token) {
@@ -64,8 +64,8 @@ apiClient.interceptors.response.use(
 
             console.warn('인증이 만료되어 로그아웃 처리됩니다.');
 
-            // 1. 로컬 스토리지의 토큰 삭제
-            localStorage.removeItem('accessToken');
+            // 1. 세션 스토리지의 토큰 삭제
+            sessionStorage.removeItem('accessToken');
 
             // 2. 로그인 페이지로 강제 이동
             // .jsx 파일이라도 컴포넌트 내부가 아니므로 useNavigate 훅을 쓸 수 없습니다.

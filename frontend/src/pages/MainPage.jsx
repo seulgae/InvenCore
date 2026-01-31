@@ -22,9 +22,9 @@ function MainPage() {
     const isHomePage = location.pathname === '/';
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-        const storedUsername = localStorage.getItem('username');
-        const storedRole = localStorage.getItem('role');
+        const accessToken = sessionStorage.getItem('accessToken');
+        const storedUsername = sessionStorage.getItem('username');
+        const storedRole = sessionStorage.getItem('role');
 
         if (accessToken && storedUsername && storedRole) {
             setIsLoggedIn(true);
@@ -68,9 +68,9 @@ function MainPage() {
     }, [isSidebarOpen]);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('username');
-        localStorage.removeItem('role');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('username');
+        sessionStorage.removeItem('role');
         setIsLoggedIn(false);
         setUsername('');
         setRole(null);
