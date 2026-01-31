@@ -12,7 +12,7 @@ import NoticeEdit from './pages/notice/NoticeEdit';
 import NoticeRegist from './pages/notice/NoticeRegist';
 
 function PrivateRoute({ children }) {
-    const isAuthenticated = localStorage.getItem('accessToken') !== null;
+    const isAuthenticated = sessionStorage.getItem('accessToken') !== null;
     if (!isAuthenticated) {
         alert('로그인이 필요합니다.');
         return <Navigate to="/" replace />;
