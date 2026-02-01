@@ -1,13 +1,10 @@
 package com.inven.core.backend.api.requestboard.service.impl;
 
-import com.inven.core.backend.api.comment.dto.CommentDTO;
-import com.inven.core.backend.api.comment.service.CommentService;
 import com.inven.core.backend.api.requestboard.dto.RequestBoardDTO;
 import com.inven.core.backend.api.requestboard.entity.RequestBoard;
 import com.inven.core.backend.api.requestboard.repository.RequestBoardRepository;
 import com.inven.core.backend.api.requestboard.service.RequestBoardService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -24,18 +21,15 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RequestBoardServiceImpl implements RequestBoardService {
 
     private final RequestBoardRepository requestBoardRepository;
-    private final CommentService commentService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -77,7 +71,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 .build();
 
         RequestBoard saved = requestBoardRepository.save(requestBoard);
-        return toDTO(saved, Collections.emptyList());
+        return toDTO(saved);
     }
 
     @Override
@@ -85,18 +79,14 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     public RequestBoardDTO getRequestBoardById(Long id) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
-        
-        List<CommentDTO> comments = commentService.getCommentsByRequestBoardId(id);
-        log.info("게시글 ID [{}]: 조회된 댓글 수 = {}", id, comments.size());
-        
-        return toDTO(requestBoard, comments);
+        return toDTO(requestBoard);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RequestBoardDTO> getAllRequestBoards() {
         return requestBoardRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(board -> toDTO(board, null))
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -109,13 +99,22 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     @Override
     @Transactional(readOnly = true)
     public Page<RequestBoardDTO> getRequestBoards(int page, int size, String keyword) {
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50), Sort.by(Sort.Direction.DESC, "createdAt"));
+        if (page < 0) page = 0;
+        if (size <= 0) size = 10;
+        if (size > 50) size = 50;
 
-        Page<RequestBoard> result = StringUtils.hasText(keyword)
-                ? requestBoardRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword.trim(), keyword.trim(), pageable)
-                : requestBoardRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return result.map(board -> toDTO(board, null));
+        Page<RequestBoard> result;
+        if (!StringUtils.hasText(keyword)) {
+            result = requestBoardRepository.findAll(pageable);
+        } else {
+            String k = keyword.trim();
+            result = requestBoardRepository
+                    .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(k, k, pageable);
+        }
+
+        return result.map(this::toDTO);
     }
 
     @Override
@@ -124,16 +123,19 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
 
+        if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
+            throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
+        }
+
         if (!requestBoard.getAuthor().equals(username)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");
         }
 
+        // 파일 처리
         handleFileUpdate(requestBoard, file, requestBoardDTO.isDeleteExistingFile());
 
         requestBoard.update(requestBoardDTO.getTitle(), requestBoardDTO.getContent());
-        
-        List<CommentDTO> comments = commentService.getCommentsByRequestBoardId(id);
-        return toDTO(requestBoard, comments);
+        return toDTO(requestBoard);
     }
 
     @Override
@@ -146,19 +148,16 @@ public class RequestBoardServiceImpl implements RequestBoardService {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
 
-        // 1. 파일 먼저 삭제
+        // 파일 삭제
         if (requestBoard.getFilePath() != null) {
             try {
                 Files.deleteIfExists(Paths.get(requestBoard.getFilePath()));
             } catch (IOException e) {
-                log.error("파일 삭제 실패: {}", requestBoard.getFilePath(), e);
+                // 로그를 남기는 것이 좋습니다.
+                System.err.println("파일 삭제 실패: " + requestBoard.getFilePath());
             }
         }
 
-        // 2. 게시글에 종속된 모든 댓글 삭제 (서비스 위임)
-        commentService.deleteCommentsByRequestBoardId(id);
-
-        // 3. 게시글 삭제
         requestBoardRepository.delete(requestBoard);
     }
 
@@ -190,25 +189,29 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     private void handleFileUpdate(RequestBoard requestBoard, MultipartFile newFile, boolean deleteExisting) {
         String oldFilePath = requestBoard.getFilePath();
 
+        // 1. 기존 파일 삭제 플래그가 true인 경우
         if (deleteExisting && oldFilePath != null) {
             try {
                 Files.deleteIfExists(Paths.get(oldFilePath));
                 requestBoard.setFilePath(null);
                 requestBoard.setFileName(null);
             } catch (IOException e) {
-                log.error("기존 파일 삭제 실패: {}", oldFilePath, e);
+                System.err.println("기존 파일 삭제 실패: " + oldFilePath);
             }
         }
 
+        // 2. 새로운 파일이 업로드된 경우
         if (newFile != null && !newFile.isEmpty()) {
+            // 새 파일이 있으니, 기존 파일은 무조건 삭제
             if (oldFilePath != null) {
                 try {
                     Files.deleteIfExists(Paths.get(oldFilePath));
                 } catch (IOException e) {
-                    log.error("기존 파일 삭제 실패: {}", oldFilePath, e);
+                    System.err.println("기존 파일 삭제 실패: " + oldFilePath);
                 }
             }
 
+            // 새 파일 저장
             try {
                 File uploadDir = new File(this.uploadDir);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -226,8 +229,9 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         }
     }
 
-    private RequestBoardDTO toDTO(RequestBoard requestBoard, List<CommentDTO> comments) {
-        RequestBoardDTO dto = new RequestBoardDTO(
+
+    private RequestBoardDTO toDTO(RequestBoard requestBoard) {
+        return new RequestBoardDTO(
                 requestBoard.getId(),
                 requestBoard.getTitle(),
                 requestBoard.getContent(),
@@ -236,7 +240,5 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 requestBoard.getFileName(),
                 requestBoard.getCreatedAt()
         );
-        dto.setComments(comments);
-        return dto;
     }
 }
