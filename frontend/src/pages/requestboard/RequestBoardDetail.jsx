@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/axios';
 import '../../styles/RequestBoardDetail.css';
@@ -14,31 +14,24 @@ function RequestBoardDetail() {
     const navigate = useNavigate();
     const currentUsername = localStorage.getItem('username');
 
-    useEffect(() => {
-        const fetchRequestBoard = async () => {
-            try {
-                const response = await apiClient.get(`/requestboards/${id}`);
-                setRequestBoard(response.data);
-            } catch (err) {
-                setError('게시글을 불러오는 데 실패했습니다.');
-                console.error(err);
-            }
-        };
-
-        const fetchComments = async () => {
-            try {
-                const response = await apiClient.get(`/comments/requestboard/${id}`);
-                setComments(response.data);
-            } catch (err) {
-                console.error('댓글을 불러오는 데 실패했습니다.', err);
-            }
-        };
-
-        if (id) {
-            fetchRequestBoard();
-            fetchComments();
+    // 게시글과 댓글을 함께 불러오는 함수
+    const fetchRequestBoardData = useCallback(async () => {
+        try {
+            const response = await apiClient.get(`/requestboards/${id}`);
+            setRequestBoard(response.data);
+            // 백엔드에서 받은 데이터에 댓글이 포함되어 있으므로, comments 상태도 업데이트
+            setComments(response.data.comments || []);
+        } catch (err) {
+            setError('데이터를 불러오는 데 실패했습니다.');
+            console.error(err);
         }
     }, [id]);
+
+    useEffect(() => {
+        if (id) {
+            fetchRequestBoardData();
+        }
+    }, [id, fetchRequestBoardData]);
 
     const handleDelete = async () => {
         if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
@@ -51,6 +44,11 @@ function RequestBoardDetail() {
                 console.error(err);
             }
         }
+    };
+
+    // 댓글/답글 작성 및 삭제 후 데이터를 다시 불러오는 공통 로직
+    const refreshData = () => {
+        fetchRequestBoardData();
     };
 
     const handleCommentSubmit = async (e) => {
@@ -67,8 +65,7 @@ function RequestBoardDetail() {
                 content: commentContent
             });
             setCommentContent('');
-            const response = await apiClient.get(`/comments/requestboard/${id}`);
-            setComments(response.data);
+            refreshData(); // 데이터 새로고침
         } catch (err) {
             alert('댓글 작성에 실패했습니다.');
             console.error(err);
@@ -89,8 +86,7 @@ function RequestBoardDetail() {
             });
             setReplyContent({ ...replyContent, [parentId]: '' });
             setShowReplyForm({ ...showReplyForm, [parentId]: false });
-            const response = await apiClient.get(`/comments/requestboard/${id}`);
-            setComments(response.data);
+            refreshData(); // 데이터 새로고침
         } catch (err) {
             alert('답글 작성에 실패했습니다.');
             console.error(err);
@@ -101,8 +97,7 @@ function RequestBoardDetail() {
         if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
             try {
                 await apiClient.delete(`/comments/${commentId}`);
-                const response = await apiClient.get(`/comments/requestboard/${id}`);
-                setComments(response.data);
+                refreshData(); // 데이터 새로고침
             } catch (err) {
                 alert('댓글 삭제에 실패했습니다.');
                 console.error(err);
