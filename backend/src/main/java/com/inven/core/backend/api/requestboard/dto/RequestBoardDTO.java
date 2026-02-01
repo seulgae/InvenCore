@@ -1,5 +1,6 @@
 package com.inven.core.backend.api.requestboard.dto;
 
+import com.inven.core.backend.api.comment.dto.CommentDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,7 +36,9 @@ public class RequestBoardDTO {
     private String fileName;
     private LocalDateTime createdAt;
     private boolean deleteExistingFile; // 파일 삭제 여부 플래그
+    private List<CommentDTO> comments; // 댓글 목록 필드 추가
 
+    // 기존 생성자는 유지하여 다른 코드에 영향을 주지 않도록 함
     public RequestBoardDTO(Long id, String title, String content, String author, String filePath, String fileName, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
