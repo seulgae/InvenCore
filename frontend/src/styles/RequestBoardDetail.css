@@ -112,10 +112,7 @@
     margin-bottom: 1.5rem;
 }
 
-/*
-    댓글 작성 폼 스타일을 일시적으로 비활성화하여 문제 확인
-*/
-/*
+/* 댓글 작성 폼 */
 .comment-form {
     margin-bottom: 2rem;
     padding: 1rem;
@@ -154,7 +151,6 @@
 .comment-form-footer button:hover {
     background-color: #2980b9;
 }
-*/
 
 .char-count {
     font-size: 0.85rem;
