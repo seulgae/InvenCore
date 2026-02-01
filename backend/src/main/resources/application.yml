@@ -46,25 +46,12 @@ jwt:
 ---
 
 # ==========================================
-# 개발(dev) 환경 또는 기본(default) 프로필
+# 개발(dev), 운영(prod) 또는 기본(default) 프로필
 # ==========================================
 spring:
   config:
     activate:
       on-profile: "default"
-
-file:
-  upload-dir: C:/uploads/
-
----
-
-# ==========================================
-# 운영(prod) 환경 프로필
-# ==========================================
-spring:
-  config:
-    activate:
-      on-profile: "prod"
 
 file:
   upload-dir: /home/ec2-user/app/upload
