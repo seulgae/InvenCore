@@ -7,6 +7,7 @@ import com.inven.core.backend.api.requestboard.entity.RequestBoard;
 import com.inven.core.backend.api.requestboard.repository.RequestBoardRepository;
 import com.inven.core.backend.api.requestboard.service.RequestBoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -28,12 +29,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RequestBoardServiceImpl implements RequestBoardService {
 
     private final RequestBoardRepository requestBoardRepository;
-    private final CommentService commentService; // CommentService 주입
+    private final CommentService commentService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -75,7 +77,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 .build();
 
         RequestBoard saved = requestBoardRepository.save(requestBoard);
-        return toDTO(saved, Collections.emptyList()); // 생성 시에는 댓글이 없음
+        return toDTO(saved, Collections.emptyList());
     }
 
     @Override
@@ -84,17 +86,17 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
         
-        // 댓글 목록 조회
         List<CommentDTO> comments = commentService.getCommentsByRequestBoardId(id);
+        log.info("게시글 ID [{}]: 조회된 댓글 수 = {}", id, comments.size());
         
-        return toDTO(requestBoard, comments); // 댓글 목록과 함께 DTO 생성
+        return toDTO(requestBoard, comments);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RequestBoardDTO> getAllRequestBoards() {
         return requestBoardRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(board -> toDTO(board, null)) // 목록 조회 시에는 댓글 미포함
+                .map(board -> toDTO(board, null))
                 .collect(Collectors.toList());
     }
 
@@ -107,22 +109,13 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     @Override
     @Transactional(readOnly = true)
     public Page<RequestBoardDTO> getRequestBoards(int page, int size, String keyword) {
-        if (page < 0) page = 0;
-        if (size <= 0) size = 10;
-        if (size > 50) size = 50;
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50), Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<RequestBoard> result = StringUtils.hasText(keyword)
+                ? requestBoardRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword.trim(), keyword.trim(), pageable)
+                : requestBoardRepository.findAll(pageable);
 
-        Page<RequestBoard> result;
-        if (!StringUtils.hasText(keyword)) {
-            result = requestBoardRepository.findAll(pageable);
-        } else {
-            String k = keyword.trim();
-            result = requestBoardRepository
-                    .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(k, k, pageable);
-        }
-
-        return result.map(board -> toDTO(board, null)); // 목록 조회 시에는 댓글 미포함
+        return result.map(board -> toDTO(board, null));
     }
 
     @Override
@@ -131,20 +124,14 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
 
-        if (!StringUtils.hasText(requestBoardDTO.getTitle()) || !StringUtils.hasText(requestBoardDTO.getContent())) {
-            throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
-        }
-
         if (!requestBoard.getAuthor().equals(username)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");
         }
 
-        // 파일 처리
         handleFileUpdate(requestBoard, file, requestBoardDTO.isDeleteExistingFile());
 
         requestBoard.update(requestBoardDTO.getTitle(), requestBoardDTO.getContent());
         
-        // 수정 후에도 댓글 정보를 포함하여 반환
         List<CommentDTO> comments = commentService.getCommentsByRequestBoardId(id);
         return toDTO(requestBoard, comments);
     }
@@ -158,23 +145,20 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         if (!requestBoard.getAuthor().equals(username)) {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
-        
-        // 게시글에 달린 댓글 먼저 삭제
-        commentService.getCommentsByRequestBoardId(id).forEach(commentDTO -> {
-            commentService.deleteComment(commentDTO.getId(), username); // 이 부분은 권한 문제가 있을 수 있으므로, 내부 로직으로 변경 필요
-        });
 
-
-        // 파일 삭제
+        // 1. 파일 먼저 삭제
         if (requestBoard.getFilePath() != null) {
             try {
                 Files.deleteIfExists(Paths.get(requestBoard.getFilePath()));
             } catch (IOException e) {
-                // 로그를 남기는 것이 좋습니다.
-                System.err.println("파일 삭제 실패: " + requestBoard.getFilePath());
+                log.error("파일 삭제 실패: {}", requestBoard.getFilePath(), e);
             }
         }
 
+        // 2. 게시글에 종속된 모든 댓글 삭제 (서비스 위임)
+        commentService.deleteCommentsByRequestBoardId(id);
+
+        // 3. 게시글 삭제
         requestBoardRepository.delete(requestBoard);
     }
 
@@ -206,29 +190,25 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     private void handleFileUpdate(RequestBoard requestBoard, MultipartFile newFile, boolean deleteExisting) {
         String oldFilePath = requestBoard.getFilePath();
 
-        // 1. 기존 파일 삭제 플래그가 true인 경우
         if (deleteExisting && oldFilePath != null) {
             try {
                 Files.deleteIfExists(Paths.get(oldFilePath));
                 requestBoard.setFilePath(null);
                 requestBoard.setFileName(null);
             } catch (IOException e) {
-                System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+                log.error("기존 파일 삭제 실패: {}", oldFilePath, e);
             }
         }
 
-        // 2. 새로운 파일이 업로드된 경우
         if (newFile != null && !newFile.isEmpty()) {
-            // 새 파일이 있으니, 기존 파일은 무조건 삭제
             if (oldFilePath != null) {
                 try {
                     Files.deleteIfExists(Paths.get(oldFilePath));
                 } catch (IOException e) {
-                    System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+                    log.error("기존 파일 삭제 실패: {}", oldFilePath, e);
                 }
             }
 
-            // 새 파일 저장
             try {
                 File uploadDir = new File(this.uploadDir);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -246,7 +226,6 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         }
     }
 
-    // DTO 변환 메소드 (댓글 목록 포함)
     private RequestBoardDTO toDTO(RequestBoard requestBoard, List<CommentDTO> comments) {
         RequestBoardDTO dto = new RequestBoardDTO(
                 requestBoard.getId(),
@@ -257,7 +236,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 requestBoard.getFileName(),
                 requestBoard.getCreatedAt()
         );
-        dto.setComments(comments); // 댓글 목록 설정
+        dto.setComments(comments);
         return dto;
     }
 }

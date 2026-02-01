@@ -42,15 +42,7 @@ public class CommentService {
                     List<CommentDTO> replyDTOs = replies.stream()
                             .map(this::convertToDTO)
                             .collect(Collectors.toList());
-                    parentDTO = new CommentDTO(
-                            parentDTO.getId(),
-                            parentDTO.getRequestBoardId(),
-                            parentDTO.getParentId(),
-                            parentDTO.getContent(),
-                            parentDTO.getAuthor(),
-                            parentDTO.getCreatedAt(),
-                            replyDTOs
-                    );
+                    parentDTO.setReplies(replyDTOs); // Setter를 사용하여 답글 목록 설정
                     return parentDTO;
                 })
                 .collect(Collectors.toList());
@@ -84,6 +76,11 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    @Transactional
+    public void deleteCommentsByRequestBoardId(Long requestBoardId) {
+        commentRepository.deleteByRequestBoardId(requestBoardId);
+    }
+
     private CommentDTO convertToDTO(Comment comment) {
         return new CommentDTO(
                 comment.getId(),
@@ -92,7 +89,7 @@ public class CommentService {
                 comment.getContent(),
                 comment.getAuthor(),
                 comment.getCreatedAt(),
-                null
+                null // 초기에는 답글 목록을 null로 설정
         );
     }
 }
