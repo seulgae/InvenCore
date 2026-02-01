@@ -6,13 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter; // Setter 임포트
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter // Setter 추가
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDTO {
