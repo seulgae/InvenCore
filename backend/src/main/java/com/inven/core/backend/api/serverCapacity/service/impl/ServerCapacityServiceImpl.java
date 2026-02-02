@@ -14,10 +14,17 @@ import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.channel.Channel;
+import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.KeyPair;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
@@ -34,7 +41,7 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
     private final ServerCapacityRepository serverCapacityRepository;
     private final ServerCapacityCheckLogRepository checkLogRepository;
     private static final long SSH_TIMEOUT_SECONDS = 10;
-    private static final String SERVER_PASSWORD = "Rlfxogud1@"; // 비밀번호 하드코딩
+    private static final String PEM_FILE_NAME = "LightsailDefaultKey-ap-northeast-2.pem";
 
     @Override
     @Transactional
@@ -101,13 +108,26 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
     private ServerCapacityDTO getServerCapacityFromSsh(ServerConfigDTO serverConfig) throws Exception {
         SshClient client = SshClient.setUpDefaultClient();
         client.start();
+        
+        Path tempPemFile = Files.createTempFile("sshd-pem-", ".tmp");
+        try (InputStream pemStream = new ClassPathResource(PEM_FILE_NAME).getInputStream()) {
+            Files.copy(pemStream, tempPemFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        // 1. 파일 경로로 FileKeyPairProvider 생성
+        FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(tempPemFile);
+        // 2. KeyPairProvider에서 KeyPair 로드
+        Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
+        KeyPair keyPair = keyPairs.iterator().next();
 
         try (ClientSession session = client.connect(serverConfig.getUser(), serverConfig.getHost(), serverConfig.getPort())
                                            .verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS).getSession()) {
-            session.addPasswordIdentity(SERVER_PASSWORD); // 하드코딩된 비밀번호 사용
+            // 3. 세션에 KeyPair를 직접 추가
+            session.addPublicKeyIdentity(keyPair);
+            // 4. 인증 수행
             session.auth().verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-            log.info("SSH 세션 연결 성공: {}", serverConfig.getHost());
+            log.info("SSH 세션 연결 성공 (키 파일 인증): {}", serverConfig.getHost());
             String command = "df -h / | tail -n 1; free -m | grep Mem; top -bn1 | grep 'Cpu(s)'";
             
             ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -124,6 +144,7 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
 
         } finally {
             client.stop();
+            Files.deleteIfExists(tempPemFile); // 임시 파일 삭제
         }
     }
 
