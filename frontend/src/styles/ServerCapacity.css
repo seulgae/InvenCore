@@ -1,0 +1,86 @@
+/* styles/ServerCapacity.css */
+.capacity-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    color: #333;
+}
+
+.capacity-container h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.capacity-container p {
+    text-align: center;
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+.capacity-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.capacity-table thead {
+    background-color: #f8f9fa;
+}
+
+.capacity-table th,
+.capacity-table td {
+    padding: 0.8rem 1rem;
+    border: 1px solid #e9ecef;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.capacity-table th {
+    font-weight: 600;
+    color: #495057;
+}
+
+.capacity-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.check-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    background-color: #3498db;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.check-button:hover {
+    background-color: #2980b9;
+}
+
+.check-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.empty-message {
+    text-align: center;
+    color: #888;
+    padding: 2rem;
+    font-style: italic;
+}
+
+.error-message {
+    color: #e74c3c;
+    padding: 1rem;
+    background-color: #fee;
+    border-radius: 5px;
+    text-align: center;
+}
