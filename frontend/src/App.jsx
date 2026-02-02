@@ -10,6 +10,7 @@ import NoticeList from './pages/notice/NoticeList';
 import NoticeDetail from './pages/notice/NoticeDetail';
 import NoticeEdit from './pages/notice/NoticeEdit';
 import NoticeRegist from './pages/notice/NoticeRegist';
+import ServerCapacityPage from './pages/servercapacity/ServerCapacityPage'; // 컴포넌트 임포트
 
 function PrivateRoute({ children }) {
     const isAuthenticated = sessionStorage.getItem('accessToken') !== null;
@@ -34,6 +35,8 @@ function App() {
                     <Route path="notice/regist" element={<PrivateRoute><NoticeRegist /></PrivateRoute>} />
                     <Route path="notice/:id" element={<NoticeDetail />} />
                     <Route path="notice/edit/:id" element={<PrivateRoute><NoticeEdit /></PrivateRoute>} />
+                    {/* 서버용량조사 페이지 라우트 추가 */}
+                    <Route path="servercapacity" element={<PrivateRoute><ServerCapacityPage /></PrivateRoute>} />
                 </Route>
             </Routes>
         </Router>

@@ -13,9 +13,6 @@ function MainPage() {
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // 요청 게시판 상태/호출 제거
-    // const [boards, setBoards] = useState([]);
-
     const [notices, setNotices] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
@@ -35,20 +32,9 @@ function MainPage() {
 
     useEffect(() => {
         if (isHomePage) {
-            // fetchBoards(); // 제거
             fetchNotices();
         }
     }, [isHomePage]);
-
-    // 요청 게시판 API 호출 제거
-    // const fetchBoards = async () => {
-    //     try {
-    //         const response = await apiClient.get('/requestboards');
-    //         setBoards(response.data.slice(0, 5));
-    //     } catch (err) {
-    //         console.error('게시글 목록을 불러오는 데 실패했습니다.', err);
-    //     }
-    // };
 
     const fetchNotices = async () => {
         try {
@@ -146,6 +132,10 @@ function MainPage() {
                     <ul>
                         <li><Link to="/notice" onClick={closeSidebar}>공지사항</Link></li>
                         <li><Link to="/requestboard" onClick={closeSidebar}>요청 게시판</Link></li>
+                        {/* 모든 로그인 사용자가 볼 수 있도록 isLoggedIn으로 조건 변경 */}
+                        {isLoggedIn && (
+                            <li><Link to="/servercapacity" onClick={closeSidebar}>서버용량조사</Link></li>
+                        )}
                     </ul>
                 </aside>
 
@@ -177,8 +167,6 @@ function MainPage() {
                                     )}
                                 </div>
                             </div>
-
-                            {/* 요청 게시판 섹션 제거 */}
                         </div>
                     ) : (
                         <Outlet context={{
