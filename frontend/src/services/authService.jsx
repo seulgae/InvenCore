@@ -15,7 +15,6 @@ export const login = async (username, password) => {
             sessionStorage.setItem('username', loggedInUsername);
             sessionStorage.setItem('role', role); // ✅ role 저장
 
-            console.log('로그인 성공 및 토큰/사용자 정보 저장 완료!');
             // ✅ role도 함께 반환
             return { success: true, username: loggedInUsername, role };
         }
@@ -30,7 +29,6 @@ export const logout = () => {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('role'); // ✅ 로그아웃 시 role도 제거
-    console.log('로그아웃 완료!');
 };
 
 export const join = async (username, password) => {

@@ -4,6 +4,7 @@ import com.inven.core.backend.api.member.dto.LoginRequest;
 import com.inven.core.backend.api.member.dto.MemberResponse;
 import com.inven.core.backend.api.member.service.MemberService;
 import com.inven.core.backend.api.member.dto.RegisterRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class MemberController {
      * @return 회원가입 성공/실패 여부 및 메시지 포함 응답
      */
     @PostMapping("/register")
-    public ResponseEntity<MemberResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<MemberResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         MemberResponse response = memberService.register(registerRequest);
         return response.isSuccess() ? ResponseEntity.status(HttpStatus.CREATED).body(response) : ResponseEntity.badRequest().body(response);
     }

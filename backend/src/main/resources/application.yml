@@ -4,17 +4,16 @@
 spring:
   application:
     name: InvenCore
-  # 데이터베이스, JPA, 서버, 로깅 등 공통 설정은 여기에 유지
   datasource:
     url: jdbc:postgresql://13.124.177.193:5432/invencore
-    username: invenmaster
-    password: invencore123
+    username: ${DB_USERNAME:invenmaster}
+    password: ${DB_PASSWORD:invencore123}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
-    show-sql: true
+    show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
         default_schema: inven_schema
@@ -33,25 +32,37 @@ server:
 
 logging:
   level:
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: INFO
+    com.inven.core: ${LOG_LEVEL:INFO}
 
 app:
   cors:
-    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://13.124.177.193,https://13.124.177.193,http://13.124.177.193:5173"
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
 
 jwt:
-  secret: v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s
-  expiration: 1800000
+  secret: ${JWT_SECRET:v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s}
+  expiration: ${JWT_EXPIRATION:1800000}
+
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:/home/ec2-user/app/upload}
+
+server-capacity:
+  pem-file: ${SSH_PEM_FILE:LightsailDefaultKey-ap-northeast-2.pem}
+  servers: ${MONITORED_SERVERS:AWS-WAS-01,WAS,13.124.177.193,22,ec2-user,LINUX}
 
 ---
 
 # ==========================================
-# 개발(dev), 운영(prod) 또는 기본(default) 프로필
+# 개발(dev) 프로필
 # ==========================================
 spring:
   config:
     activate:
-      on-profile: "default"
+      on-profile: "dev"
+  jpa:
+    show-sql: true
 
-file:
-  upload-dir: /home/ec2-user/app/upload
+logging:
+  level:
+    com.inven.core: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

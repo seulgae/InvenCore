@@ -336,6 +336,18 @@
     padding: 2rem;
     font-style: italic;
 }
+/* 마이페이지 css 적용 */
+.navbar-welcome {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.navbar-welcome:hover {
+    text-decoration: underline;
+}
 
 @media (max-width: 768px) {
     .home-content {

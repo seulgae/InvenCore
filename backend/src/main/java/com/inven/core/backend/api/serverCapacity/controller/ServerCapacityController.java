@@ -5,12 +5,16 @@ import com.inven.core.backend.api.serverCapacity.dto.ServerConfigDTO;
 import com.inven.core.backend.api.serverCapacity.service.ServerCapacityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -19,6 +23,30 @@ import java.util.List;
 public class ServerCapacityController {
 
     private final ServerCapacityService serverCapacityService;
+
+    @Value("${server-capacity.servers:}")
+    private String serversConfig;
+
+    @GetMapping("/servers")
+    public ResponseEntity<List<Map<String, Object>>> getMonitoredServers() {
+        List<Map<String, Object>> servers = new ArrayList<>();
+        if (serversConfig != null && !serversConfig.isEmpty()) {
+            for (String entry : serversConfig.split(";")) {
+                String[] parts = entry.split(",");
+                if (parts.length >= 4) {
+                    Map<String, Object> server = new HashMap<>();
+                    server.put("serverNo", parts[0].trim());
+                    server.put("serverType", parts[1].trim());
+                    server.put("host", parts[2].trim());
+                    server.put("port", Integer.parseInt(parts[3].trim()));
+                    server.put("user", parts.length > 4 ? parts[4].trim() : "ec2-user");
+                    server.put("osType", parts.length > 5 ? parts[5].trim() : "LINUX");
+                    servers.add(server);
+                }
+            }
+        }
+        return ResponseEntity.ok(servers);
+    }
 
     @PostMapping("/check")
     public ResponseEntity<?> checkServerCapacity(@RequestBody ServerConfigDTO serverConfig, Principal principal) {
