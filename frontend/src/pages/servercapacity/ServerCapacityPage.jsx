@@ -2,24 +2,22 @@ import React, { useState, useEffect, useMemo } from 'react';
 import apiClient from '../../api/axios';
 import '../../styles/ServerCapacity.css';
 
-// TODO: 이 서버 목록은 향후 DB나 설정 파일에서 관리하는 것이 좋습니다.
-const MONITORED_SERVERS = [
-    {
-        host: '13.124.177.193', // 실제 서버 호스트
-        port: 22,
-        user: 'ec2-user', // 실제 접속 유저
-        serverNo: 'AWS-WAS-01', // 서버 번호 형식 변경
-        serverType: 'WAS',
-        osType: 'LINUX'
-    },
-    // 다른 서버가 있다면 여기에 추가
-];
-
 function ServerCapacityPage() {
+    const [monitoredServers, setMonitoredServers] = useState([]);
     const [capacities, setCapacities] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [checking, setChecking] = useState({});
+
+    const fetchServers = async () => {
+        try {
+            const response = await apiClient.get('/server-capacity/servers');
+            setMonitoredServers(response.data);
+        } catch (err) {
+            setError('서버 목록을 불러오는 데 실패했습니다.');
+            console.error(err);
+        }
+    };
 
     const fetchCapacities = async () => {
         try {
@@ -39,7 +37,11 @@ function ServerCapacityPage() {
     };
 
     useEffect(() => {
-        fetchCapacities();
+        const init = async () => {
+            await fetchServers();
+            await fetchCapacities();
+        };
+        init();
     }, []);
 
     const handleCheckCapacity = async (serverConfig) => {
@@ -47,13 +49,12 @@ function ServerCapacityPage() {
         setError('');
 
         try {
-            // 비밀번호 프롬프트 제거, 백엔드에서 하드코딩된 비밀번호 사용
             await apiClient.post('/server-capacity/check', serverConfig);
             alert(`${serverConfig.serverNo} 서버의 용량 조사가 완료되었습니다.`);
             fetchCapacities();
         } catch (err) {
             if (err.response && err.response.status === 429) {
-                alert(err.response.data);
+                alert(err.response.data?.message || err.response.data);
             } else {
                 setError(`${serverConfig.serverNo} 서버 용량 조사에 실패했습니다. (서버 상태 확인)`);
             }
@@ -64,11 +65,11 @@ function ServerCapacityPage() {
     };
 
     const serverList = useMemo(() => {
-        return MONITORED_SERVERS.map(server => ({
+        return monitoredServers.map(server => ({
             ...server,
             capacity: capacities[server.serverNo] || null
         }));
-    }, [capacities]);
+    }, [monitoredServers, capacities]);
 
     if (loading) {
         return <div className="capacity-container"><h2>로딩 중...</h2></div>;
@@ -79,7 +80,7 @@ function ServerCapacityPage() {
             <h1>서버 용량 조사</h1>
             <p>각 서버의 최신 용량 정보를 확인하고, 버튼을 눌러 실시간으로 업데이트할 수 있습니다.</p>
             {error && <div className="error-message">{error}</div>}
-            
+
             <table className="capacity-table">
                 <thead>
                     <tr>
@@ -107,7 +108,7 @@ function ServerCapacityPage() {
                                 <td>{server.capacity ? `${server.capacity.systemDiskUsed} / ${server.capacity.systemDiskTotal} (${server.capacity.systemDiskUsagePercent})` : 'N/A'}</td>
                                 <td>{server.capacity ? new Date(server.capacity.regDt).toLocaleString() : 'N/A'}</td>
                                 <td>
-                                    <button 
+                                    <button
                                         onClick={() => handleCheckCapacity(server)}
                                         disabled={checking[server.serverNo]}
                                         className="check-button"

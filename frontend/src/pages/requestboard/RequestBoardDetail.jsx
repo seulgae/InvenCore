@@ -12,7 +12,7 @@ function RequestBoardDetail() {
     const [showReplyForm, setShowReplyForm] = useState({});
     const { id } = useParams();
     const navigate = useNavigate();
-    const currentUsername = localStorage.getItem('username');
+    const currentUsername = sessionStorage.getItem('username');
 
     useEffect(() => {
         const fetchRequestBoard = async () => {

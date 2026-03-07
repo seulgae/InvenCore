@@ -41,7 +41,9 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
     private final ServerCapacityRepository serverCapacityRepository;
     private final ServerCapacityCheckLogRepository checkLogRepository;
     private static final long SSH_TIMEOUT_SECONDS = 10;
-    private static final String PEM_FILE_NAME = "LightsailDefaultKey-ap-northeast-2.pem";
+
+    @org.springframework.beans.factory.annotation.Value("${server-capacity.pem-file}")
+    private String pemFileName;
 
     @Override
     @Transactional
@@ -110,7 +112,7 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
         client.start();
         
         Path tempPemFile = Files.createTempFile("sshd-pem-", ".tmp");
-        try (InputStream pemStream = new ClassPathResource(PEM_FILE_NAME).getInputStream()) {
+        try (InputStream pemStream = new ClassPathResource(pemFileName).getInputStream()) {
             Files.copy(pemStream, tempPemFile, StandardCopyOption.REPLACE_EXISTING);
         }
 

@@ -78,6 +78,14 @@ function MainPage() {
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
     const closeSidebar = () => setIsSidebarOpen(false);
 
+    const goMyPage = () => {
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+            return;
+        }
+        navigate('/mypage');
+    };
+
     return (
         <div className="page-wrapper">
             <nav className="navbar">
@@ -103,7 +111,10 @@ function MainPage() {
                 <div className="navbar-auth">
                     {isLoggedIn ? (
                         <>
-                            <span className="navbar-welcome">{username}님 </span>
+                            <button onClick={() => navigate('/mypage')} className="navbar-welcome">
+                                {username}님
+                            </button>
+
                             <button onClick={handleLogout} className="nav-button">
                                 로그아웃
                             </button>

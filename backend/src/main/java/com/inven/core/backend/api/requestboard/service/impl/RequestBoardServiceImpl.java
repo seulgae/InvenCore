@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,12 +24,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RequestBoardServiceImpl implements RequestBoardService {
+
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".txt", ".csv", ".zip", ".rar", ".7z",
+            ".png", ".jpg", ".jpeg", ".gif", ".bmp"
+    );
 
     private final RequestBoardRepository requestBoardRepository;
 
@@ -46,12 +56,14 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
         if (file != null && !file.isEmpty()) {
             try {
+                fileName = StringUtils.cleanPath(file.getOriginalFilename());
+                validateFileExtension(fileName);
+
                 File uploadDir = new File(this.uploadDir);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
 
-                fileName = StringUtils.cleanPath(file.getOriginalFilename());
                 String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
                 Path destination = Paths.get(this.uploadDir, uniqueFileName);
                 Files.copy(file.getInputStream(), destination);
@@ -153,8 +165,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
             try {
                 Files.deleteIfExists(Paths.get(requestBoard.getFilePath()));
             } catch (IOException e) {
-                // 로그를 남기는 것이 좋습니다.
-                System.err.println("파일 삭제 실패: " + requestBoard.getFilePath());
+                log.warn("파일 삭제 실패: {}", requestBoard.getFilePath(), e);
             }
         }
 
@@ -196,7 +207,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 requestBoard.setFilePath(null);
                 requestBoard.setFileName(null);
             } catch (IOException e) {
-                System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+                log.warn("기존 파일 삭제 실패: {}", oldFilePath, e);
             }
         }
 
@@ -207,16 +218,17 @@ public class RequestBoardServiceImpl implements RequestBoardService {
                 try {
                     Files.deleteIfExists(Paths.get(oldFilePath));
                 } catch (IOException e) {
-                    System.err.println("기존 파일 삭제 실패: " + oldFilePath);
+                    log.warn("기존 파일 삭제 실패: {}", oldFilePath, e);
                 }
             }
 
             // 새 파일 저장
             try {
+                String fileName = StringUtils.cleanPath(newFile.getOriginalFilename());
+                validateFileExtension(fileName);
+
                 File uploadDir = new File(this.uploadDir);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
-
-                String fileName = StringUtils.cleanPath(newFile.getOriginalFilename());
                 String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
                 Path destination = Paths.get(this.uploadDir, uniqueFileName);
                 Files.copy(newFile.getInputStream(), destination);
@@ -229,6 +241,16 @@ public class RequestBoardServiceImpl implements RequestBoardService {
         }
     }
 
+
+    private void validateFileExtension(String fileName) {
+        if (fileName == null || !fileName.contains(".")) {
+            throw new IllegalArgumentException("파일 확장자를 확인할 수 없습니다.");
+        }
+        String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다: " + extension);
+        }
+    }
 
     private RequestBoardDTO toDTO(RequestBoard requestBoard) {
         return new RequestBoardDTO(
