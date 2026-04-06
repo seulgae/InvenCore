@@ -41,11 +41,21 @@
     text-decoration: none;
 }
 
-.navbar-logo span {
-    color: #f8fafc;
-    font-size: clamp(1.45rem, 2.2vw, 2rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
+.brand-mark {
+    display: inline-block;
+    margin: 0;
+    font-family: "Aptos", "Segoe UI Variable Display", "Segoe UI", sans-serif;
+    font-weight: 300;
+    text-transform: lowercase;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.brand-mark--nav {
+    color: rgba(248, 250, 252, 0.96);
+    font-size: clamp(1.1rem, 1.9vw, 1.5rem);
+    letter-spacing: 0.22em;
 }
 
 .menu-button {
@@ -179,13 +189,14 @@
 }
 
 .home-content {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .board-section {
     margin-bottom: 24px;
-    padding: 28px;
+    padding: 2rem;
     border-radius: 28px;
     backdrop-filter: blur(16px);
     background: var(--surface);
@@ -281,8 +292,9 @@
         top: 60px;
     }
 
-    .navbar-logo span {
-        font-size: 1.45rem;
+    .brand-mark--nav {
+        font-size: 1rem;
+        letter-spacing: 0.16em;
     }
 
     .navbar-auth {

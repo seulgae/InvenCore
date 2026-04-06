@@ -17,8 +17,8 @@
   </g>
 
   <g transform="translate(150, 160)">
-    <text x="0" y="0" font-family="Arial, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0c1c44">InvenCore</text>
-    <text x="0" y="25" font-family="Arial, sans-serif" font-weight="400" font-size="14" text-anchor="middle" fill="#0c1c44" letter-spacing="1">Innovate the Core</text>
+    <text x="0" y="0" font-family="Aptos, 'Segoe UI Variable Display', 'Segoe UI', sans-serif" font-weight="300" font-size="28" text-anchor="middle" fill="#0c1c44" letter-spacing="4">invencore</text>
+    <text x="0" y="24" font-family="Aptos, 'Segoe UI Variable Display', 'Segoe UI', sans-serif" font-weight="400" font-size="12" text-anchor="middle" fill="#48607d" letter-spacing="2">Innovate the Core</text>
   </g>
 
   <defs>

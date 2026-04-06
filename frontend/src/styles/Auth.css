@@ -23,8 +23,12 @@
 
 .auth-card h1 {
   margin-bottom: 0.6rem;
-  font-size: clamp(1.9rem, 3vw, 2.4rem);
-  letter-spacing: -0.04em;
+}
+
+.brand-mark--auth {
+  color: var(--text);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  letter-spacing: 0.24em;
 }
 
 .auth-form {

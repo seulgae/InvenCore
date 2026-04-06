@@ -139,7 +139,7 @@ function JoinPage({ onClose, onJoinSuccess }) {
             <div className="modal-content">
                 <div className="auth-card">
                     <button className="modal-close-button" onClick={onClose}>&times;</button>
-                    <h1>INVENCORE</h1>
+                    <h1 className="brand-mark brand-mark--auth">invencore</h1>
                     <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.1rem' }}>새 계정을 만들어 시작하세요</p>
 
                     {serverStatus === false && (

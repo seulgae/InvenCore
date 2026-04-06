@@ -103,7 +103,7 @@ function MainPage() {
 
                     <div className="navbar-logo">
                         <a href="/">
-                            <span>InvenCore</span>
+                            <span className="brand-mark brand-mark--nav">invencore</span>
                         </a>
                     </div>
                 </div>
