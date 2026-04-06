@@ -5,10 +5,15 @@ spring:
   application:
     name: InvenCore
   datasource:
-    url: jdbc:postgresql://13.124.177.193:5432/invencore
-    username: ${DB_USERNAME:invenmaster}
-    password: ${DB_PASSWORD:invencore123}
-    driver-class-name: org.postgresql.Driver
+    # AWS PostgreSQL example
+    # url: jdbc:postgresql://13.124.177.193:5432/invencore
+    url: ${DB_URL:jdbc:h2:mem:invencore;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    # username: ${DB_USERNAME:invenmaster}
+    username: ${DB_USERNAME:sa}
+    # password: ${DB_PASSWORD:invencore123}
+    password: ${DB_PASSWORD:}
+    # driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
   jpa:
     open-in-view: false
     show-sql: ${JPA_SHOW_SQL:false}
@@ -16,8 +21,11 @@ spring:
       ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
-        default_schema: inven_schema
         format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   servlet:
     multipart:
       max-file-size: 5MB
@@ -44,11 +52,18 @@ jwt:
   expiration: ${JWT_EXPIRATION:1800000}
 
 file:
-  upload-dir: ${FILE_UPLOAD_DIR:/home/ec2-user/app/upload}
+  upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
-server-capacity:
-  pem-file: ${SSH_PEM_FILE:LightsailDefaultKey-ap-northeast-2.pem}
-  servers: ${MONITORED_SERVERS:AWS-WAS-01,WAS,13.124.177.193,22,ec2-user,LINUX}
+feature:
+  aws:
+    enabled: ${FEATURE_AWS_ENABLED:false}
+  server-capacity:
+    enabled: ${FEATURE_SERVER_CAPACITY_ENABLED:false}
+
+# AWS server capacity example
+# server-capacity:
+#   pem-file: ${SSH_PEM_FILE:LightsailDefaultKey-ap-northeast-2.pem}
+#   servers: ${MONITORED_SERVERS:AWS-WAS-01,WAS,13.124.177.193,22,ec2-user,LINUX}
 
 ---
 
@@ -61,6 +76,8 @@ spring:
       on-profile: "dev"
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: update
 
 logging:
   level:

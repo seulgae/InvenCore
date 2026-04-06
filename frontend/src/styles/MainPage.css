@@ -1,117 +1,113 @@
-/* frontend/src/styles/MainPage.css */
-
 .page-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
 }
 
 .main-page-container {
     display: flex;
-    flex-grow: 1;
+    flex: 1;
 }
 
-/* ✅ 내비게이션 바 */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 40px;
-    height: 60px;
+    padding: 14px 28px;
+    min-height: 72px;
     width: 100%;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
     z-index: 101;
-    position: relative;
+    background:
+        linear-gradient(180deg, rgba(10, 15, 28, 0.94), rgba(12, 21, 41, 0.98)),
+        radial-gradient(circle at top, rgba(45, 212, 191, 0.14), transparent 32%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 40px rgba(5, 10, 24, 0.22);
+    color: #f8fafc;
 }
 
-/* ✅ 왼쪽: 햄버거 + 로고 */
 .navbar-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
-.navbar-logo {
-    display: flex;
+.navbar-logo a {
+    display: inline-flex;
     align-items: center;
-    gap: 5px;
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
+    gap: 10px;
+    text-decoration: none;
 }
 
 .navbar-logo span {
-    color: white;
+    color: #f8fafc;
+    font-size: clamp(1.45rem, 2.2vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
 }
 
-/* ✅ 햄버거 버튼 */
 .menu-button {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 6px;
-    padding: 10px;
-    transition: background-color 0.2s ease;
+    gap: 5px;
 }
 
 .menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background: rgba(45, 212, 191, 0.12);
 }
 
-/* 햄버거 줄 3개 */
 .menu-button span {
     display: block;
-    height: 2px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 2px;
+    height: 2px;
+    background: rgba(248, 250, 252, 0.96);
+    border-radius: 999px;
 }
 
 .navbar-auth {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
+}
+
+.navbar-welcome,
+.nav-button {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+    box-shadow: none;
+}
+
+.navbar-welcome:hover,
+.nav-button:hover {
+    background: rgba(45, 212, 191, 0.12);
 }
 
 .navbar-welcome {
-    color: white;
-    font-weight: 500;
+    font-weight: 700;
 }
 
-.nav-button {
-    text-decoration: none;
-    color: #fff;
-    background-color: transparent;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.nav-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* ✅ 오버레이 */
 .sidebar-overlay {
     position: fixed;
-    top: 60px;               /* navbar 아래부터 */
+    top: 72px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.35);
+    background: rgba(5, 10, 24, 0.3);
+    backdrop-filter: blur(4px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -123,24 +119,22 @@
     pointer-events: auto;
 }
 
-/* ✅ 사이드바: hover 제거, open 클래스에 의해 이동 */
 .sidebar {
-    width: 300px;
-    background-color: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 20px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-
+    width: min(320px, 86vw);
+    padding: 24px 18px;
     position: fixed;
-    top: 60px;
+    top: 72px;
     left: 0;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 72px);
     z-index: 100;
-
-    /* ✅ 기본은 숨김 */
     transform: translateX(-100%);
     transition: transform 0.25s ease-out;
+    overflow-y: auto;
+    background:
+        linear-gradient(180deg, rgba(10, 15, 28, 0.94), rgba(12, 21, 41, 0.98)),
+        radial-gradient(circle at top, rgba(45, 212, 191, 0.14), transparent 32%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 24px 0 60px rgba(5, 10, 24, 0.22);
 }
 
 .sidebar.open {
@@ -150,240 +144,182 @@
 .sidebar ul {
     list-style: none;
     padding: 0;
-    width: 100%;
-}
-
-.sidebar li {
-    margin-bottom: 5px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .sidebar a {
-    text-decoration: none;
-    color: #ffffff;
     display: block;
-    padding: 8px 10px;
-    font-weight: 600;
-    font-size: 1.2rem;
-    transition: color 0.2s ease, background-color 0.2s ease;
-    border-radius: 8px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    color: rgba(248, 250, 252, 0.94);
+    font-size: 1.02rem;
+    font-weight: 700;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .sidebar a:hover {
-    color: #667eea;
-    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
 }
 
-/* ✅ 메인 컨텐츠 */
 .main-content {
-    flex-grow: 1;
-    padding: 40px;
-    margin-left: 0; /* hover 밀기 제거 */
+    flex: 1;
+    padding: 40px 24px 48px;
+    margin-left: 0;
     transition: margin-left 0.25s ease-out;
-    color: white;
+    color: var(--text);
 }
 
-/* ✅ 데스크탑에서 사이드바 열리면 컨텐츠를 밀어내기 */
 .main-content.sidebar-open {
     margin-left: 300px;
 }
 
-/* ✅ 모바일 반응형 */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 5px 15px;
-        height: 50px;
-    }
-
-    .navbar-logo {
-        font-size: 1.5rem;
-    }
-
-    .menu-button {
-        width: 38px;
-        height: 38px;
-        padding: 9px;
-        border-radius: 10px;
-    }
-
-    .navbar-auth {
-        gap: 10px;
-    }
-
-    .navbar-welcome {
-        font-size: 0.9rem;
-    }
-
-    .nav-button {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-    }
-
-    .sidebar {
-        width: 240px;
-        top: 50px;
-        height: calc(100vh - 50px);
-        padding: 15px;
-    }
-
-    .sidebar-overlay {
-        top: 50px;
-    }
-
-    /* ✅ 모바일은 컨텐츠 밀지 말고(공간 좁으니) 오버레이 방식 유지 */
-    .main-content.sidebar-open {
-        margin-left: 0;
-    }
-
-    .main-content {
-        padding: 20px;
-    }
-
-    .main-content h1 {
-        font-size: 1.8rem;
-    }
-}
-
-/* 홈 페이지 스타일 */
 .home-content {
     max-width: 1200px;
     margin: 0 auto;
 }
 
 .board-section {
-    margin-bottom: 3rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    padding: 28px;
+    border-radius: 28px;
+    backdrop-filter: blur(16px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 1rem;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
 }
 
 .section-header h2 {
-    color: white;
-    font-size: 1.8rem;
     margin: 0;
+    font-size: clamp(1.4rem, 2vw, 1.9rem);
+    letter-spacing: -0.03em;
 }
 
 .more-button {
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
+    min-height: 40px;
+    padding: 0 14px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--accent-strong);
+    border: 1px solid var(--line-strong);
+    box-shadow: none;
 }
 
 .more-button:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(15, 118, 110, 0.08);
 }
 
 .board-list-preview {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 14px;
 }
 
 .board-item-preview {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 1rem;
+    padding: 18px 20px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border-left: 3px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
 }
 
 .board-item-preview:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(5px);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+    border-color: rgba(15, 118, 110, 0.16);
 }
 
 .board-item-preview h3 {
-    color: white;
-    font-size: 1.1rem;
-    margin: 0 0 0.5rem 0;
-    font-weight: 600;
+    color: var(--text);
+    font-size: 1.08rem;
+    margin: 0 0 0.6rem 0;
+    font-weight: 700;
 }
 
 .item-meta {
     display: flex;
     gap: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
     font-size: 0.9rem;
 }
 
-.empty-message {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    padding: 2rem;
-    font-style: italic;
-}
-
-/* ✅ 메인 페이지 전용 '게시글 없음' 메시지 스타일 */
 .home-empty-message {
     text-align: center;
-    color: white; /* ✅ 흰색으로 변경 */
+    color: var(--muted);
     padding: 2rem;
     font-style: italic;
-}
-/* 마이페이지 css 적용 */
-.navbar-welcome {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.navbar-welcome:hover {
-    text-decoration: underline;
 }
 
 @media (max-width: 768px) {
-    .home-content {
-        padding: 0;
+    .navbar {
+        min-height: 60px;
+        padding: 10px 14px;
+    }
+
+    .sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
+        width: min(260px, 82vw);
+    }
+
+    .sidebar-overlay {
+        top: 60px;
+    }
+
+    .navbar-logo span {
+        font-size: 1.45rem;
+    }
+
+    .navbar-auth {
+        gap: 8px;
+    }
+
+    .navbar-welcome,
+    .nav-button {
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 0.82rem;
+    }
+
+    .main-content {
+        padding: 20px 14px 32px;
+    }
+
+    .main-content.sidebar-open {
+        margin-left: 0;
     }
 
     .board-section {
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 18px;
+        border-radius: 22px;
     }
 
     .section-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .section-header h2 {
-        font-size: 1.5rem;
     }
 
     .more-button {
         width: 100%;
     }
 
-    .board-item-preview {
-        padding: 0.8rem;
-    }
-
-    .board-item-preview h3 {
-        font-size: 1rem;
-    }
-
     .item-meta {
-        font-size: 0.8rem;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.35rem;
     }
 }

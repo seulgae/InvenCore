@@ -1,43 +1,41 @@
 /* styles/RequestBoardList.css */
-
 .rb-container {
     padding: 2rem;
     max-width: 1100px;
     margin: 2rem auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    color: #333;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    color: var(--text);
+    backdrop-filter: blur(16px);
 }
 
 .rb-container * {
     box-sizing: border-box;
 }
 
-/* ======================
-   Header
-====================== */
 .rb-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     gap: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 1px solid var(--line);
     margin-bottom: 1.2rem;
 }
 
 .rb-title {
     margin: 0;
-    color: #2c3e50;
+    color: var(--text);
     font-size: 2.2rem;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.04em;
 }
 
 .rb-subtitle {
     margin: 0.35rem 0 0;
-    color: #777;
+    color: var(--muted);
     font-size: 0.95rem;
 }
 
@@ -49,28 +47,16 @@
     justify-content: flex-end;
 }
 
-/* ======================
-   Search
-====================== */
 .rb-search-input {
     width: 220px;
-    height: 40px;
-    padding: 0 0.75rem;
-    border-radius: 5px;
-    border: 1px solid #e6e6e6;
-    outline: none;
-    background: #fff;
-    font-size: 0.9rem;
+    height: 42px;
+    padding: 0 0.9rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.88);
+    font-size: 0.92rem;
 }
 
-.rb-search-input:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
-}
-
-/* ======================
-   Buttons
-====================== */
 .rb-header-actions button,
 .rb-header-actions button * {
     font-size: 0.9rem !important;
@@ -81,23 +67,31 @@
 }
 
 .rb-btn {
-    height: 40px;
-    padding: 0.6rem 1.2rem;
+    height: 42px;
+    padding: 0.6rem 1rem;
     font-size: 0.9rem;
-    border-radius: 5px;
-    border: none;
+    border-radius: 12px;
     cursor: pointer;
-    background-color: #3498db;
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    transition: background-color 0.3s ease;
 }
 
-.rb-btn:hover {
-    background-color: #2980b9;
+.rb-btn-ghost {
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--accent-strong);
+    border: 1px solid var(--line-strong);
+    box-shadow: none;
+}
+
+.rb-btn-ghost:hover {
+    background: rgba(15, 118, 110, 0.08);
+}
+
+.rb-btn-primary {
+    background: linear-gradient(180deg, var(--accent), var(--accent-strong));
 }
 
 .rb-btn:disabled {
@@ -105,40 +99,34 @@
     cursor: not-allowed;
 }
 
-/* ======================
-   Error
-====================== */
 .rb-error {
-    color: #e74c3c;
+    color: var(--danger);
     padding: 1rem;
-    background-color: #fee;
-    border-radius: 5px;
+    background-color: var(--danger-soft);
+    border-radius: 12px;
     margin-bottom: 1rem;
 }
 
-/* ======================
-   List
-====================== */
 .rb-list {
-    border: 1px solid #eee;
-    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 22px;
     overflow: hidden;
+    background: rgba(255, 255, 255, 0.78);
 }
 
-/* 🔧 컬럼 고정 */
 .rb-list-head,
 .rb-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 180px 260px;
+    grid-template-columns: minmax(0, 1fr) 180px 160px;
     align-items: center;
 }
 
 .rb-list-head {
-    background: #fafafa;
-    border-bottom: 1px solid #eee;
-    padding: 0.85rem 1rem;
+    background: rgba(248, 250, 252, 0.9);
+    border-bottom: 1px solid var(--line);
+    padding: 0.95rem 1rem;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--muted);
 }
 
 .rb-col {
@@ -149,25 +137,18 @@
     justify-self: center;
     text-align: center;
     white-space: nowrap;
-    color: #555;
-}
-
-/* ✅ 데스크톱에서 작성일 강제 표시 */
-.rb-list-head > :nth-child(3),
-.rb-row > :nth-child(3) {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
+    color: var(--muted);
 }
 
 .rb-row {
     width: 100%;
     text-align: left;
     border: none;
-    background: #fff;
-    padding: 0.95rem 1rem;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.84);
+    padding: 1rem;
     cursor: pointer;
-    border-bottom: 1px solid #f3f3f3;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
 }
 
 .rb-row:last-child {
@@ -175,15 +156,14 @@
 }
 
 .rb-row:hover {
-    background: #fcfcff;
+    background: rgba(15, 118, 110, 0.05);
 }
 
-/* ✅ button 전역 스타일 영향 차단 */
 .rb-row,
 .rb-row * {
     opacity: 1 !important;
     visibility: visible !important;
-    color: #333 !important;
+    color: var(--text) !important;
 }
 
 .rb-cell {
@@ -198,9 +178,9 @@
 }
 
 .rb-row-title {
-    font-size: 1.05rem;
+    font-size: 1.04rem;
     font-weight: 800;
-    color: #2c3e50;
+    color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -208,7 +188,7 @@
 
 .rb-row-preview {
     font-size: 0.92rem;
-    color: #666;
+    color: var(--muted);
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
@@ -218,73 +198,55 @@
 .rb-empty {
     padding: 2rem;
     text-align: center;
-    color: #888;
+    color: var(--muted);
     font-style: italic;
 }
 
-/* ======================
-   Pagination (공지사항 NoticeList랑 동일 스타일)
-====================== */
+.pagination,
 .rb-pagination {
     display: flex;
     justify-content: center;
-    gap: 0.4rem;
-    margin-top: 2.5rem;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
     align-items: center;
     flex-wrap: wrap;
 }
 
+.page-button,
 .rb-page-btn,
 .rb-page-num {
-    min-width: 36px;
-    height: 36px;
-    padding: 0.45rem 0.7rem;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: #333;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: none;
+    color: var(--text) !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 전역 button 스타일 때문에 숫자 안 보이는 현상 방어 */
-.rb-page-btn,
-.rb-page-num,
-.rb-page-btn *,
-.rb-page-num * {
-    opacity: 1 !important;
-    visibility: visible !important;
-    text-indent: 0 !important;
-    letter-spacing: normal !important;
-    line-height: 1 !important;
-    color: #333 !important;
-    font-size: 0.85rem !important;
-}
-
+.page-button.active,
 .rb-page-num.active {
-    background-color: #3498db;
-    border-color: #3498db;
+    background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+    border-color: transparent;
     color: #fff !important;
-    font-weight: 600;
 }
 
+.page-button:disabled,
 .rb-page-btn:disabled,
 .rb-page-num:disabled {
     cursor: not-allowed;
-    opacity: 0.5 !important;
+    opacity: 0.45 !important;
 }
 
-/* ======================
-   Responsive
-====================== */
 @media (max-width: 768px) {
     .rb-container {
         padding: 1rem;
         margin: 1rem;
-        border-radius: 8px;
+        border-radius: 22px;
     }
 
     .rb-header {
@@ -304,7 +266,7 @@
 
     .rb-list-head,
     .rb-row {
-        grid-template-columns: minmax(0, 1fr) 120px;
+        grid-template-columns: minmax(0, 1fr) 96px;
     }
 
     .rb-list-head > :nth-child(3),
@@ -314,18 +276,5 @@
 
     .rb-row-preview {
         -webkit-line-clamp: 2;
-    }
-
-    .rb-row-fix,
-    .rb-row-fix * {
-        font-size: 0.95rem;
-        color: #333;
-        opacity: 1;
-        text-indent: 0;
-        line-height: 1.4;
-    }
-
-    .rb-col-center {
-        white-space: nowrap;
     }
 }

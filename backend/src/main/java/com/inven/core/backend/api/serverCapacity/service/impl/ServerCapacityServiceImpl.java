@@ -9,6 +9,7 @@ import com.inven.core.backend.api.serverCapacity.repository.ServerCapacityReposi
 import com.inven.core.backend.api.serverCapacity.service.ServerCapacityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.channel.ClientChannelEvent;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "feature.server-capacity.enabled", havingValue = "true")
 public class ServerCapacityServiceImpl implements ServerCapacityService {
 
     private final ServerCapacityRepository serverCapacityRepository;

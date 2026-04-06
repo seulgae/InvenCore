@@ -1,39 +1,43 @@
 /* styles/Modal.css */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5, 10, 24, 0.64), rgba(8, 15, 32, 0.72)),
+    radial-gradient(circle at top, rgba(45, 212, 191, 0.1), transparent 32%);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
   z-index: 1000;
-  animation: fadeIn 0.3s ease; /* 부드러운 등장 효과 */
+  animation: fadeIn 0.24s ease;
 }
 
 .modal-content {
   position: relative;
-  /* background, padding, border-radius, box-shadow, max-width, max-height, overflow는 auth-card에서 처리 */
-  /* 여기서는 auth-card가 모달의 실제 내용을 담당하므로, modal-content는 컨테이너 역할만 합니다. */
 }
 
 .modal-close-button {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 2rem;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: none;
+  font-size: 1.7rem;
   cursor: pointer;
-  color: #aaa;
+  color: #64748b;
   line-height: 1;
-  transition: color 0.2s ease;
 }
 
 .modal-close-button:hover {
-  color: #333;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--accent-strong);
 }
 
 @keyframes fadeIn {
@@ -45,11 +49,16 @@
   }
 }
 
-/* 모바일 반응형 */
 @media (max-width: 768px) {
+  .modal-overlay {
+    padding: 12px;
+  }
+
   .modal-close-button {
-    font-size: 1.5rem; /* 모바일에서 닫기 버튼 크기 줄임 */
     top: 10px;
     right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 1.4rem;
   }
 }
