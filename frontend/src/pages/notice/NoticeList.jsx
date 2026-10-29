@@ -43,7 +43,7 @@ function NoticeList() {
     };
 
     return (
-        <div className="notice-container">
+        <div className="notice-list-container">
             <div className="notice-header">
                 <h1>공지사항</h1>
                 {canCreate && (
