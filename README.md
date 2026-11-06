@@ -1,14 +1,16 @@
 # InvenCore 프로젝트 (Fullstack) - 배포 완전체 README.md
 
-InvenCore는 **Spring Boot 기반 백엔드**와 **React(Vite) 기반 프론트엔드**로 구성된 **풀스택 재고 관리 웹 애플리케이션**입니다.  
+InvenCore는 **Spring Boot 기반 백엔드**와 **React(Vite) 기반 프론트엔드**로 구성된 **개인의 기술과 구현 경험을 보관하고 정리하며 보여주는 풀스택 웹 애플리케이션**입니다.
+
+프로젝트 이름의 인벤토리는 쌓아 온 기술과 경험을 담는 저장소를 의미합니다.
 본 문서는 **로컬 실행 + 운영 배포(Backend/Frontend) + 환경변수 + CORS + Nginx 서빙**까지 포함한 통합 안내서입니다.
 
 ---
 
 ## 📦 1. 프로젝트 구성
 
-- **Backend**: 재고 관리 및 핵심 비즈니스 로직 제공 (REST API)
-- **Frontend**: 사용자 UI 제공 및 백엔드 API 호출
+- **Backend**: 회원 인증, 게시판, 서버 용량 조사 등 기술 구현을 위한 비즈니스 로직 제공 (REST API)
+- **Frontend**: 기술과 구현 경험을 보여주는 사용자 UI 제공 및 백엔드 API 호출
 
 ---
 

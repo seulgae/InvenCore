@@ -79,7 +79,9 @@ function RequestBoardRegist() {
             alert('게시글이 등록되었습니다.');
             navigate('/requestboard');
         } catch (err) {
-            const serverMsg = err?.response?.data?.message || '게시글 등록에 실패했습니다.';
+            const serverMsg = err.code === 'AUTH_EXPIRED'
+                ? err.message
+                : err?.response?.data?.message || '게시글 등록에 실패했습니다.';
             setError(serverMsg);
             console.error(err);
         }

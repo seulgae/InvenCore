@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -31,12 +30,11 @@ public class RequestBoardController {
     @PostMapping
     public ResponseEntity<RequestBoardDTO> createRequestBoard(
             @Valid @RequestPart("requestBoardDTO") RequestBoardDTO requestBoardDTO,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            Principal principal
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         log.info("POST /api/requestboards 요청 수신");
         RequestBoardDTO createdRequestBoard =
-                requestBoardService.createRequestBoard(requestBoardDTO, principal.getName(), file);
+                requestBoardService.createRequestBoard(requestBoardDTO, "demo", file);
         log.info("요청 게시글 생성 완료: {}", createdRequestBoard.getTitle());
         return new ResponseEntity<>(createdRequestBoard, HttpStatus.CREATED);
     }
@@ -60,20 +58,19 @@ public class RequestBoardController {
     public ResponseEntity<RequestBoardDTO> updateRequestBoard(
             @PathVariable Long id,
             @Valid @RequestPart("requestBoardDTO") RequestBoardDTO requestBoardDTO,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            Principal principal
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         log.info("PUT /api/requestboards/{} 요청 수신", id);
         RequestBoardDTO updatedRequestBoard =
-                requestBoardService.updateRequestBoard(id, requestBoardDTO, principal.getName(), file);
+                requestBoardService.updateRequestBoard(id, requestBoardDTO, "demo", file);
         log.info("요청 게시글 수정 완료: {}", updatedRequestBoard.getTitle());
         return ResponseEntity.ok(updatedRequestBoard);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRequestBoard(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<Void> deleteRequestBoard(@PathVariable Long id) {
         log.info("DELETE /api/requestboards/{} 요청 수신", id);
-        requestBoardService.deleteRequestBoard(id, principal.getName());
+        requestBoardService.deleteRequestBoard(id, "demo");
         log.info("요청 게시글 삭제 완료: id={}", id);
         return ResponseEntity.noContent().build();
     }

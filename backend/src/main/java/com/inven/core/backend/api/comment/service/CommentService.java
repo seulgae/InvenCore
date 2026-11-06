@@ -4,7 +4,6 @@ import com.inven.core.backend.api.comment.dto.CommentDTO;
 import com.inven.core.backend.api.comment.entity.Comment;
 import com.inven.core.backend.api.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,10 +59,6 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id: " + id));
 
-        if (!comment.getAuthor().equals(username)) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
-        }
-
         comment.update(commentDTO.getContent());
         return convertToDTO(comment);
     }
@@ -72,10 +67,6 @@ public class CommentService {
     public void deleteComment(Long id, String username) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id: " + id));
-
-        if (!comment.getAuthor().equals(username)) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
 
         // 답글이 있으면 함께 삭제
         List<Comment> replies = commentRepository.findByParentIdOrderByCreatedAtAsc(id);

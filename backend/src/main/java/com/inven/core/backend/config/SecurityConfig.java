@@ -68,6 +68,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            response.setStatus(401);
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"code\":\"AUTHENTICATION_REQUIRED\",\"message\":\"로그인이 필요하거나 인증이 만료되었습니다. 다시 로그인해 주세요.\"}");
+                        })
+                )
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -82,23 +90,9 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         
-                        // ✅ 요청 게시판 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
-                        .requestMatchers(HttpMethod.GET, "/api/requestboards", "/api/requestboards/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/requestboards").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/requestboards/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/requestboards/**").authenticated()
-
-                        // ✅ 댓글 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
-                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/comments").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
-
-                        // ✅ 공지사항 조회(GET)는 누구나, 생성/수정/삭제는 인증된 사용자만
-                        .requestMatchers(HttpMethod.GET, "/api/notices", "/api/notices/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/notices").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/notices/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/notices/**").authenticated()
+                        // Public sample boards; SSH and other APIs keep authentication.
+                        .requestMatchers("/api/requestboards", "/api/requestboards/**",
+                                "/api/comments", "/api/comments/**").permitAll()
 
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()

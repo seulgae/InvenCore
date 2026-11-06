@@ -1,207 +1,220 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import apiClient from '../../api/axios';
-import '../../styles/RequestBoardList.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../../api/axios";
+import "../../styles/RequestBoardList.css";
 
 function RequestBoardList() {
-    const navigate = useNavigate();
-    const { isLoggedIn, openLoginModal } = useOutletContext();
+  const navigate = useNavigate();
 
-    const [items, setItems] = useState([]);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const [page, setPage] = useState(0);
-    const size = 10;
-    const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(0);
+  const size = 10;
+  const [totalPages, setTotalPages] = useState(1);
 
-    const [keyword, setKeyword] = useState('');
-    const [appliedKeyword, setAppliedKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
+  const [appliedKeyword, setAppliedKeyword] = useState("");
 
-    const formatDate = (v) => {
-        if (!v) return '-';
-        const d = new Date(v);
-        if (Number.isNaN(d.getTime())) return '-';
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-    };
+  const formatDate = (v) => {
+    if (!v) return "-";
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return "-";
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
-    const fetchPage = async ({ nextPage, keyword: kw }) => {
-        const trimmed = (kw ?? '').trim();
+  const fetchPage = async ({ nextPage, keyword: kw }) => {
+    const trimmed = (kw ?? "").trim();
 
-        try {
-            setLoading(true);
-            setError('');
+    try {
+      setLoading(true);
+      setError("");
 
-            const res = await apiClient.get('/requestboards', {
-                params: {
-                    page: nextPage,
-                    size,
-                    keyword: trimmed ? trimmed : undefined,
-                },
-            });
+      const res = await apiClient.get("/requestboards", {
+        params: {
+          page: nextPage,
+          size,
+          keyword: trimmed ? trimmed : undefined,
+        },
+      });
 
-            setItems(res.data?.content ?? []);
-            setTotalPages(res.data?.totalPages ?? 1);
-            setPage(res.data?.number ?? nextPage);
-        } catch (e) {
-            setError('게시글 목록을 불러오는 데 실패했습니다.');
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
+      setItems(res.data?.content ?? []);
+      setTotalPages(res.data?.totalPages ?? 1);
+      setPage(res.data?.number ?? nextPage);
+    } catch (e) {
+      setError("게시글 목록을 불러오는 데 실패했습니다.");
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchPage({ nextPage: 0, keyword: '' });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  useEffect(() => {
+    fetchPage({ nextPage: 0, keyword: "" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const handleCreateClick = () => {
-        if (isLoggedIn) navigate('/requestboard/regist');
-        else {
-            alert('로그인이 필요합니다.');
-            openLoginModal();
-        }
-    };
+  const handleCreateClick = () => navigate("/requestboard/regist");
 
-    const handleSearch = () => {
-        const k = keyword.trim();
-        setAppliedKeyword(k);
-        fetchPage({ nextPage: 0, keyword: k });
-    };
+  const handleSearch = () => {
+    const k = keyword.trim();
+    setAppliedKeyword(k);
+    fetchPage({ nextPage: 0, keyword: k });
+  };
 
-    const handleClearSearch = () => {
-        setKeyword('');
-        setAppliedKeyword('');
-        fetchPage({ nextPage: 0, keyword: '' });
-    };
+  const handleClearSearch = () => {
+    setKeyword("");
+    setAppliedKeyword("");
+    fetchPage({ nextPage: 0, keyword: "" });
+  };
 
-    const goPage = (p) => {
-        if (p < 0 || p > totalPages - 1) return;
-        fetchPage({ nextPage: p, keyword: appliedKeyword });
-    };
+  const goPage = (p) => {
+    if (p < 0 || p > totalPages - 1) return;
+    fetchPage({ nextPage: p, keyword: appliedKeyword });
+  };
 
-    return (
-        <div className="rb-container">
-            <div className="rb-header">
-                <div className="rb-header-left">
-                    <h1 className="rb-title">요청 게시판</h1>
-                    <p className="rb-subtitle">요청사항을 등록하고 진행 상황을 확인하세요.</p>
-                </div>
-
-                <div className="rb-header-actions">
-                    <input
-                        className="rb-search-input"
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                        placeholder="제목/내용 검색"
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    />
-
-                    <button className="rb-btn rb-btn-ghost" type="button" onClick={handleSearch} disabled={loading}>
-                        검색
-                    </button>
-
-                    <button className="rb-btn rb-btn-ghost" type="button" onClick={handleClearSearch} disabled={loading}>
-                        초기화
-                    </button>
-
-                    <button className="rb-btn rb-btn-primary" type="button" onClick={handleCreateClick}>
-                        등록
-                    </button>
-                </div>
-            </div>
-
-            {error && <p className="rb-error">{error}</p>}
-
-            <div className="rb-list">
-                <div className="rb-list-head">
-                    <div className="rb-col">제목</div>
-                    <div className="rb-col rb-col-center">작성자</div>
-                    <div className="rb-col rb-col-center">작성일</div>
-                </div>
-
-                {loading ? (
-                    <div className="rb-empty">불러오는 중...</div>
-                ) : items.length === 0 ? (
-                    <div className="rb-empty">게시글이 없습니다.</div>
-                ) : (
-                    items.map((it) => (
-                        <button
-                            key={it.id}
-                            className="rb-row rb-row-fix"
-                            type="button"
-                            onClick={() => navigate(`/requestboard/${it.id}`)}
-                        >
-                            <div className="rb-cell rb-cell-title">
-                                <div className="rb-row-title">{it.title}</div>
-                                <div className="rb-row-preview">{(it.content || '').replace(/\n/g, ' ')}</div>
-                            </div>
-
-                            <div className="rb-cell rb-col-center">{it.author || '-'}</div>
-
-                            <div className="rb-cell rb-col-center">{formatDate(it.createdAt)}</div>
-                        </button>
-                    ))
-                )}
-            </div>
-
-            {totalPages > 0 && (
-                <div className="pagination">
-                    <button
-                        className="page-button"
-                        type="button"
-                        onClick={() => goPage(0)}
-                        disabled={page === 0 || loading}
-                    >
-                        «
-                    </button>
-
-                    <button
-                        className="page-button"
-                        type="button"
-                        onClick={() => goPage(page - 1)}
-                        disabled={page === 0 || loading}
-                    >
-                        ‹
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
-                        <button
-                            key={p}
-                            className={`page-button ${p === page ? 'active' : ''}`}
-                            type="button"
-                            onClick={() => goPage(p)}
-                            disabled={loading}
-                        >
-                            {p + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        className="page-button"
-                        type="button"
-                        onClick={() => goPage(page + 1)}
-                        disabled={page >= totalPages - 1 || loading}
-                    >
-                        ›
-                    </button>
-
-                    <button
-                        className="page-button"
-                        type="button"
-                        onClick={() => goPage(totalPages - 1)}
-                        disabled={page >= totalPages - 1 || loading}
-                    >
-                        »
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="rb-container">
+      <div className="rb-header">
+        <div className="rb-header-left">
+          <h1 className="rb-title">요청 게시판</h1>
+          <p className="rb-subtitle">
+            요청사항을 등록하고 진행 상황을 확인하세요.
+          </p>
         </div>
-    );
+
+        <div className="rb-header-actions">
+          <input
+            className="rb-search-input"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="제목/내용 검색"
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+
+          <button
+            className="rb-btn rb-btn-ghost"
+            type="button"
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            검색
+          </button>
+
+          <button
+            className="rb-btn rb-btn-ghost"
+            type="button"
+            onClick={handleClearSearch}
+            disabled={loading}
+          >
+            초기화
+          </button>
+
+          <button
+            className="rb-btn rb-btn-primary"
+            type="button"
+            onClick={handleCreateClick}
+          >
+            등록
+          </button>
+        </div>
+      </div>
+
+      {error && <p className="rb-error">{error}</p>}
+
+      <div className="rb-list">
+        <div className="rb-list-head">
+          <div className="rb-col">제목</div>
+          <div className="rb-col rb-col-center">작성자</div>
+          <div className="rb-col rb-col-center">작성일</div>
+        </div>
+
+        {loading ? (
+          <div className="rb-empty">불러오는 중...</div>
+        ) : items.length === 0 ? (
+          <div className="rb-empty">게시글이 없습니다.</div>
+        ) : (
+          items.map((it) => (
+            <button
+              key={it.id}
+              className="rb-row rb-row-fix"
+              type="button"
+              onClick={() => navigate(`/requestboard/${it.id}`)}
+            >
+              <div className="rb-cell rb-cell-title">
+                <div className="rb-row-title">{it.title}</div>
+                <div className="rb-row-preview">
+                  {(it.content || "").replace(/\n/g, " ")}
+                </div>
+              </div>
+
+              <div className="rb-cell rb-col-center">{it.author || "-"}</div>
+
+              <div className="rb-cell rb-col-center">
+                {formatDate(it.createdAt)}
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      {totalPages > 0 && (
+        <div className="pagination">
+          <button
+            className="page-button"
+            type="button"
+            onClick={() => goPage(0)}
+            disabled={page === 0 || loading}
+          >
+            «
+          </button>
+
+          <button
+            className="page-button"
+            type="button"
+            onClick={() => goPage(page - 1)}
+            disabled={page === 0 || loading}
+          >
+            ‹
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i).map((p) => (
+            <button
+              key={p}
+              className={`page-button ${p === page ? "active" : ""}`}
+              type="button"
+              onClick={() => goPage(p)}
+              disabled={loading}
+            >
+              {p + 1}
+            </button>
+          ))}
+
+          <button
+            className="page-button"
+            type="button"
+            onClick={() => goPage(page + 1)}
+            disabled={page >= totalPages - 1 || loading}
+          >
+            ›
+          </button>
+
+          <button
+            className="page-button"
+            type="button"
+            onClick={() => goPage(totalPages - 1)}
+            disabled={page >= totalPages - 1 || loading}
+          >
+            »
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default RequestBoardList;

@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.inven.core'
 version = '0.0.1-SNAPSHOT'
-description = 'InvenCore backend service for inventory and core business APIs'
+description = 'InvenCore backend service for showcasing and organizing personal skills and implementation experience'
 
 java {
 	toolchain {
@@ -29,6 +29,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	// Redis / Kafka: dependencies prepared for future examples
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-kafka'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'com.h2database:h2'

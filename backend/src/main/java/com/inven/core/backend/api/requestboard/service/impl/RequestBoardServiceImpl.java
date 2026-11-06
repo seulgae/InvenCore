@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.*;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -139,10 +138,6 @@ public class RequestBoardServiceImpl implements RequestBoardService {
             throw new IllegalArgumentException("제목과 내용은 공백일 수 없습니다.");
         }
 
-        if (!requestBoard.getAuthor().equals(username)) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
-        }
-
         // 파일 처리
         handleFileUpdate(requestBoard, file, requestBoardDTO.isDeleteExistingFile());
 
@@ -155,10 +150,6 @@ public class RequestBoardServiceImpl implements RequestBoardService {
     public void deleteRequestBoard(Long id, String username) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
-
-        if (!requestBoard.getAuthor().equals(username)) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
 
         // 파일 삭제
         if (requestBoard.getFilePath() != null) {

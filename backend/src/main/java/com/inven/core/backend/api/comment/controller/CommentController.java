@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -20,9 +19,9 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO, Principal principal) {
+    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO) {
         log.info("POST /api/comments 요청 수신");
-        CommentDTO createdComment = commentService.createComment(commentDTO, principal.getName());
+        CommentDTO createdComment = commentService.createComment(commentDTO, "demo");
         log.info("댓글 생성 완료: {}", createdComment.getId());
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
@@ -35,17 +34,17 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, Principal principal) {
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         log.info("PUT /api/comments/{} 요청 수신", id);
-        CommentDTO updatedComment = commentService.updateComment(id, commentDTO, principal.getName());
+        CommentDTO updatedComment = commentService.updateComment(id, commentDTO, "demo");
         log.info("댓글 수정 완료: {}", updatedComment.getId());
         return ResponseEntity.ok(updatedComment);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
         log.info("DELETE /api/comments/{} 요청 수신", id);
-        commentService.deleteComment(id, principal.getName());
+        commentService.deleteComment(id, "demo");
         log.info("댓글 삭제 완료: id={}", id);
         return ResponseEntity.noContent().build();
     }
