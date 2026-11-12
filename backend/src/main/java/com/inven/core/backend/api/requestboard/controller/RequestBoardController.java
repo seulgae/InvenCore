@@ -62,7 +62,7 @@ public class RequestBoardController {
     ) {
         log.info("PUT /api/requestboards/{} 요청 수신", id);
         RequestBoardDTO updatedRequestBoard =
-                requestBoardService.updateRequestBoard(id, requestBoardDTO, "demo", file);
+                requestBoardService.updateRequestBoard(id, requestBoardDTO, file);
         log.info("요청 게시글 수정 완료: {}", updatedRequestBoard.getTitle());
         return ResponseEntity.ok(updatedRequestBoard);
     }
@@ -70,7 +70,7 @@ public class RequestBoardController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRequestBoard(@PathVariable Long id) {
         log.info("DELETE /api/requestboards/{} 요청 수신", id);
-        requestBoardService.deleteRequestBoard(id, "demo");
+        requestBoardService.deleteRequestBoard(id);
         log.info("요청 게시글 삭제 완료: id={}", id);
         return ResponseEntity.noContent().build();
     }
@@ -81,7 +81,7 @@ public class RequestBoardController {
         String originalFileName = requestBoardService.getRequestBoardById(id).getFileName();
 
         String encodedFileName = URLEncoder.encode(originalFileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-        
+
         String contentType;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());

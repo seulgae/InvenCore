@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {"spring.datasource.url=jdbc:h2:mem:auth-regression;MODE=PostgreSQL;DB_CLOSE_DELAY=-1", "spring.jpa.hibernate.ddl-auto=create-drop"})
+        properties = {"spring.datasource.url=jdbc:h2:mem:auth-regression;DB_CLOSE_DELAY=-1", "spring.jpa.hibernate.ddl-auto=create-drop"})
 class RequestBoardAuthenticationTests {
     @LocalServerPort int port;
     private final HttpClient client = HttpClient.newHttpClient();

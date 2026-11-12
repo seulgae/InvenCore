@@ -22,10 +22,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -95,20 +93,6 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestBoardDTO> getAllRequestBoards() {
-        return requestBoardRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<RequestBoardDTO> getRequestBoards(int page, int size) {
-        return getRequestBoards(page, size, null);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<RequestBoardDTO> getRequestBoards(int page, int size, String keyword) {
         if (page < 0) page = 0;
         if (size <= 0) size = 10;
@@ -130,7 +114,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
     @Override
     @Transactional
-    public RequestBoardDTO updateRequestBoard(Long id, RequestBoardDTO requestBoardDTO, String username, MultipartFile file) {
+    public RequestBoardDTO updateRequestBoard(Long id, RequestBoardDTO requestBoardDTO, MultipartFile file) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
 
@@ -147,7 +131,7 @@ public class RequestBoardServiceImpl implements RequestBoardService {
 
     @Override
     @Transactional
-    public void deleteRequestBoard(Long id, String username) {
+    public void deleteRequestBoard(Long id) {
         RequestBoard requestBoard = requestBoardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request board Id: " + id));
 
@@ -231,7 +215,6 @@ public class RequestBoardServiceImpl implements RequestBoardService {
             }
         }
     }
-
 
     private void validateFileExtension(String fileName) {
         if (fileName == null || !fileName.contains(".")) {

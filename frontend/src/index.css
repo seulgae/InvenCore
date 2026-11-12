@@ -1,27 +1,32 @@
 :root {
   --font-ui:
-    "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+    "Segoe UI Variable", "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo",
+    Arial, sans-serif;
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.7;
   font-weight: 400;
-  color-scheme: light;
-  --bg: #f5f6f8;
-  --bg-strong: #edf0f4;
-  --surface: #ffffff;
-  --surface-strong: #ffffff;
-  --surface-dark: #263343;
-  --line: #dce1e7;
-  --line-strong: #bdc9d6;
-  --text: #273343;
-  --muted: #606b79;
-  --accent: #405f80;
-  --accent-strong: #2e4966;
-  --accent-soft: #eaf0f6;
-  --danger: #b42318;
-  --danger-soft: #fef3f2;
-  --success: #466738;
-  --success-soft: #edf4e8;
+  color-scheme: dark;
+  --bg: #1e1f22;
+  --bg-strong: #25262a;
+  --surface: #2b2d30;
+  --surface-strong: #303236;
+  --surface-dark: #1e1f22;
+  --panel: #25262a;
+  --editor: #1e1f22;
+  --surface-hover: #36393f;
+  --selection: #293d57;
+  --line: #43464d;
+  --line-strong: #646b78;
+  --text: #dfe1e5;
+  --muted: #afb5c1;
+  --accent: #3065d1;
+  --accent-strong: #356bd6;
+  --accent-soft: #293d57;
+  --danger: #f29c9c;
+  --danger-soft: #442d32;
+  --success: #a8cf98;
+  --success-soft: #2b3b30;
   --shadow: 0 8px 24px #23352006;
   --shadow-strong: 0 20px 60px #23352016;
   color: var(--text);
@@ -65,9 +70,9 @@ button {
   padding: 0.75rem 1.2rem;
   font-size: 0.9rem;
   font-weight: 600;
-  font-family: inherit;
+  font-family: var(--font-ui);
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -95,14 +100,14 @@ select {
   border: 1px solid var(--line);
   padding: 0.8rem 1rem;
   font-size: 0.9rem;
-  font-family: inherit;
+  font-family: var(--font-ui);
   width: 100%;
   background: var(--surface);
   color: var(--text);
 }
 input::placeholder,
 textarea::placeholder {
-  color: #6b7685;
+  color: var(--muted);
 }
 label {
   display: block;

@@ -32,7 +32,7 @@ public class CommentService {
     public List<CommentDTO> getCommentsByRequestBoardId(Long requestBoardId) {
         // 부모 댓글만 가져오기
         List<Comment> parentComments = commentRepository.findByRequestBoardIdAndParentIdIsNullOrderByCreatedAtAsc(requestBoardId);
-        
+
         return parentComments.stream()
                 .map(parent -> {
                     CommentDTO parentDTO = convertToDTO(parent);
@@ -55,7 +55,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDTO updateComment(Long id, CommentDTO commentDTO, String username) {
+    public CommentDTO updateComment(Long id, CommentDTO commentDTO) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id: " + id));
 
@@ -64,7 +64,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long id, String username) {
+    public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment Id: " + id));
 

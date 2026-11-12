@@ -1,37 +1,45 @@
-# InvenCore 기술 인벤토리
+# InvenCore 프론트엔드
 
-기능별 카드에서 구현 노트, 실제 실행 화면, 소스 코드와 아키텍처를 확인하는 React 프론트엔드입니다.
+IntelliJ 스타일 다크 작업창에서 기술 카드를 탐색하고, 실제 기능·구현 소스·아키텍처를 확인하는 React 애플리케이션입니다.
 
-## 실행
+## 실행과 검사
+
+이 디렉터리에서 실행합니다. Node.js 22.12 이상이 필요합니다.
 
 ```sh
 npm ci
 npm run dev
-```
-
-개발 서버의 `/api` 요청은 `http://localhost:8080`으로 전달됩니다. 코드·구조도는 백엔드 없이 열 수 있으며, 실제 기능 실행에는 백엔드가 필요합니다. 서버용량조사는 별도의 기능 활성화·서버 목록·SSH 키 설정이 필요합니다.
-
-## 화면과 소스 구성
-
-- `src/data/inventory.js`: 카드 메타데이터, 구현 설명, 구조도 노드, 공개할 소스 연결
-- `src/pages/InventoryPage.jsx`: 분류·검색·정렬을 지원하는 카드 보관함
-- `src/pages/InventoryDetailPage.jsx`: 아이템별 노트·실행·소스·아키텍처 작업창
-- `src/components/inventory`: 소스 탐색기, 구조도, 실제 기능 실행 패널
-- `config/inventorySourcePlugin.js`: 허용 목록에 있는 백엔드 구현 파일을 소스 모듈로 제공
-
-`/inventory/:itemId?tab=source&file=2`처럼 아이템·탭·파일을 직접 연결할 수 있습니다. 인벤토리 검색·분류·정렬도 URL에 보관됩니다.
-
-## 아이템 추가
-
-`inventory.js`에 아이템 메타데이터와 구조도, 실제 구현 파일을 등록하고 `FeatureDemo.jsx`에 실행 화면을 연결합니다. 새 백엔드 소스를 공개하려면 `inventorySourcePlugin.js`의 허용 목록에도 정확한 파일 경로를 추가합니다.
-
-소스는 예제 복사본이 아닌 실제 프로젝트 파일에서 읽습니다. 배포 빌드에는 빌드 시점의 내용이 포함되고, 개발 중에는 선택한 백엔드 파일의 변경을 감지합니다. 설정 파일·환경변수 파일·개인키는 공개 목록에 포함하지 않습니다.
-
-실행 탭은 실제 API를 사용하며, 작성·수정·삭제는 실제 데이터에 반영됩니다. DB 설정과 백엔드 실행 방법은 루트 README를 참고하세요.
-
-## 검증
-
-```sh
-npm run build
 npm run lint
+npm run build
 ```
+
+개발 서버 주소는 터미널 출력을 확인하세요. `/api`는 Vite에서 `http://localhost:8080`으로 프록시합니다. 별도의 API 주소 `.env`는 사용하지 않습니다. 백엔드 실행·H2·선택 기능 설정은 [루트 README](../README.md)를 참고하세요.
+
+## 화면 구성
+
+- `pages/MainPage.jsx`: Project 트리, 도구 창, 문서 탭, 로그인 모달, 상태 표시줄
+- `pages/InventoryPage.jsx`: 카드 검색·분류·정렬
+- `pages/InventoryDetailPage.jsx`: 노트·실행·소스·아키텍처·구현 자료 탭
+- `components/inventory/SourceViewer.jsx`: 파일 탐색·구문 강조·줄 번호·복사
+- `components/inventory/ImplementationReference.jsx`: 관련 의존성, 클래스 import, 메서드별 실제 코드
+- `components/inventory/ArchitectureView.jsx`: 카드 메타데이터 기반 호출 흐름
+- `components/inventory/FeatureDemo.jsx`: 기존 화면과 실제 API 연결
+- `pages/benchmark/BenchmarkPage.jsx`: 병렬 스트림·인덱스 튜닝 비교, 시간 차트·반복값·실행 계획·최근 실행
+- `data/inventory.js`, `data/methodReference.js`: 카드 설명과 메서드 노트
+- `styles/Theme.css`: 공통 다크 테마와 IDE 작업창 스타일
+
+## 링크와 데이터
+
+- `/`: 카드 목록. 검색 `q`, 분류 `category`, 정렬 `sort`를 URL에 저장
+- `/inventory/:itemId`: 카드 상세
+- `?tab=source&file=2`: 소스 탭에서 세 번째 파일 선택
+- `/requestboard`, `/requestboard/regist`, `/requestboard/:id`, `/requestboard/edit/:id`: 요청 게시판 실행 화면
+- `/servercapacity`: 인증이 필요한 선택적 서버용량조사 화면
+
+게시판·댓글·파일 첨부는 로그인 없이 실행하며, 작성자는 `demo`입니다. JWT 인증은 별도 예제입니다. 실제 실행의 변경 사항은 백엔드 데이터에 반영됩니다. 코드와 구조도는 백엔드 없이도 열 수 있습니다.
+
+성능 비교 카드는 `/inventory/parallel-stream?tab=demo`, `/inventory/index-tuning?tab=demo`에서 실행합니다. `/api/benchmarks`는 로그인 없이 호출합니다. 서버 시작 시 기본 30만 행씩 두 테이블을 준비하고, 버튼 실행으로 실제 측정값을 표시합니다. 워밍업 2회·측정 5회의 중앙값을 비교하며 느려진 결과도 그대로 표시합니다. 최근 8회 기록은 현재 화면에서만 유지됩니다. 데이터 크기는 백엔드의 `BENCHMARK_ROWS`로 조절합니다.
+
+소스 뷰어는 예제 복사본 대신 실제 파일을 읽습니다. 백엔드 구현 파일은 `config/inventorySourcePlugin.js`의 명시적 허용 목록으로만 공개합니다. 새 카드나 소스 추가 시 설명·구조도·라이브러리 목록·메서드 노트를 함께 확인하세요. 런타임 설정과 키 파일은 포함하지 않습니다.
+
+빌드하려면 형제 디렉터리인 `../backend`도 함께 있어야 합니다. 빌드 결과는 `dist/`에 생성됩니다. 외부 서버 배포 방법은 현재 저장소에서 별도로 구성하지 않습니다.

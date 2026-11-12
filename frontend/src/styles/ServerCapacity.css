@@ -3,21 +3,21 @@
     padding: 2rem;
     max-width: 1200px;
     margin: 2rem auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    color: #333;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: none;
+    color: var(--text);
 }
 
 .capacity-container h1 {
     text-align: center;
-    color: #2c3e50;
+    color: var(--text);
     margin-bottom: 1rem;
 }
 
 .capacity-container p {
     text-align: center;
-    color: #888;
+    color: var(--text);
     margin-bottom: 2rem;
 }
 
@@ -29,24 +29,24 @@
 }
 
 .capacity-table thead {
-    background-color: #f8f9fa;
+    background-color: var(--panel);
 }
 
 .capacity-table th,
 .capacity-table td {
     padding: 0.8rem 1rem;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--line);
     text-align: center;
     vertical-align: middle;
 }
 
 .capacity-table th {
     font-weight: 600;
-    color: #495057;
+    color: var(--text);
 }
 
 .capacity-table tbody tr:hover {
-    background-color: #f1f3f5;
+    background-color: var(--surface-hover);
 }
 
 .check-button {
@@ -56,31 +56,31 @@
     border: none;
     cursor: pointer;
     font-weight: 500;
-    background-color: #3498db;
+    background-color: var(--surface);
     color: white;
     transition: background-color 0.3s ease;
 }
 
 .check-button:hover {
-    background-color: #2980b9;
+    background-color: var(--surface-hover);
 }
 
 .check-button:disabled {
-    background-color: #bdc3c7;
+    background-color: var(--surface);
     cursor: not-allowed;
 }
 
 .empty-message {
     text-align: center;
-    color: #888;
+    color: var(--text);
     padding: 2rem;
     font-style: italic;
 }
 
 .error-message {
-    color: #e74c3c;
+    color: var(--danger);
     padding: 1rem;
-    background-color: #fee;
+    background-color: var(--danger-soft);
     border-radius: 5px;
     text-align: center;
 }

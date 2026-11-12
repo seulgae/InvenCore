@@ -3,6 +3,40 @@
 const backend = "../../../backend/src/main/java/com/inven/core/backend/";
 const source = (path, load) => ({ path, load });
 const sources = {
+  benchmark: [
+    source(
+      "frontend/src/pages/benchmark/BenchmarkPage.jsx",
+      () => import("../pages/benchmark/BenchmarkPage.jsx?raw"),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java"
+        ),
+    ),
+  ],
   auth: [
     source(
       "frontend/src/services/authService.jsx",
@@ -11,17 +45,23 @@ const sources = {
     source(
       `${backend}api/member/service/MemberService.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/member/service/MemberService.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/member/service/MemberService.java"
+        ),
     ),
     source(
       `${backend}security/JwtAuthenticationFilter.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/security/JwtAuthenticationFilter.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/security/JwtAuthenticationFilter.java"
+        ),
     ),
     source(
       `${backend}util/JwtUtil.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/util/JwtUtil.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/util/JwtUtil.java"
+        ),
     ),
   ],
   board: [
@@ -32,17 +72,23 @@ const sources = {
     source(
       `${backend}api/requestboard/controller/RequestBoardController.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"
+        ),
     ),
     source(
       `${backend}api/requestboard/service/impl/RequestBoardServiceImpl.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"
+        ),
     ),
     source(
       `${backend}api/requestboard/repository/RequestBoardRepository.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/repository/RequestBoardRepository.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/repository/RequestBoardRepository.java"
+        ),
     ),
   ],
   comments: [
@@ -53,17 +99,23 @@ const sources = {
     source(
       `${backend}api/comment/controller/CommentController.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/controller/CommentController.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/controller/CommentController.java"
+        ),
     ),
     source(
       `${backend}api/comment/service/CommentService.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/service/CommentService.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/service/CommentService.java"
+        ),
     ),
     source(
       `${backend}api/comment/entity/Comment.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/entity/Comment.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/entity/Comment.java"
+        ),
     ),
   ],
   files: [
@@ -74,17 +126,23 @@ const sources = {
     source(
       `${backend}api/requestboard/controller/RequestBoardController.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"
+        ),
     ),
     source(
       `${backend}api/requestboard/service/impl/RequestBoardServiceImpl.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"
+        ),
     ),
     source(
       `${backend}api/requestboard/entity/RequestBoard.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/entity/RequestBoard.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/entity/RequestBoard.java"
+        ),
     ),
   ],
   capacity: [
@@ -95,22 +153,135 @@ const sources = {
     source(
       `${backend}api/serverCapacity/controller/ServerCapacityController.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/ServerCapacityController.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/ServerCapacityController.java"
+        ),
     ),
     source(
       `${backend}api/serverCapacity/service/impl/ServerCapacityServiceImpl.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/impl/ServerCapacityServiceImpl.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/impl/ServerCapacityServiceImpl.java"
+        ),
     ),
     source(
       `${backend}api/serverCapacity/entity/ServerCapacity.java`,
       () =>
-        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/entity/ServerCapacity.java"),
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/entity/ServerCapacity.java"
+        ),
     ),
   ],
 };
 const step = (layer, name, description) => ({ layer, name, description });
 export const inventory = [
+  {
+    id: "parallel-stream",
+    number: "06",
+    title: "병렬 스트림 성능 비교",
+    subtitle: "SEQUENTIAL / PARALLEL STREAM",
+    category: "Performance",
+    icon: "∥",
+    color: "blue",
+    tags: ["parallelStream", "ForkJoinPool", "CPU"],
+    endpoint: "POST /api/benchmarks/streams",
+    summary:
+      "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
+    description:
+      "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
+    features: [
+      "시작 시 30만 행과 숫자 목록 자동 준비",
+      "전용 ForkJoinPool 최대 4개 작업자",
+      "2회 워밍업 · 5회 교대 측정 · checksum 검증",
+    ],
+    caveats: [
+      "작업량·CPU·JIT·GC에 따라 병렬 처리도 더 느릴 수 있습니다.",
+      "DB 조회나 대기 시간이 없는 CPU 작업 비교이며 JMH 정밀 측정은 아닙니다.",
+    ],
+    steps: [
+      {
+        layer: "STARTUP",
+        name: "BenchmarkDataInitializer",
+        description: "DB 비교 데이터와 숫자 목록 준비",
+      },
+      {
+        layer: "API",
+        name: "BenchmarkController",
+        description: "실험 종류 확인 · 동시 실행 제어",
+      },
+      {
+        layer: "COMPUTE",
+        name: "BenchmarkService.streams",
+        description: "stream / parallelStream · 동일한 score 연산",
+      },
+      {
+        layer: "MEASURE",
+        name: "BenchmarkService.measure",
+        description: "워밍업 · 순서 교대 · nanoTime 측정",
+      },
+      {
+        layer: "VIEW",
+        name: "BenchmarkPage",
+        description: "중앙값 · 전체 표본 · 실행 이력 표시",
+      },
+    ],
+    tables: ["bench_plain", "bench_indexed"],
+    sources: sources.benchmark,
+  },
+  {
+    id: "index-tuning",
+    number: "07",
+    title: "인덱스 튜닝 성능 비교",
+    subtitle: "TABLE SCAN / COMPOSITE INDEX",
+    category: "Performance",
+    icon: "⌗",
+    color: "blue",
+    tags: ["H2", "SQL", "EXPLAIN ANALYZE"],
+    endpoint: "POST /api/benchmarks/indexes",
+    summary:
+      "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
+    description:
+      "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
+    features: [
+      "동일 데이터의 인덱스 유무 테이블 자동 준비",
+      "복합 인덱스 (account_id, state)",
+      "EXPLAIN ANALYZE · scan count · 집계 결과 일치 확인",
+    ],
+    caveats: [
+      "두 테이블 모두 기본키 인덱스가 있고 한쪽에만 추가 복합 인덱스가 있습니다.",
+      "H2 메모리 DB의 워밍업 후 결과이며 운영 DB의 디스크 성능을 대표하지 않습니다.",
+    ],
+    steps: [
+      {
+        layer: "STARTUP",
+        name: "BenchmarkDataInitializer",
+        description: "동일 데이터 복제 · 한쪽 복합 인덱스 생성",
+      },
+      {
+        layer: "API",
+        name: "BenchmarkController",
+        description: "한 번에 하나의 실험만 허용",
+      },
+      {
+        layer: "QUERY",
+        name: "BenchmarkService.queryBatch",
+        description: "같은 조건으로 8개 집계 쿼리 실행",
+      },
+      {
+        layer: "MEASURE",
+        name: "BenchmarkService.indexes",
+        description: "실행 계획 수집 · 2회 워밍업 · 5회 측정",
+      },
+      {
+        layer: "VIEW",
+        name: "BenchmarkPage",
+        description: "비교 시간 · 배율 · 전체 실행 계획 표시",
+      },
+    ],
+    tables: ["bench_plain", "bench_indexed"],
+    sources: sources.benchmark,
+  },
+
   {
     id: "capacity",
     number: "01",

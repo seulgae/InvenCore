@@ -5,7 +5,7 @@ const apiClient = axios.create({ baseURL: "/api", withCredentials: true });
 const isLoginRequest = (config) =>
   /\/members\/(login|register)(?:\?|$)/.test(config?.url || "");
 const isPublicBoardRequest = (config) =>
-  /^\/(requestboards|comments)(?:\/|\?|$)/.test(config?.url || "");
+  /^\/(requestboards|comments|benchmarks)(?:\/|\?|$)/.test(config?.url || "");
 
 apiClient.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("accessToken");

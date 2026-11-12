@@ -64,7 +64,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -80,16 +79,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/health", "/actuator/health").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/benchmarks", "/api/benchmarks/**").permitAll()
                         .requestMatchers(
-                            "/api/members/login", 
-                            "/api/members/register", 
+                            "/api/members/login",
+                            "/api/members/register",
                             "/api/members/check-username"
                         ).permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        
+
                         // Public sample boards; SSH and other APIs keep authentication.
                         .requestMatchers("/api/requestboards", "/api/requestboards/**",
                                 "/api/comments", "/api/comments/**").permitAll()

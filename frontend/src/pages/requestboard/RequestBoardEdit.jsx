@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/axios';
 import '../../styles/RequestBoardEdit.css';
 
-const TITLE_REGEX = /^[가-힣a-zA-Z0-9\s.,!?:;\-\[\]]*$/;
+const TITLE_REGEX = /^[가-힣a-zA-Z0-9\s.,!?:;\-[\]]*$/;
 const TITLE_MAX_LENGTH = 50;
 const FILE_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 

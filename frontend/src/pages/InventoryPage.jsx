@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { categories, inventory } from "../data/inventory";
+import { inventory } from "../data/inventory";
 import "../styles/Inventory.css";
 
 export default function InventoryPage() {
@@ -28,68 +28,13 @@ export default function InventoryPage() {
     );
   return (
     <div className="inventory-workspace">
-      <aside className="inventory-rail" aria-label="인벤토리 분류">
-        <div className="rail-heading">
-          <span className="rail-icon">▦</span>
-          <span>
-            WORKSPACE<small>InvenCore / 개인 보관함</small>
-          </span>
-        </div>
-        <p className="rail-label">COLLECTIONS</p>
-        {categories.map((name, index) => (
-          <button
-            key={name}
-            className={`rail-category ${category === name ? "active" : ""}`}
-            aria-pressed={category === name}
-            onClick={() => update("category", name === "All" ? "" : name)}
-          >
-            <span className="rail-category-icon">
-              {["▦", ">_", "◈", "{ }"][index]}
-            </span>
-            {name === "All" ? "모든 아이템" : name}
-            <small>
-              {inventory
-                .filter((item) => name === "All" || item.category === name)
-                .length.toString()
-                .padStart(2, "0")}
-            </small>
-          </button>
-        ))}
-        <div className="rail-divider" />
-        <p className="rail-label">CONTENTS / ITEM</p>
-        <div className="rail-content">
-          <span>▷</span> 실행 화면
-        </div>
-        <div className="rail-content">
-          <span>⌘</span> 소스 코드
-        </div>
-        <div className="rail-content">
-          <span>⌗</span> 아키텍처
-        </div>
-        <div className="rail-content">
-          <span>≡</span> 구현 노트
-        </div>
-        <div className="rail-bottom">
-          <span className="tiny-status" />
-          LOCAL COLLECTION<small>Java 17 · React · Spring Boot</small>
-        </div>
-      </aside>
       <section className="inventory-main" aria-labelledby="inventory-title">
-        <div className="workspace-breadcrumb">
-          WORKSPACE <span>/</span> INVENTORY <span>/</span>{" "}
-          {category.toUpperCase()}
-        </div>
         <header className="workspace-heading">
           <div>
-            <p className="workspace-kicker">PERSONAL TECH STORAGE</p>
             <h1 id="inventory-title">
               기술 인벤토리
               <span>{inventory.length.toString().padStart(2, "0")}</span>
             </h1>
-          </div>
-          <div className="collection-meta">
-            <span className="tiny-status" /> IMPLEMENTATION ARCHIVE
-            <small>기능 · 코드 · 구조</small>
           </div>
         </header>
         <div className="inventory-controls">
@@ -169,13 +114,6 @@ export default function InventoryPage() {
             <button onClick={() => setParams({})}>필터 초기화</button>
           </div>
         )}
-        <div className="inventory-statusbar">
-          <span>
-            {items.length} / {inventory.length} ITEMS
-          </span>
-          <span>INVENCORE / TECH INVENTORY</span>
-          <span>▦ GRID VIEW</span>
-        </div>
       </section>
     </div>
   );

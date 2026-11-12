@@ -4,6 +4,10 @@ import { fileURLToPath } from "node:url";
 
 // Public implementation source allowlist. Never include config or key files.
 const allowedPaths = new Set([
+  "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java",
+  "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java",
+  "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java",
+  "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java",
   "backend/build.gradle",
   "backend/src/main/java/com/inven/core/backend/api/member/service/MemberService.java",
   "backend/src/main/java/com/inven/core/backend/security/JwtAuthenticationFilter.java",

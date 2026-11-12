@@ -1,31 +1,16 @@
-# ==========================================
-# 공통 설정 (모든 환경에 적용)
-# ==========================================
 spring:
   application:
     name: InvenCore
   datasource:
-    # AWS PostgreSQL example
-    # url: jdbc:postgresql://13.124.177.193:5432/invencore
-    url: ${DB_URL:jdbc:h2:mem:invencore;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-    # username: ${DB_USERNAME:invenmaster}
-    username: ${DB_USERNAME:sa}
-    # password: ${DB_PASSWORD:invencore123}
-    password: ${DB_PASSWORD:}
-    # driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:invencore;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
     driver-class-name: org.h2.Driver
   jpa:
     open-in-view: false
     show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    properties:
-      hibernate:
-        format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+      ddl-auto: update
   servlet:
     multipart:
       max-file-size: 5MB
@@ -45,7 +30,7 @@ logging:
 
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174}
 
 jwt:
   secret: ${JWT_SECRET:v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s}
@@ -54,32 +39,13 @@ jwt:
 file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
+# Optional SSH example; no server details or keys are bundled.
 feature:
-  aws:
-    enabled: ${FEATURE_AWS_ENABLED:false}
   server-capacity:
     enabled: ${FEATURE_SERVER_CAPACITY_ENABLED:false}
+server-capacity:
+  pem-file: ${SSH_PEM_FILE:}
+  servers: ${MONITORED_SERVERS:}
 
-# AWS server capacity example
-# server-capacity:
-#   pem-file: ${SSH_PEM_FILE:LightsailDefaultKey-ap-northeast-2.pem}
-#   servers: ${MONITORED_SERVERS:AWS-WAS-01,WAS,13.124.177.193,22,ec2-user,LINUX}
-
----
-
-# ==========================================
-# 개발(dev) 프로필
-# ==========================================
-spring:
-  config:
-    activate:
-      on-profile: "dev"
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-
-logging:
-  level:
-    com.inven.core: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+benchmark:
+  rows: ${BENCHMARK_ROWS:300000}

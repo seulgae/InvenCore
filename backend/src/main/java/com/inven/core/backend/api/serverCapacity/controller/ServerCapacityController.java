@@ -35,14 +35,13 @@ public class ServerCapacityController {
         if (serversConfig != null && !serversConfig.isEmpty()) {
             for (String entry : serversConfig.split(";")) {
                 String[] parts = entry.split(",");
-                if (parts.length >= 4) {
+                if (parts.length >= 5) {
                     Map<String, Object> server = new HashMap<>();
                     server.put("serverNo", parts[0].trim());
                     server.put("serverType", parts[1].trim());
                     server.put("host", parts[2].trim());
                     server.put("port", Integer.parseInt(parts[3].trim()));
-                    server.put("user", parts.length > 4 ? parts[4].trim() : "ec2-user");
-                    server.put("osType", parts.length > 5 ? parts[5].trim() : "LINUX");
+                    server.put("user", parts[4].trim());
                     servers.add(server);
                 }
             }

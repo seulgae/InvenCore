@@ -9,7 +9,6 @@ const families = {
   "spring-boot-starter-security": "요청 인증과 접근 제어·BCrypt",
   "spring-boot-starter-validation": "DTO 입력값 검증",
   lombok: "Getter·생성자·Builder 등 코드 생성",
-  postgresql: "PostgreSQL JDBC 드라이버",
   h2: "기본 메모리 DB 드라이버",
   "spring-boot-devtools": "개발 중 재시작 지원",
   "jjwt-api": "JWT 생성·검증 API",
@@ -23,6 +22,16 @@ const families = {
   "junit-platform-launcher": "JUnit 테스트 실행",
 };
 const related = {
+  "parallel-stream": [
+    "spring-boot-starter-webmvc",
+    "spring-boot-starter-data-jpa",
+    "h2",
+  ],
+  "index-tuning": [
+    "spring-boot-starter-webmvc",
+    "spring-boot-starter-data-jpa",
+    "h2",
+  ],
   capacity: [
     "sshd-core",
     "sshd-common",
@@ -177,7 +186,12 @@ export default function ImplementationReference({ item }) {
                   <td>
                     <code>{dep.scope}</code>
                   </td>
-                  <td>{families[dep.name] || "빌드 선언 참고"}</td>
+                  <td>
+                    {["parallel-stream", "index-tuning"].includes(item.id) &&
+                    dep.name === "spring-boot-starter-data-jpa"
+                      ? "전이 의존성의 JDBC·커넥션 풀 사용 (실험은 JdbcTemplate으로 조회)"
+                      : families[dep.name] || "빌드 선언 참고"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -203,7 +217,10 @@ export default function ImplementationReference({ item }) {
                     react: "컴포넌트·상태·훅",
                     "react-dom": "브라우저 렌더링",
                     "react-router-dom": "화면 라우팅",
-                    axios: item.id === "auth" ? "HTTP 요청·인증 인터셉터" : "HTTP API 요청",
+                    axios:
+                      item.id === "auth"
+                        ? "HTTP 요청·인증 인터셉터"
+                        : "HTTP API 요청",
                   }[name]
                 }
               </li>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import apiClient from "../../api/axios";
+import BenchmarkPage from "../../pages/benchmark/BenchmarkPage";
 import { join, login } from "../../services/authService";
 import RequestBoardList from "../../pages/requestboard/RequestBoardList";
 import RequestBoardRegist from "../../pages/requestboard/RequestBoardRegist";
@@ -326,6 +327,8 @@ export default function FeatureDemo({ item }) {
             {item.id === "files" && <RequestBoardRegist />}
             {item.id === "capacity" && <ServerCapacityPage />}
             {item.id === "comments" && <CommentDemo />}
+            {item.id === "parallel-stream" && <BenchmarkPage kind="streams" />}
+            {item.id === "index-tuning" && <BenchmarkPage kind="indexes" />}
           </div>
         </>
       )}

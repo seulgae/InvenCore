@@ -25,20 +25,20 @@
 .brand-symbol {
   font-size: 25px;
   letter-spacing: -3px;
-  background: #34465a;
-  color: #fff;
+  background: var(--surface);
+  color: var(--text);
   width: 39px;
   height: 39px;
   display: grid;
   place-content: center;
-  border-radius: 9px;
+  border-radius: 8px;
   font-weight: 800;
   position: relative;
   padding-right: 7px;
 }
 .brand-symbol span {
   position: absolute;
-  color: #626b76;
+  color: var(--text);
   right: 8px;
   bottom: 4px;
 }
@@ -55,26 +55,7 @@
   display: block;
   font: 13px/2.3 var(--font-ui);
   letter-spacing: 1.4px;
-  color: #626b76;
-}
-.site-navigation {
-  display: flex;
-  gap: 25px;
-  height: 100%;
-  align-items: center;
-}
-.site-navigation a {
-  white-space: nowrap;
-  font-size: 15px;
-  color: #626b76;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  border-bottom: 2px solid transparent;
-}
-.site-navigation a.active {
-  border-color: #ced5de;
-  color: #303b49;
+  color: var(--muted);
 }
 .navbar-auth {
   display: flex;
@@ -84,30 +65,30 @@
 .nav-button {
   font-size: 14px;
   background: transparent;
-  color: #626b76;
+  color: var(--text);
   padding: 9px 0;
   border-radius: 5px;
   box-shadow: none;
 }
 .nav-button:hover {
-  color: #303b49;
+  color: var(--text);
   background: none;
 }
 .nav-button-primary {
-  background: #34465a;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--text);
   padding: 10px 14px;
 }
 .nav-button-primary:hover {
-  background: #34465a;
-  color: #ffffff;
+  background: var(--surface-hover);
+  color: var(--text);
 }
 .nav-button-primary span {
   margin-left: 15px;
 }
 .navbar-welcome {
   font-size: 14px;
-  color: #626b76;
+  color: var(--text);
 }
 .main-content {
   width: 100%;
@@ -129,21 +110,21 @@
 }
 .site-footer > a {
   font-size: 15px;
-  color: #626b76;
+  color: var(--muted);
   letter-spacing: normal;
 }
 .site-footer > a span {
-  color: #626b76;
+  color: var(--muted);
 }
 .site-footer p {
   font-size: 13px;
-  color: #626b76;
+  color: var(--muted);
 }
 .site-footer > span {
   margin-left: auto;
   font: 13px var(--font-ui);
   letter-spacing: normal;
-  color: #626b76;
+  color: var(--muted);
 }
 .skip-link {
   position: fixed;
@@ -163,9 +144,6 @@
   }
   .main-content {
     padding: 0 25px;
-  }
-  .site-navigation {
-    gap: 18px;
   }
   .site-footer {
     width: calc(100% - 50px);
@@ -195,16 +173,6 @@
   }
   .navbar-auth {
     gap: 12px;
-  }
-  .site-navigation {
-    order: 3;
-    width: 100%;
-    height: 37px;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .site-navigation a {
-    font-size: 15px;
   }
   .main-content {
     padding: 0 20px;

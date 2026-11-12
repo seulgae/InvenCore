@@ -16,15 +16,12 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.security.KeyPair;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -110,19 +107,18 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
     }
 
     private ServerCapacityDTO getServerCapacityFromSsh(ServerConfigDTO serverConfig) throws Exception {
-        SshClient client = SshClient.setUpDefaultClient();
-        client.start();
-        
-        Path tempPemFile = Files.createTempFile("sshd-pem-", ".tmp");
-        try (InputStream pemStream = new ClassPathResource(pemFileName).getInputStream()) {
-            Files.copy(pemStream, tempPemFile, StandardCopyOption.REPLACE_EXISTING);
+        if (pemFileName == null || pemFileName.isBlank()) {
+            throw new IllegalArgumentException("SSH_PEM_FILE에 외부 개인키 파일 경로를 지정해 주세요.");
         }
-
-        // 1. 파일 경로로 FileKeyPairProvider 생성
-        FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(tempPemFile);
-        // 2. KeyPairProvider에서 KeyPair 로드
+        Path pemPath = Path.of(pemFileName).toAbsolutePath().normalize();
+        if (!Files.isRegularFile(pemPath) || !Files.isReadable(pemPath)) {
+            throw new IllegalArgumentException("SSH 개인키 파일을 읽을 수 없습니다.");
+        }
+        FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(pemPath);
         Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
         KeyPair keyPair = keyPairs.iterator().next();
+        SshClient client = SshClient.setUpDefaultClient();
+        client.start();
 
         try (ClientSession session = client.connect(serverConfig.getUser(), serverConfig.getHost(), serverConfig.getPort())
                                            .verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS).getSession()) {
@@ -133,7 +129,7 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
 
             log.info("SSH 세션 연결 성공 (키 파일 인증): {}", serverConfig.getHost());
             String command = "df -h / | tail -n 1; free -m | grep Mem; top -bn1 | grep 'Cpu(s)'";
-            
+
             ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
             try (ClientChannel channel = session.createChannel(Channel.CHANNEL_EXEC, command)) {
                 channel.setOut(responseStream);
@@ -148,7 +144,6 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
 
         } finally {
             client.stop();
-            Files.deleteIfExists(tempPemFile); // 임시 파일 삭제
         }
     }
 

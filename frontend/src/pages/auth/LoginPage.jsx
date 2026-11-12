@@ -71,7 +71,7 @@ function LoginPage({ onClose, onLoginSuccess }) {
                 <div className="auth-card">
                     <button className="modal-close-button" onClick={onClose}>&times;</button>
                     <h1 className="brand-mark brand-mark--auth">invencore</h1>
-                    <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.1rem' }}>로그인하여 시작하세요</p>
+                    <p style={{ color: 'var(--muted)', marginBottom: '2rem', fontSize: '1.1rem' }}>로그인하여 시작하세요</p>
 
                     {serverStatus === false && (
                         <div className="status-message status-error">

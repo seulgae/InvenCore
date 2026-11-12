@@ -2,9 +2,9 @@
 .auth-card {
   background: var(--surface-strong);
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 8px;
   padding: 2.5rem;
-  box-shadow: var(--shadow-strong);
+  box-shadow: none;
   width: 90vw;
   max-width: 700px;
   animation: fadeInUp 0.4s ease;
@@ -45,7 +45,7 @@
 
 .status-message {
   padding: 0.85rem 1rem;
-  border-radius: 14px;
+  border-radius: 8px;
   margin-bottom: 1rem;
   font-size: 0.92rem;
   display: flex;
@@ -68,13 +68,13 @@
 .status-success {
   background: var(--success-soft);
   color: var(--success);
-  border: 1px solid rgba(22, 101, 52, 0.16);
+  border: 1px solid var(--line);
 }
 
 .status-error {
   background: var(--danger-soft);
   color: var(--danger);
-  border: 1px solid rgba(180, 35, 24, 0.12);
+  border: 1px solid var(--line);
 }
 
 .error-message {
@@ -83,7 +83,7 @@
   margin-top: 0.25rem;
   padding: 0.75rem 0.9rem;
   background: var(--danger-soft);
-  border-radius: 12px;
+  border-radius: 8px;
   border-left: 3px solid var(--danger);
 }
 
@@ -103,7 +103,7 @@
   .auth-card {
     width: calc(100vw - 24px);
     padding: 1.75rem;
-    border-radius: 22px;
+    border-radius: 8px;
   }
 
   .auth-form {

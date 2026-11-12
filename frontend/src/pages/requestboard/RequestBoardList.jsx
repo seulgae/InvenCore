@@ -8,7 +8,8 @@ function RequestBoardList() {
 
   const [items, setItems] = useState([]);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [request, setRequest] = useState({ nextPage: 0, keyword: "" });
 
   const [page, setPage] = useState(0);
   const size = 10;
@@ -27,36 +28,38 @@ function RequestBoardList() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  const fetchPage = async ({ nextPage, keyword: kw }) => {
-    const trimmed = (kw ?? "").trim();
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const res = await apiClient.get("/requestboards", {
-        params: {
-          page: nextPage,
-          size,
-          keyword: trimmed ? trimmed : undefined,
-        },
-      });
-
-      setItems(res.data?.content ?? []);
-      setTotalPages(res.data?.totalPages ?? 1);
-      setPage(res.data?.number ?? nextPage);
-    } catch (e) {
-      setError("게시글 목록을 불러오는 데 실패했습니다.");
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+  const fetchPage = (nextRequest) => {
+    setLoading(true);
+    setError("");
+    setRequest(nextRequest);
   };
 
   useEffect(() => {
-    fetchPage({ nextPage: 0, keyword: "" });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const controller = new AbortController();
+    apiClient
+      .get("/requestboards", {
+        params: {
+          page: request.nextPage,
+          size,
+          keyword: request.keyword.trim() || undefined,
+        },
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        if (controller.signal.aborted) return;
+        setItems(data.content ?? []);
+        setTotalPages(data.totalPages ?? 1);
+        setPage(data.number ?? request.nextPage);
+      })
+      .catch((error) => {
+        if (error.code !== "ERR_CANCELED")
+          setError("게시글 목록을 불러오는 데 실패했습니다.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [request]);
 
   const handleCreateClick = () => navigate("/requestboard/regist");
 

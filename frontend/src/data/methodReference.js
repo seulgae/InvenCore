@@ -1,11 +1,57 @@
 export const methodNotes = {
+  initialize: [
+    "비교 데이터 준비",
+    "실험 전용 테이블 생성 → 행 수 확인 → 결정적 데이터 생성·복제 → 복합 인덱스 생성 → 통계 갱신 → 숫자 목록 구성 → 준비 상태 공개",
+  ],
+  status: [
+    "실험 환경 조회",
+    "데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·H2 버전 반환",
+  ],
+  score: [
+    "동일 CPU 연산",
+    "입력 숫자마다 64회 비트 변환·회전 수행 → 정수 범위로 마스킹. 두 방식 모두 같은 순수 함수를 사용합니다.",
+  ],
+  streams: [
+    "순차·병렬 스트림 비교",
+    "같은 목록의 stream()과 전용 ForkJoinPool 안의 parallelStream()에 동일 score·합계를 적용 → 공통 측정 함수 호출",
+  ],
+  indexes: [
+    "인덱스 비교",
+    "양쪽 EXPLAIN ANALYZE 수집 → 같은 조건의 집계 쿼리 배치를 공통 측정 함수로 비교",
+  ],
+  queryBatch: [
+    "고정 조회 부하",
+    "내부의 고정된 테이블 이름에만 SQL 적용 → 8개 계정·상태 조건을 파라미터로 전달 → 결과 합산",
+  ],
+  measure: [
+    "공정한 반복 측정",
+    "사전 결과 비교 → 2회 워밍업 → 5회 실행 순서 교대 → 표본별 checksum 확인 → 중앙값·시간 변화율 계산",
+  ],
+  time: [
+    "실행 시간 측정",
+    "nanoTime 시작 → 실제 작업 및 결과 소비 → 경과 시간 기록 → 기대 checksum 확인",
+  ],
+  summarize: [
+    "측정값 요약",
+    "표본 정렬 → 중앙값·최소·최대 산출 → 원래 실행 순서의 전체 표본과 checksum 보관",
+  ],
+  tryAcquire: [
+    "동시 실행 제어",
+    "초기화 완료 여부 확인 → 서버 프로세스 공용 ReentrantLock 획득 시도",
+  ],
+  release: [
+    "실험 잠금 해제",
+    "컨트롤러의 finally에서 잠금을 반환해 다음 측정을 허용",
+  ],
+  close: ["작업자 풀 종료", "애플리케이션 종료 시 전용 ForkJoinPool 정리"],
+
   checkAndSaveServerCapacity: [
     "조사 및 결과 저장",
     "사용자·서버별 마지막 조사 날짜 확인 → SSH 수집 → 기존 결과 갱신 또는 신규 저장 → 조사 시각 저장",
   ],
   getServerCapacityFromSsh: [
     "SSH 자원 수집",
-    "SSH 클라이언트 시작 → 키 로드 → 연결·인증 → df/free/top 실행 → 출력 파싱 → 연결과 임시 키 파일 정리",
+    "외부 키 파일 경로 확인 → 키 로드 → SSH 연결·인증 → df/free/top 실행 → 출력 파싱 → 연결 종료",
   ],
   parseSshOutput: [
     "명령 출력 파싱",
@@ -60,10 +106,6 @@ export const methodNotes = {
     "페이지·검색 조회",
     "페이지·크기 범위 조정 → 검색어 유무에 따라 Repository 조회 → DTO 페이지 반환",
   ],
-  getAllRequestBoards: [
-    "전체 게시글 조회",
-    "생성 시각 내림차순으로 전체 조회 → DTO 목록 변환. 현재 컨트롤러에서는 페이지 조회를 사용합니다.",
-  ],
   getRequestBoardById: [
     "게시글 상세 조회",
     "ID로 게시글 조회 → 없으면 예외 → DTO 반환",
@@ -111,7 +153,7 @@ export const methodNotes = {
   ],
   fetchPage: [
     "게시글 목록 요청",
-    "조회 상태 초기화 → 검색어·페이지를 API에 전송 → 목록·페이지 정보 갱신 → 로딩 종료",
+    "조회 상태 초기화 → 검색어·페이지 요청 상태 갱신 → Effect에서 API 조회와 목록·로딩 상태 반영",
   ],
   fetchServers: [
     "서버 목록 요청",

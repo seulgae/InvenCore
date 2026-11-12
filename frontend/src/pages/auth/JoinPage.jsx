@@ -14,7 +14,7 @@ function JoinPage({ onClose, onJoinSuccess }) {
     const [serverStatus, setServerStatus] = useState(null);
 
     const usernameRegex = /^[a-zA-Z0-9]*$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,20}$/;
 
     const usernameCheckTimeout = useRef(null);
 
@@ -140,7 +140,7 @@ function JoinPage({ onClose, onJoinSuccess }) {
                 <div className="auth-card">
                     <button className="modal-close-button" onClick={onClose}>&times;</button>
                     <h1 className="brand-mark brand-mark--auth">invencore</h1>
-                    <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.1rem' }}>새 계정을 만들어 시작하세요</p>
+                    <p style={{ color: 'var(--muted)', marginBottom: '2rem', fontSize: '1.1rem' }}>새 계정을 만들어 시작하세요</p>
 
                     {serverStatus === false && (
                         <div className="status-message status-error">

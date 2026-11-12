@@ -36,7 +36,7 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         log.info("PUT /api/comments/{} 요청 수신", id);
-        CommentDTO updatedComment = commentService.updateComment(id, commentDTO, "demo");
+        CommentDTO updatedComment = commentService.updateComment(id, commentDTO);
         log.info("댓글 수정 완료: {}", updatedComment.getId());
         return ResponseEntity.ok(updatedComment);
     }
@@ -44,7 +44,7 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
         log.info("DELETE /api/comments/{} 요청 수신", id);
-        commentService.deleteComment(id, "demo");
+        commentService.deleteComment(id);
         log.info("댓글 삭제 완료: id={}", id);
         return ResponseEntity.noContent().build();
     }
