@@ -111,31 +111,6 @@ export default function MainPage() {
           >
             ▤
           </button>
-          <Link to="/" title="인벤토리" aria-label="인벤토리">
-            ▦
-          </Link>
-          <Link
-            to={`/inventory/${activeItem.id}?tab=source`}
-            title="소스 탐색기"
-            aria-label="소스 탐색기"
-          >
-            〈〉
-          </Link>
-          <Link
-            to={`/inventory/${activeItem.id}?tab=architecture`}
-            title="아키텍처"
-            aria-label="아키텍처"
-          >
-            ⌗
-          </Link>
-          <Link
-            className="ide-rail-bottom"
-            to={`/inventory/${activeItem.id}?tab=demo`}
-            title="실행 창"
-            aria-label="실행 창"
-          >
-            ▷
-          </Link>
         </nav>
         {projectOpen && (
           <aside

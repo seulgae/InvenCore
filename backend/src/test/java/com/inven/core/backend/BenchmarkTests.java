@@ -2,6 +2,9 @@ package com.inven.core.backend;
 
 import com.inven.core.backend.api.benchmark.BenchmarkService;
 import com.inven.core.backend.api.benchmark.BenchmarkResult;
+import com.inven.core.backend.api.benchmark.mapper.BenchmarkMapper;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.LocalCacheScope;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
  properties = {"benchmark.rows=2000", "spring.datasource.url=jdbc:h2:mem:benchmark-tests;DB_CLOSE_DELAY=-1"})
 class BenchmarkTests {
     @Autowired BenchmarkService service;
+    @Autowired BenchmarkMapper mapper;
+    @Autowired SqlSessionFactory sqlSessionFactory;
     @LocalServerPort int port;
 
     @Test void seedsOnStartupAndReusesSameDataset() {
@@ -23,6 +28,15 @@ class BenchmarkTests {
         assertEquals(2000, service.status().rowsPerTable());
         service.initialize();
         assertEquals(2000, service.status().rowsPerTable());
+        assertEquals(2000, mapper.countRows(false));
+        assertEquals(2000, mapper.countRows(true));
+    }
+
+    @Test void mybatisExecutesBothVariantsWithoutResultCaching() {
+        assertFalse(sqlSessionFactory.getConfiguration().isCacheEnabled());
+        assertEquals(LocalCacheScope.STATEMENT, sqlSessionFactory.getConfiguration().getLocalCacheScope());
+        assertTrue(mapper.sumAmount(false, 100, 0) > 0);
+        assertEquals(mapper.sumAmount(false, 100, 0), mapper.sumAmount(true, 100, 0));
     }
 
     @Test void sequentialAndParallelResultsAreEquivalent() {

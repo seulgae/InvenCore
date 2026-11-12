@@ -65,7 +65,7 @@ export default function BenchmarkPage({ kind = "streams" }) {
           <p>
             {isStream
               ? "같은 숫자 목록을 같은 CPU 연산으로 처리합니다. stream()과 parallelStream()의 실제 실행 시간을 비교합니다."
-              : "동일한 데이터를 가진 두 테이블에서 같은 조건·집계 SQL을 실행합니다. 한쪽에만 (account_id, state) 복합 인덱스가 있습니다."}
+              : "MyBatis Mapper XML로 동일 데이터의 두 테이블에 같은 집계 SQL을 실행합니다. 한쪽에만 (account_id, state) 복합 인덱스가 있습니다."}
           </p>
         </div>
         <span
@@ -266,7 +266,7 @@ export default function BenchmarkPage({ kind = "streams" }) {
           <li>
             {isStream
               ? "병렬 스트림은 최대 4개 작업자의 전용 ForkJoinPool에서 실행합니다. 작업은 숫자당 64회 변환·합계이며 DB·대기 시간은 포함하지 않습니다."
-              : "H2 메모리 DB의 워밍업 후 조회 실험입니다. 연결 획득과 JDBC 호출·집계 시간이 포함됩니다. 디스크 DB의 운영 성능과 같지 않습니다."}
+              : "H2 메모리 DB의 MyBatis 조회 실험입니다. 연결 획득·Mapper 호출·SQL 실행·집계 시간이 포함됩니다. MyBatis 2차 캐시는 끄고 1차 캐시는 STATEMENT 범위로 제한합니다. 운영 DB 성능과 같지 않습니다."}
           </li>
           <li>
             CPU 수·JIT·GC·서버 부하·DB 캐시에 따라 결과가 달라집니다. 병렬화나

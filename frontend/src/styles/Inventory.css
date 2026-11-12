@@ -663,17 +663,21 @@
 .source-workbench {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   margin: 25px 0;
   border: 1px solid var(--line);
   border-radius: 5px;
   overflow: hidden;
-  min-height: 480px;
+  height: max(420px, 70dvh);
+  min-height: 0;
 }
 .source-file-tree {
   background: var(--panel);
   border-right: 1px solid var(--line);
   padding: 17px 0;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 .source-file-tree > p {
   display: flex;
@@ -738,12 +742,17 @@
 }
 .source-editor {
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--editor);
   color: var(--text);
   position: relative;
 }
 .source-editor-toolbar {
   display: flex;
+  flex-shrink: 0;
   gap: 14px;
   align-items: center;
   padding: 12px 17px;
@@ -777,6 +786,7 @@
   border-color: var(--line);
 }
 .source-path {
+  flex-shrink: 0;
   font: 13px/1.6 var(--font-ui);
   color: var(--muted);
   margin: 0;
@@ -787,7 +797,8 @@
 .source-code {
   margin: 0;
   padding: 15px 0 24px;
-  max-height: 640px;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
   font:
     13px/1.9 "Consolas",
@@ -845,6 +856,7 @@
   color: var(--muted);
 }
 .source-copy-status {
+  flex-shrink: 0;
   font: 13px sans-serif;
   color: var(--text);
   display: block;
@@ -1364,9 +1376,13 @@
   .source-file-tree {
     padding: 12px 0;
     display: flex;
+    flex-shrink: 0;
     overflow: auto;
     border: 0;
     border-bottom: 1px solid var(--line);
+  }
+  .source-editor {
+    flex: 1;
   }
   .source-file-tree > p,
   .source-snapshot-label {
@@ -1407,7 +1423,6 @@
   }
   .source-code {
     font-size: 14px;
-    max-height: 520px;
   }
   .line-number {
     width: 35px;

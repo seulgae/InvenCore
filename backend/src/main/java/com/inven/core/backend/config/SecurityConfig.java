@@ -81,6 +81,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/error", "/favicon.ico").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/benchmarks", "/api/benchmarks/**").permitAll()
+                        .requestMatchers("/api/gw-sync/**").permitAll()
+                        .requestMatchers("/api/order-lab/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/practice/*/check").permitAll()
                         .requestMatchers(
                             "/api/members/login",
                             "/api/members/register",

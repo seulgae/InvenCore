@@ -1,7 +1,8 @@
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { inventory, displayPath } from "../data/inventory";
+import { inventory } from "../data/inventory";
 import ArchitectureView from "../components/inventory/ArchitectureView";
 import SourceViewer from "../components/inventory/SourceViewer";
+import ImplementationNotes from "../components/inventory/ImplementationNotes";
 import FeatureDemo from "../components/inventory/FeatureDemo";
 import ImplementationReference from "../components/inventory/ImplementationReference";
 import "../styles/Inventory.css";
@@ -50,7 +51,7 @@ export default function InventoryDetailPage() {
           </div>
         </div>
         <button className="inspector-run" onClick={() => selectTab("demo")}>
-          ▷ 실행하기
+          ▷ 실행 · 구현 실습
         </button>
       </header>
       <nav className="inspector-tabs" aria-label="아이템 보기">
@@ -79,64 +80,16 @@ export default function InventoryDetailPage() {
         {active === "demo" && <FeatureDemo item={item} />}
         {active === "reference" && <ImplementationReference item={item} />}
         {active === "overview" && (
-          <div className="implementation-overview">
-            <section className="implementation-description">
-              <div className="inspector-section-label">01 / IMPLEMENTATION</div>
-              <h2>{item.summary}</h2>
-              <p>{item.description}</p>
-              <ul>
-                {item.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-              <div className="endpoint-strip">
-                <span>ENTRY POINT</span>
-                <code>{item.endpoint}</code>
-              </div>
-            </section>
-            <aside className="implementation-files">
-              <div className="inspector-section-label">02 / SOURCE FILES</div>
-              {item.sources.map((source, index) => (
-                <button
-                  key={source.path}
-                  onClick={() =>
-                    setParams(
-                      { tab: "source", file: String(index) },
-                      { replace: true },
-                    )
-                  }
-                >
-                  <span>{displayPath(source.path).split("/").pop()}</span>
-                  <small>{String(index + 1).padStart(2, "0")} ↗</small>
-                </button>
-              ))}
-              <p>
-                현재 프로젝트의 실제 구현 파일
-                <br />
-                선택하면 소스 탐색기가 열립니다.
-              </p>
-            </aside>
-            <section className="overview-architecture">
-              <div className="overview-section-heading">
-                <div className="inspector-section-label">03 / ARCHITECTURE</div>
-                <button onClick={() => selectTab("architecture")}>
-                  구조 전체 보기 ↗
-                </button>
-              </div>
-              <ArchitectureView item={item} compact />
-            </section>
-            <section className="implementation-caveats">
-              <button onClick={() => selectTab("reference")}>
-                사용 클래스 · 메서드별 로직 · build.gradle 의존성 보기 →
-              </button>
-              <div className="inspector-section-label">04 / CURRENT LIMITS</div>
-              <ul>
-                {item.caveats.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-            </section>
-          </div>
+          <ImplementationNotes
+            item={item}
+            onTab={selectTab}
+            onSource={(index) =>
+              setParams(
+                { tab: "source", file: String(index) },
+                { replace: true },
+              )
+            }
+          />
         )}
       </section>
       <footer className="inspector-footer">

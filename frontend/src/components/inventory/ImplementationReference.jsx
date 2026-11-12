@@ -6,6 +6,10 @@ import frontendPackage from "../../../package.json";
 const families = {
   "spring-boot-starter-webmvc": "REST 컨트롤러·HTTP 요청 처리",
   "spring-boot-starter-data-jpa": "Repository·엔티티 저장·트랜잭션",
+  "mybatis-spring-boot-starter":
+    "Mapper 자동 등록·XML SQL 실행·SqlSession 관리",
+  "spring-boot-starter-kafka": "Kafka 이벤트 발행·수신·재시도·DLT",
+  "spring-boot-starter-data-redis": "Redis JSON 스냅샷·TTL·버전 비교 Lua",
   "spring-boot-starter-security": "요청 인증과 접근 제어·BCrypt",
   "spring-boot-starter-validation": "DTO 입력값 검증",
   lombok: "Getter·생성자·Builder 등 코드 생성",
@@ -22,14 +26,33 @@ const families = {
   "junit-platform-launcher": "JUnit 테스트 실행",
 };
 const related = {
+  "kafka-lab": [
+    "spring-boot-starter-webmvc",
+    "spring-boot-starter-validation",
+    "spring-boot-starter-data-jpa",
+    "spring-boot-starter-kafka",
+    "h2",
+    "lombok",
+  ],
+  "gw-sync": [
+    "spring-boot-starter-webmvc",
+    "spring-boot-starter-validation",
+    "spring-boot-starter-data-jpa",
+    "spring-boot-starter-kafka",
+    "spring-boot-starter-data-redis",
+    "h2",
+    "lombok",
+  ],
   "parallel-stream": [
     "spring-boot-starter-webmvc",
-    "spring-boot-starter-data-jpa",
+    "mybatis-spring-boot-starter",
+    "lombok",
     "h2",
   ],
   "index-tuning": [
     "spring-boot-starter-webmvc",
-    "spring-boot-starter-data-jpa",
+    "mybatis-spring-boot-starter",
+    "lombok",
     "h2",
   ],
   capacity: [
@@ -186,12 +209,7 @@ export default function ImplementationReference({ item }) {
                   <td>
                     <code>{dep.scope}</code>
                   </td>
-                  <td>
-                    {["parallel-stream", "index-tuning"].includes(item.id) &&
-                    dep.name === "spring-boot-starter-data-jpa"
-                      ? "전이 의존성의 JDBC·커넥션 풀 사용 (실험은 JdbcTemplate으로 조회)"
-                      : families[dep.name] || "빌드 선언 참고"}
-                  </td>
+                  <td>{families[dep.name] || "빌드 선언 참고"}</td>
                 </tr>
               ))}
             </tbody>
@@ -251,21 +269,25 @@ export default function ImplementationReference({ item }) {
                     /^import\s+(.+?)\s+from\s+['"]([^'"]+)['"]/gm,
                   ),
                 ].map((m) => `${m[1]} ← ${m[2]}`);
-            const layer = file.path.includes("/controller/")
-              ? "요청 수신·DTO 검증"
-              : file.path.includes("/service/")
-                ? "비즈니스 로직"
-                : file.path.includes("/repository/")
-                  ? "DB 조회"
-                  : file.path.includes("/entity/")
-                    ? "영속 데이터 모델"
-                    : file.path.includes("/security/")
-                      ? "요청 인증 필터"
-                      : file.path.includes("/util/")
-                        ? "토큰 처리"
-                        : java
-                          ? "백엔드 클래스"
-                          : "프론트엔드 모듈";
+            const layer = file.path.includes("/mappers/")
+              ? "MyBatis XML · SQL 정의"
+              : file.path.includes("/mapper/")
+                ? "MyBatis Mapper · DB 조회"
+                : file.path.includes("/controller/")
+                  ? "요청 수신·DTO 검증"
+                  : file.path.includes("/service/")
+                    ? "비즈니스 로직"
+                    : file.path.includes("/repository/")
+                      ? "DB 조회"
+                      : file.path.includes("/entity/")
+                        ? "영속 데이터 모델"
+                        : file.path.includes("/security/")
+                          ? "요청 인증 필터"
+                          : file.path.includes("/util/")
+                            ? "토큰 처리"
+                            : java
+                              ? "백엔드 클래스"
+                              : "프론트엔드 모듈";
             return (
               <article key={file.path}>
                 <span className="reference-caption">{layer}</span>

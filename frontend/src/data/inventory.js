@@ -1,9 +1,303 @@
+import { inventoryPractice } from "./inventoryPractice";
 // Only explicitly selected implementation files are exposed in the source viewer.
 // Configuration, credentials, private keys and environment files are never imported.
 const backend = "../../../backend/src/main/java/com/inven/core/backend/";
 const source = (path, load) => ({ path, load });
 const sources = {
+  orderLab: [
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/practice/UserKafkaCode.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/UserKafkaCode.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/practice/OrderLabPractice.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/OrderLabPractice.java"
+        ),
+    ),
+    source(
+      "frontend/src/components/inventory/KafkaPracticePanel.jsx",
+      () => import("../components/inventory/KafkaPracticePanel.jsx?raw"),
+    ),
+    source(
+      "frontend/src/components/inventory/ParcelFactoryGame.jsx",
+      () => import("../components/inventory/ParcelFactoryGame.jsx?raw"),
+    ),
+    source(
+      "frontend/src/pages/gwsync/OrderLabPage.jsx",
+      () => import("../pages/gwsync/OrderLabPage.jsx?raw"),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDto.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDto.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEvent.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEvent.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDelivery.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDelivery.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjection.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjection.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEventRepository.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEventRepository.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDeliveryRepository.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDeliveryRepository.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjectionRepository.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjectionRepository.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabStore.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabStore.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEngine.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEngine.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabPublisher.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabPublisher.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabLocalEngine.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabLocalEngine.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConsumer.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConsumer.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConfig.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConfig.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaEngine.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaEngine.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabController.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabController.java"
+        ),
+    ),
+  ],
+  gwSync: [
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncConfig.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncConfig.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwCacheStore.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwCacheStore.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwLocalSnapshotCache.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwLocalSnapshotCache.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventPublisher.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventPublisher.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventListener.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventListener.java"
+        ),
+    ),
+    source(
+      "frontend/src/pages/gwsync/GwSyncPage.jsx",
+      () => import("../pages/gwsync/GwSyncPage.jsx?raw"),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwSource.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwSource.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwTarget.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwTarget.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/dto/GwSyncDto.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/dto/GwSyncDto.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/event/GwChangedEvent.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/event/GwChangedEvent.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwSourceRepository.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwSourceRepository.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwTargetRepository.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwTargetRepository.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwSourceService.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwSourceService.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwProjectionService.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwProjectionService.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwQueryService.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwQueryService.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventPublisher.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventPublisher.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventListener.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventListener.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwSnapshotCache.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwSnapshotCache.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/controller/GwSyncController.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/controller/GwSyncController.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncProperties.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncProperties.java"
+        ),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwKafkaConfig.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwKafkaConfig.java"
+        ),
+    ),
+  ],
   benchmark: [
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/benchmark/mapper/BenchmarkMapper.java",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/mapper/BenchmarkMapper.java"
+        ),
+    ),
+    source(
+      "backend/src/main/resources/mappers/benchmark/BenchmarkMapper.xml",
+      () =>
+        import(
+          "virtual:inventory-source/backend/src/main/resources/mappers/benchmark/BenchmarkMapper.xml"
+        ),
+    ),
     source(
       "frontend/src/pages/benchmark/BenchmarkPage.jsx",
       () => import("../pages/benchmark/BenchmarkPage.jsx?raw"),
@@ -176,6 +470,120 @@ const sources = {
 const step = (layer, name, description) => ({ layer, name, description });
 export const inventory = [
   {
+    id: "kafka-lab",
+    number: "09",
+    title: "택배 공장 · Kafka 미니게임",
+    subtitle: "PLAY THE PIPELINE / KAFKA",
+    category: "Integration",
+    icon: "≋",
+    color: "blue",
+    tags: ["Mini Game", "Kafka", "Replay"],
+    endpoint: "POST /api/order-lab/runs",
+    summary:
+      "택배 공장의 세 미션으로 순서 지키기·밀린 작업 이어가기·중복 배송 막기를 체험합니다.",
+    description:
+      "Java TODO 세 곳을 직접 작성해 같은 게임에 적용할 수 있습니다. 키 분배·다음 오프셋·업무 버전 방어를 구현하고 계약 검사 후 내 코드 모드로 실행합니다. 게임과 연결한 Kafka 용어 사전과 상세 기록도 제공합니다.",
+    features: [
+      "레일 선택 · 잠든 작업자 · 되감기 방어전 3개 미션",
+      "실제 주문·검수 기록에 연결된 공장 상태와 완료 판정",
+      "기술 상세에서 파티션·오프셋·재처리 관찰",
+    ],
+    caveats: [
+      "순서는 파티션 안에서만 보장됩니다. 오프셋은 업무 순번이 아니며 파티션 사이에서 비교할 수 없습니다.",
+      "기본 local 모드는 교육용 모형입니다. GW_SYNC_MODE=external일 때 실제 Kafka Admin 오프셋과 소비자 처리 기록을 사용합니다.",
+      "재처리는 전용 실습 토픽 전체 기준입니다. DB와 오프셋은 하나의 트랜잭션이 아니며 정확히 한 번 처리를 보장하지 않습니다.",
+    ],
+    steps: [
+      step(
+        "CREATE",
+        "OrderLabStore.start",
+        "4단계 주문 이벤트를 JPA에 개별 저장 · KEYED 또는 SPREAD 분기",
+      ),
+      step(
+        "PUBLISH",
+        "OrderLabPublisher",
+        "미발행 이벤트를 순서대로 전송 · 실제 partition/offset 확인",
+      ),
+      step(
+        "CONSUME",
+        "OrderLabKafkaConsumer / OrderLabLocalEngine",
+        "두 그룹 독립 소비 · 외부 모드는 그룹별 3개 소비자",
+      ),
+      step(
+        "PROJECT",
+        "OrderLabStore.consume",
+        "업무 버전·누락 검사 · 처리 기록과 최종 상태 저장",
+      ),
+      step(
+        "OBSERVE",
+        "OrderLabKafkaEngine.state",
+        "브로커 시작·끝·그룹별 커밋 오프셋과 lag 조회",
+      ),
+      step(
+        "CONTROL",
+        "OrderLabEngine.control",
+        "일시정지·재개·재시작·시작 오프셋 seek",
+      ),
+    ],
+    tables: ["order_lab_event", "order_lab_delivery", "order_lab_projection"],
+    sources: sources.orderLab,
+  },
+  {
+    id: "gw-sync",
+    number: "08",
+    title: "GW 데이터 연동",
+    subtitle: "LOCAL DEMO / KAFKA / REDIS",
+    category: "Integration",
+    icon: "⇄",
+    color: "blue",
+    tags: ["Local Demo", "JPA", "Kafka / Redis"],
+    endpoint: "POST /api/gw-sync/items",
+    summary:
+      "외부 서버 없이 두 테이블과 형상 캐시를 연동하고, Kafka·Redis 모드로 전환할 수 있습니다.",
+    description:
+      "기본 로컬 모드는 Spring 내부 이벤트와 메모리 JSON 캐시로 동작합니다. 외부 모드는 Kafka와 Redis를 사용합니다. 두 모드 모두 원본의 발행 대기 버전과 대상 revision을 비교하고 DB 커밋 후 형상을 캐시합니다.",
+    features: [
+      "원본 생성·수정·삭제 이벤트와 대상 반영",
+      "로컬 내부 이벤트 / 외부 Kafka · 버전 검증 · 재시도",
+      "메모리 / Redis JSON 형상 · TTL · 외부 모드 DLT",
+    ],
+    caveats: [
+      "기본 local 모드는 별도 설치 없이 실행합니다. GW_SYNC_MODE=external일 때만 Kafka·Redis가 필요합니다.",
+      "최신 상태 연동 예제이며 빠른 변경은 합쳐질 수 있습니다. H2 데이터는 재시작 시 초기화됩니다.",
+      "Redis는 최종적 일관성의 파생 캐시이며, 갱신 실패 시 TTL까지 이전 형상을 보관할 수 있습니다.",
+    ],
+    steps: [
+      step(
+        "SOURCE",
+        "GwSourceService",
+        "JPA 원본·발행 대기 revision을 같은 트랜잭션으로 저장",
+      ),
+      step(
+        "PUBLISH",
+        "GwLocalEventPublisher / GwEventPublisher",
+        "대기 조회 → 내부 이벤트 또는 Kafka 전송 → 처리 확인 후 발행 버전 갱신",
+      ),
+      step(
+        "CONSUME",
+        "GwLocalEventListener / GwEventListener",
+        "내부 이벤트 수신 또는 Kafka JSON 매핑 → 공통 JPA 반영",
+      ),
+      step(
+        "TARGET",
+        "GwProjectionService",
+        "동일 ID 잠금 · revision 비교 · JPA 대상 반영",
+      ),
+      step(
+        "CACHE",
+        "GwLocalSnapshotCache / GwSnapshotCache",
+        "DB 커밋 후 원자적 버전 비교 · 메모리 또는 Redis에 JSON·TTL 저장",
+      ),
+      step("VIEW", "GwSyncPage", "두 DB와 캐시 형상 비교 · 2.5초 상태 갱신"),
+    ],
+    tables: ["gw_source", "gw_target"],
+    sources: sources.gwSync,
+  },
+  {
     id: "parallel-stream",
     number: "06",
     title: "병렬 스트림 성능 비교",
@@ -183,7 +591,7 @@ export const inventory = [
     category: "Performance",
     icon: "∥",
     color: "blue",
-    tags: ["parallelStream", "ForkJoinPool", "CPU"],
+    tags: ["parallelStream", "ForkJoinPool", "MyBatis"],
     endpoint: "POST /api/benchmarks/streams",
     summary:
       "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
@@ -202,7 +610,7 @@ export const inventory = [
       {
         layer: "STARTUP",
         name: "BenchmarkDataInitializer",
-        description: "DB 비교 데이터와 숫자 목록 준비",
+        description: "MyBatis Mapper XML로 DB 데이터 준비 · 숫자 목록 구성",
       },
       {
         layer: "API",
@@ -236,7 +644,7 @@ export const inventory = [
     category: "Performance",
     icon: "⌗",
     color: "blue",
-    tags: ["H2", "SQL", "EXPLAIN ANALYZE"],
+    tags: ["MyBatis", "H2", "EXPLAIN ANALYZE"],
     endpoint: "POST /api/benchmarks/indexes",
     summary:
       "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
@@ -255,7 +663,7 @@ export const inventory = [
       {
         layer: "STARTUP",
         name: "BenchmarkDataInitializer",
-        description: "동일 데이터 복제 · 한쪽 복합 인덱스 생성",
+        description: "MyBatis Mapper로 동일 데이터 복제 · 복합 인덱스 생성",
       },
       {
         layer: "API",
@@ -264,8 +672,8 @@ export const inventory = [
       },
       {
         layer: "QUERY",
-        name: "BenchmarkService.queryBatch",
-        description: "같은 조건으로 8개 집계 쿼리 실행",
+        name: "BenchmarkMapper.sumAmount",
+        description: "Service → Mapper → XML SQL · 캐시 없이 8개 집계 조회",
       },
       {
         layer: "MEASURE",
@@ -456,6 +864,11 @@ export const inventory = [
     sources: sources.comments,
   },
 ];
+// Add the matching editable assignment to each card's source browser.
+for (const item of inventory) {
+  const practice = inventoryPractice[item.id];
+  if (practice) item.sources = [source(practice.path, practice.load), ...item.sources];
+}
 export const categories = [
   "All",
   ...new Set(inventory.map((item) => item.category)),

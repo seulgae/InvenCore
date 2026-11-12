@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inven.core.backend.api.benchmark.mapper.BenchmarkMapper">
+    <!-- Table names are fixed SQL branches; values always use bound parameters. -->
+    <sql id="table">
+        <choose>
+            <when test="indexed">bench_indexed</when>
+            <otherwise>bench_plain</otherwise>
+        </choose>
+    </sql>
+    <update id="createTable">
+        CREATE TABLE IF NOT EXISTS <include refid="table"/>
+        (id BIGINT PRIMARY KEY, account_id INT NOT NULL, state INT NOT NULL, amount BIGINT NOT NULL)
+    </update>
+    <select id="countRows" resultType="long">
+        SELECT COUNT(*) FROM <include refid="table"/>
+    </select>
+    <delete id="clearTable">DELETE FROM <include refid="table"/></delete>
+    <insert id="seedPlain">
+        INSERT INTO bench_plain
+        SELECT X, MOD(X, 10000), MOD(FLOOR(X / 10000.0), 4), MOD(X * 7919, 100000)
+        FROM SYSTEM_RANGE(1, #{rows})
+    </insert>
+    <insert id="copyIndexed">INSERT INTO bench_indexed SELECT * FROM bench_plain</insert>
+    <update id="createIndex">
+        CREATE INDEX IF NOT EXISTS idx_bench_account_state ON bench_indexed (account_id, state)
+    </update>
+    <update id="analyze">ANALYZE TABLE <include refid="table"/></update>
+    <select id="databaseVersion" resultType="string">SELECT H2VERSION()</select>
+    <sql id="aggregateQuery">
+        SELECT COALESCE(SUM(amount), 0) FROM <include refid="table"/>
+        WHERE account_id = #{accountId} AND state = #{state}
+    </sql>
+    <select id="sumAmount" resultType="long" useCache="false">
+        <include refid="aggregateQuery"/>
+    </select>
+    <select id="explain" resultType="string" useCache="false">
+        EXPLAIN ANALYZE <include refid="aggregateQuery"/>
+    </select>
+</mapper>

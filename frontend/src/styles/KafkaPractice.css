@@ -1,0 +1,228 @@
+.kafka-practice {
+  padding: 24px;
+  border: 1px solid #49617f;
+  border-radius: 10px;
+  background: #242f3f;
+  color: #d7e3f3;
+  margin: 8px 0 24px;
+}
+.kafka-practice > header > span {
+  color: #a8c2e6;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.kafka-practice > header h2 {
+  font-size: 24px;
+  margin: 10px 0;
+}
+.kafka-practice > header p {
+  color: #b6c7df;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.practice-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 20px 0;
+}
+.practice-modes button[aria-pressed="true"] {
+  background: #45699b;
+  border-color: #a7c3eb;
+}
+.practice-modes > span {
+  font-size: 12px;
+  color: #abc2df;
+}
+.kafka-practice summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  color: #d5e4f8;
+  line-height: 1.8;
+}
+.practice-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.practice-file code {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  color: #a9c4e9;
+}
+.practice-file a {
+  font-size: 12px;
+  color: #bfd8ff;
+}
+.practice-task-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.practice-task-grid article {
+  padding: 18px;
+  background: #202a38;
+  border: 1px solid #4b5d78;
+  border-radius: 7px;
+  min-width: 0;
+}
+.practice-task-grid header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #acc6ea;
+}
+.practice-task-grid header b {
+  color: #e1c89e;
+  font-weight: 600;
+}
+.practice-task-grid header b.passed {
+  color: #b2d7a6;
+}
+.practice-task-grid h3 {
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 14px 0 8px;
+}
+.practice-task-grid article > code {
+  font-size: 12px;
+  color: #b5d1f4;
+}
+.practice-task-grid p {
+  color: #bbcbdf;
+  font-size: 13px;
+  line-height: 1.95;
+}
+.practice-task-grid summary {
+  font-size: 12px;
+}
+.practice-task-grid .practice-observe {
+  padding-top: 12px;
+  border-top: 1px solid #40516a;
+  color: #aac4e7;
+}
+.practice-task-grid .practice-check-detail {
+  color: #d8c5a3;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.practice-steps {
+  padding: 16px;
+  border: 1px solid #415774;
+  border-radius: 6px;
+  margin-top: 18px;
+  background: #1f2b3c;
+}
+.practice-steps p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #c4d3e8;
+}
+.practice-steps pre {
+  overflow: auto;
+  padding: 14px;
+  background: #172332;
+  border: 1px solid #3e5573;
+  border-radius: 4px;
+  color: #bdd5f6;
+  font: 12px/1.8 var(--font-code);
+}
+.practice-check-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.practice-check-actions span {
+  font-size: 12px;
+  color: #b9d0ed;
+}
+.practice-disclosure {
+  color: #a0b6d2;
+  font-size: 11px;
+  line-height: 1.9;
+}
+.practice-glossary {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid #4a5d79;
+}
+.practice-glossary > label {
+  margin: 18px 0;
+  max-width: 450px;
+}
+.practice-term-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.practice-term-list article {
+  padding: 18px;
+  background: #202b3a;
+  border: 1px solid #445a76;
+  border-radius: 7px;
+  min-width: 0;
+}
+.practice-term-list header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.practice-term-list h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #d5e4f8;
+}
+.practice-term-list header span {
+  font-size: 12px;
+  color: #9eb9de;
+}
+.practice-term-list strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #c9d9ee;
+}
+.practice-term-list p {
+  font-size: 13px;
+  color: #b8cae1;
+  line-height: 1.95;
+}
+.practice-term-list .practice-term-caution {
+  color: #d6c8ad;
+  border-top: 1px solid #465067;
+  padding-top: 10px;
+  font-size: 12px;
+}
+.practice-sources {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.practice-sources a {
+  color: #b4d0f9;
+  font-size: 12px;
+}
+@media (max-width: 1050px) {
+  .practice-task-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .kafka-practice {
+    padding: 18px 14px;
+  }
+  .practice-term-list {
+    grid-template-columns: 1fr;
+  }
+}

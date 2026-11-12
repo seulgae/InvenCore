@@ -714,8 +714,7 @@ body {
   border-right: 1px solid #43464d;
   gap: 9px;
 }
-.ide-tool-rail > button,
-.ide-tool-rail > a {
+.ide-tool-rail > button {
   background: transparent;
   color: #b8bfcc;
   font-size: 20px;
@@ -732,13 +731,9 @@ body {
   background: #314363;
   border-color: #42659b;
 }
-.ide-tool-rail > a:hover,
 .ide-tool-rail > button:hover {
   background: #3c3f46;
   color: #fff;
-}
-.ide-tool-rail > .ide-rail-bottom {
-  margin-top: auto;
 }
 .ide-project-tree {
   background: #2b2d30;
@@ -1136,8 +1131,7 @@ body {
   .ide-tool-rail {
     padding: 8px 2px;
   }
-  .ide-tool-rail > button,
-  .ide-tool-rail > a {
+  .ide-tool-rail > button {
     width: 31px;
     font-size: 18px;
   }

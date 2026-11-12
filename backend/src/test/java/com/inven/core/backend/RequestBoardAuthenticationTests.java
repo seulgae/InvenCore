@@ -10,10 +10,21 @@ import java.net.http.HttpResponse;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {"spring.datasource.url=jdbc:h2:mem:auth-regression;DB_CLOSE_DELAY=-1", "spring.jpa.hibernate.ddl-auto=create-drop"})
+        properties = {"gw-sync.enabled=false", "spring.datasource.url=jdbc:h2:mem:auth-regression;DB_CLOSE_DELAY=-1", "spring.jpa.hibernate.ddl-auto=create-drop"})
 class RequestBoardAuthenticationTests {
     @LocalServerPort int port;
     private final HttpClient client = HttpClient.newHttpClient();
+
+    @Test void disabledGwSyncReportsConfigurationAndRejectsWritesWithoutExternalServices() throws Exception {
+        String base = "http://localhost:" + port + "/api/gw-sync";
+        var status = client.send(HttpRequest.newBuilder(URI.create(base + "/status")).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, status.statusCode());
+        assertTrue(status.body().contains("\"enabled\":false"));
+        var create = client.send(HttpRequest.newBuilder(URI.create(base + "/items"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"disabled\",\"description\":\"test\"}")).build(), HttpResponse.BodyHandlers.ofString());
+        assertEquals(503, create.statusCode());
+    }
 
     @Test void otherEndpointsStillRequireAuthentication() throws Exception {
         for (String token : new String[]{"", "invalid-token"}) {

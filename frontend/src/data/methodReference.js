@@ -1,11 +1,173 @@
 export const methodNotes = {
+  selectPartition: [
+    "직접 구현하는 파티션 선택",
+    "TODO 1: KEYED의 동일 주문 고정·다른 주문 분산, SPREAD의 단계별 순환 분배를 작성합니다. LEARNER 이벤트의 실제 목적지에 적용됩니다.",
+  ],
+  nextOffset: [
+    "직접 구현하는 다음 위치",
+    "TODO 2: 처리한 offset 다음 위치를 계산합니다. LEARNER의 로컬 체크포인트와 실제 Kafka commitSync에 전달합니다.",
+  ],
+  shouldApply: [
+    "직접 구현하는 업무 버전 방어",
+    "TODO 3: 새 업무 버전만 반영하고 같은 버전·과거 버전은 거부합니다. offset이 아니라 업무 sequence를 비교합니다.",
+  ],
+  inspectCode: [
+    "학습 코드 기본 계약 검사",
+    "미구현 예외·반환 범위를 확인하고 세 과제의 샘플 입력 결과를 반환합니다. 전체 정답 증명이 아닌 빠른 준비 검사입니다.",
+  ],
+  replayOffsets: [
+    "미션 시작 위치 선택",
+    "실행의 발행 완료 이벤트에서 파티션별 최소 offset을 구함 → 해당 파티션 콜백에 seek 요청. 이전 실행 전체를 되감지 않습니다.",
+  ],
+  replayFrom: [
+    "현재 주문 위치로 되감기",
+    "소비 그룹의 실제 일시정지 확인 → 해당 주문이 있는 파티션만 시작 offset으로 이동 → 재개 시 그 위치부터 읽음",
+  ],
+  publishOrders: [
+    "단계별 이벤트 발행",
+    "미발행 주문 이벤트를 생성 순으로 조회 → 모드별 전송 → partition·offset 저장. 실패 시 다음 주기 재시도",
+  ],
+  consumeLocalOrders: [
+    "로컬 소비 모형",
+    "일시정지하지 않은 그룹별로 DB 로그를 파티션 2→1→0 순서로 읽음 → 대상 반영 → 메모리 체크포인트 갱신. 실제 Kafka 측정은 아닙니다.",
+  ],
+  acceptOrder: [
+    "Kafka 주문 이벤트 수신",
+    "JSON 매핑·키 검증 → 모드별 다음 offset 계산 → 공통 JPA 반영 → REFERENCE는 acknowledge, LEARNER는 계산한 위치로 commitSync. 주문 전용 MANUAL_IMMEDIATE 설정 사용",
+  ],
+  replayBeginning: [
+    "파티션 시작으로 seek",
+    "해당 소비 그룹에 할당된 파티션의 시작 오프셋으로 seek 요청. 다른 그룹의 위치는 바꾸지 않습니다.",
+  ],
+  control: [
+    "소비 그룹 제어",
+    "실습 전용 그룹만 일시정지·재개·같은 그룹으로 재시작·처음부터 재처리. 재처리는 실제 일시정지 확인 후 허용",
+  ],
+  keyPartition: [
+    "키별 파티션 선택",
+    "Kafka 기본 키 해시와 같은 Murmur2로 고정 3개 파티션 중 하나를 선택. 실험 재현을 위해 발행 시 파티션을 명시",
+  ],
+  consume: [
+    "주문 상태 반영과 관측",
+    "주문의 첫 이벤트 행 잠금 → 그룹별 projection 조회 → 업무 버전·누락 비교 → 상태와 처리 기록 저장. Kafka 커밋은 별도 단계",
+  ],
+  dispatchPending: [
+    "로컬 이벤트 전달",
+    "커밋된 대기 원본 조회 → Spring 이벤트 발행 → 대상 처리 성공 후 발행 버전 확인. 실패 시 다음 주기 재시도",
+  ],
+  onLocalChange: [
+    "로컬 이벤트 수신",
+    "내부 변경 이벤트 → 외부 모드와 동일한 GwProjectionService로 대상 버전 검증·JPA 반영",
+  ],
+  cacheLocalSnapshot: [
+    "로컬 커밋 후 캐시",
+    "대상 트랜잭션 커밋 후 JSON 형상을 메모리 캐시에 저장",
+  ],
+  saveLocalSnapshot: [
+    "메모리 형상 저장",
+    "만료 항목 정리 → JSON 직렬화 → ConcurrentHashMap.compute로 revision 비교·TTL 저장",
+  ],
+  startGwKafka: [
+    "외부 모드 시작",
+    "Kafka 토픽·DLT 명시적 생성 확인 → GW Kafka 리스너 시작. local 모드에서는 이 설정 클래스가 등록되지 않습니다.",
+  ],
+  revise: [
+    "원본 변경",
+    "이름·설명 수정 → revision 증가 → 변경 시각 갱신. 변경과 발행 대기가 같은 원본 행에 저장됩니다.",
+  ],
+  remove: [
+    "삭제 이벤트 준비",
+    "삭제 표시 → revision 증가. 행을 보존해 오래된 이벤트로 되살아나는 것을 방지합니다.",
+  ],
+  markPublished: [
+    "발행 버전 확인",
+    "Kafka ack를 받은 revision까지 발행 완료 표시. 이미 저장된 더 최신 revision은 대기로 유지합니다.",
+  ],
+  create: [
+    "원본 생성",
+    "설정 활성 여부 확인 → 빌더로 원본 구성 → JPA 저장. 별도 발행 스케줄러가 커밋된 대기 행을 조회합니다.",
+  ],
+  pending: [
+    "발행 대기 조회",
+    "revision > publishedRevision인 원본을 최대 20개 조회 → 변경 이벤트로 매핑",
+  ],
+  confirmPublished: [
+    "Kafka 전송 확인",
+    "원본 행 잠금 → ack를 받은 버전까지 발행 확인",
+  ],
+  publishPending: [
+    "Kafka 이벤트 발행",
+    "커밋된 대기 데이터 조회 → ID를 key로 JSON 발행 → broker ack 대기 → 발행 버전 갱신. 실패 시 다음 주기 재시도",
+  ],
+  receive: [
+    "Kafka 메시지 수신",
+    "JSON → GwChangedEvent 매핑 → 스키마·입력값·key 검증 → JPA 대상 반영. 예외는 재시도 후 .DLT로 이동",
+  ],
+  project: [
+    "대상 형상 반영",
+    "원본 행 잠금 → 대상 revision 비교 → 더 최신 이벤트만 저장 → 캐시 갱신용 스냅샷 이벤트 발행",
+  ],
+  apply: [
+    "이벤트를 엔티티에 매핑",
+    "이름·설명·삭제 표시·revision·원본 변경 시각 복사 → 대상 동기화 시각 기록",
+  ],
+  afterProjectionCommitted: [
+    "커밋 이후 캐시 저장",
+    "대상 DB 트랜잭션이 커밋된 뒤 Redis Lua로 버전 비교·형상 저장. Redis 실패는 DB 반영을 되돌리지 않습니다.",
+  ],
+  inspect: [
+    "형상 조회",
+    "원본·대상 DB와 모드별 캐시 조회. local은 메모리 JSON, external은 Redis를 사용합니다. miss는 DB 형상으로 채우고 Redis 장애 시 DB로 대체합니다.",
+  ],
+  store: [
+    "Redis 형상 기록",
+    "Lua에서 revision을 원자적으로 비교 → 이전 형상 덮어쓰기 방지 → JSON 스냅샷과 TTL 저장",
+  ],
+  validate: [
+    "연동 이벤트 검증",
+    "스키마 버전·ID·revision·이름·설명 길이·변경 시각 검사",
+  ],
+  createTable: [
+    "비교 테이블 생성",
+    "XML의 indexed 분기로 고정된 테이블 선택 → 동일 스키마 생성",
+  ],
+  countRows: [
+    "데이터 수 확인",
+    "COUNT(*)로 현재 행 수 조회 → 재생성 필요 여부 판단",
+  ],
+  clearTable: [
+    "실험 데이터 초기화",
+    "크기를 변경할 때 실험 전용 테이블 데이터만 삭제",
+  ],
+  seedPlain: [
+    "결정적 데이터 생성",
+    "행 수를 바인딩해 SYSTEM_RANGE로 같은 규칙의 데이터 생성",
+  ],
+  copyIndexed: [
+    "동일 데이터 복제",
+    "기준 테이블의 모든 행을 인덱스 비교 테이블로 복제",
+  ],
+  createIndex: [
+    "복합 인덱스 생성",
+    "bench_indexed에만 (account_id, state) 복합 인덱스 생성",
+  ],
+  analyze: ["통계 갱신", "ANALYZE TABLE로 옵티마이저 통계 갱신"],
+  databaseVersion: ["DB 버전 조회", "H2VERSION() 결과를 측정 환경 정보에 표시"],
+  sumAmount: [
+    "동일 조건 집계",
+    "고정 테이블 분기 → accountId·state 바인딩 → SUM(amount) 반환. MyBatis 결과 캐시 미사용",
+  ],
+  explain: [
+    "실제 실행 계획 조회",
+    "동일 집계 SQL에 EXPLAIN ANALYZE 적용 → 인덱스·스캔 수 확인",
+  ],
   initialize: [
     "비교 데이터 준비",
-    "실험 전용 테이블 생성 → 행 수 확인 → 결정적 데이터 생성·복제 → 복합 인덱스 생성 → 통계 갱신 → 숫자 목록 구성 → 준비 상태 공개",
+    "MyBatis Mapper XML로 테이블 생성 → 행 수 확인 → 데이터 생성·복제 → 복합 인덱스 생성·통계 갱신 → 숫자 목록 구성 → 준비 상태 공개",
   ],
   status: [
     "실험 환경 조회",
-    "데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·H2 버전 반환",
+    "데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·H2 버전을 Status.builder()로 조립해 반환",
   ],
   score: [
     "동일 CPU 연산",
@@ -21,11 +183,11 @@ export const methodNotes = {
   ],
   queryBatch: [
     "고정 조회 부하",
-    "내부의 고정된 테이블 이름에만 SQL 적용 → 8개 계정·상태 조건을 파라미터로 전달 → 결과 합산",
+    "인덱스 유무를 Mapper에 전달 → XML의 고정 테이블 분기 → 8개 계정·상태 조건을 바인딩해 조회 → 결과 합산",
   ],
   measure: [
     "공정한 반복 측정",
-    "사전 결과 비교 → 2회 워밍업 → 5회 실행 순서 교대 → 표본별 checksum 확인 → 중앙값·시간 변화율 계산",
+    "사전 결과 비교 → 2회 워밍업 → 5회 실행 순서 교대 → 표본별 checksum 확인 → 중앙값·시간 변화율 계산 → Comparison.builder()로 결과 조립",
   ],
   time: [
     "실행 시간 측정",
@@ -33,7 +195,7 @@ export const methodNotes = {
   ],
   summarize: [
     "측정값 요약",
-    "표본 정렬 → 중앙값·최소·최대 산출 → 원래 실행 순서의 전체 표본과 checksum 보관",
+    "표본 정렬 → 중앙값·최소·최대 산출 → Measurement.builder()로 전체 표본과 checksum을 함께 조립",
   ],
   tryAcquire: [
     "동시 실행 제어",
@@ -215,6 +377,36 @@ function endOfBody(text, start) {
   return text.length;
 }
 export function extractMethods(text, java) {
+  if (text.includes("<mapper namespace=")) {
+    return [
+      ...text.matchAll(
+        /<(select|insert|update|delete)\s+id="([^"]+)"[^>]*>[\s\S]*?<\/\1>/g,
+      ),
+    ].map((match) => ({
+      name: match[2],
+      params: "Mapper 인터페이스의 @Param 바인딩",
+      line: text.slice(0, match.index).split("\n").length,
+      code: match[0],
+      note: methodNotes[match[2]] || [
+        "Mapper SQL",
+        "실제 XML SQL과 파라미터 바인딩을 확인합니다.",
+      ],
+    }));
+  }
+  if (java && /\binterface\s+BenchmarkMapper\b/.test(text)) {
+    return [
+      ...text.matchAll(/^\s*(?:void|long|String)\s+(\w+)\s*\(([^\n]*)\);/gm),
+    ].map((match) => ({
+      name: match[1],
+      params: match[2] || "없음",
+      line: text.slice(0, match.index).split("\n").length,
+      code: match[0].trim(),
+      note: methodNotes[match[1]] || [
+        "Mapper 메서드",
+        "동일 ID의 XML SQL을 실행합니다.",
+      ],
+    }));
+  }
   const pattern = java
     ? /^\s*(?:public|private|protected)\s+(?:(?:static|final|synchronized)\s+)*(?:[\w<>,?[\].]+\s+)+(\w+)\s*\(([^)]*)\)\s*(?:throws[^{]+)?\{/gm
     : /^\s*(?:export\s+)?(?:const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*=>|(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\))\s*\{/gm;

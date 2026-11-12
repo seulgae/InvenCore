@@ -1,0 +1,26 @@
+.java-practice { margin: 20px 0 28px; padding: clamp(20px,3vw,32px); background: #24272d; border: 1px solid #414752; border-radius: 16px; color: #e0e4eb; line-height: 1.75; }
+.java-practice header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
+.java-practice-label { color:#a8c7fa; font-size:12px; font-weight:750; letter-spacing:.12em; }
+.java-practice h2 { margin:6px 0 8px; font-size:clamp(21px,2vw,27px); line-height:1.4; color:#f1f4fa; }
+.java-practice h3 { margin:0 0 12px; font-size:16px; color:#f1f4fa; }
+.java-practice p { margin:6px 0; max-width:80ch; }
+.java-practice-state { flex-shrink:0; border:1px solid #5e6676; border-radius:20px; padding:4px 13px; font-size:13px; }
+.java-practice-state.passed { color:#a9e3bc; border-color:#548369; }
+.java-practice-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:28px; margin:24px 0; }
+.java-practice ol { padding-left:22px; margin:0 0 16px; }
+.java-practice li { margin:7px 0; }
+.java-practice aside { padding:20px; background:#1e2127; border-radius:10px; color:#bcc5d3; }
+.java-practice-source { color:#a8c7fa; font-weight:700; text-underline-offset:4px; }
+.java-practice-path { color:#9ba7b8; overflow-wrap:anywhere; font-size:12px; }
+.java-practice-actions { display:flex; flex-wrap:wrap; gap:16px; align-items:center; }
+.java-practice-actions button { background:#416ac4; color:white; border:1px solid #678bdb; border-radius:8px; padding:10px 18px; font:inherit; font-weight:700; cursor:pointer; }
+.java-practice-actions button:disabled { opacity:.65; cursor:wait; }
+.java-practice-actions span,.java-practice-footnote { color:#adb8c9; font-size:13px; }
+.java-practice-results { list-style:none; padding:12px 0; }
+.java-practice-results li { display:flex; gap:14px; padding:12px 16px; background:#1e2127; border-radius:8px; }
+.java-practice-results p { color:#b9c6d8; font-size:14px; }
+.java-practice-error { color:#ffb6b6; }
+.java-practice details { margin:20px 0; border-top:1px solid #414752; padding-top:16px; }
+.java-practice summary { cursor:pointer; font-weight:650; }
+.java-practice pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:14px; background:#191c21; border-radius:8px; }
+@media(max-width:760px) { .java-practice-grid { grid-template-columns:1fr; gap:16px; } .java-practice header { flex-direction:column; } }
