@@ -534,132 +534,6 @@
   font-size: 13px;
   color: var(--muted);
 }
-.architecture-view {
-  padding: 30px 0;
-}
-.architecture-label {
-  display: flex;
-  justify-content: space-between;
-  font: 13px var(--font-ui);
-  letter-spacing: normal;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-.architecture-flow {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  gap: 0;
-}
-.architecture-flow > li {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-}
-.architecture-node {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 5px;
-  padding: 17px 13px;
-  min-height: 142px;
-  flex: 1;
-  min-width: 0;
-}
-.architecture-node > div {
-  display: flex;
-  justify-content: space-between;
-  font: 13px var(--font-ui);
-  letter-spacing: normal;
-  color: var(--text);
-  margin-bottom: 18px;
-}
-.architecture-node small {
-  color: var(--muted);
-}
-.architecture-node strong {
-  font: 13px/1.6 var(--font-ui);
-  color: var(--text);
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: 14px;
-}
-.architecture-node p {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text);
-  margin: 9px 0 0;
-  word-break: keep-all;
-}
-.architecture-arrow {
-  font: 15px var(--font-ui);
-  color: var(--text);
-  padding: 0 8px;
-}
-.architecture-bottom {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 30px;
-}
-.architecture-bottom > section {
-  border: 1px solid var(--line);
-  padding: 22px;
-  border-radius: 5px;
-  background: var(--surface);
-}
-.architecture-bottom h3 {
-  font: 13px var(--font-ui);
-  letter-spacing: normal;
-  color: var(--text);
-  margin: 0 0 20px;
-}
-.model-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-  color: var(--text);
-}
-.model-row code {
-  font-size: 13px;
-}
-.model-row small {
-  margin-left: auto;
-  font: 13px var(--font-ui);
-  color: var(--muted);
-}
-.architecture-bottom dl {
-  margin: 0;
-}
-.architecture-bottom dl > div {
-  display: flex;
-  gap: 16px;
-  font: 13px/2.8 var(--font-ui);
-}
-.architecture-bottom dt {
-  color: var(--text);
-  width: 65px;
-  flex-shrink: 0;
-}
-.architecture-bottom dd {
-  margin: 0;
-  color: var(--text);
-  overflow-wrap: anywhere;
-}
-.architecture-footnote {
-  font-size: 13px;
-  color: var(--text);
-  margin-top: 24px;
-}
-.compact .architecture-node {
-  min-height: 125px;
-}
-.compact .architecture-label {
-  font-size: 13px;
-}
 .source-workbench {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
@@ -1140,18 +1014,6 @@
   .source-workbench {
     grid-template-columns: 205px minmax(0, 1fr);
   }
-  .architecture-node {
-    padding: 13px 10px;
-  }
-  .architecture-arrow {
-    padding: 0 4px;
-  }
-  .architecture-node strong {
-    font-size: 14px;
-  }
-  .architecture-node p {
-    font-size: 14px;
-  }
   .item-card-body p {
     min-height: 0;
     font-size: 15px;
@@ -1299,74 +1161,6 @@
   }
   .inspector-section-label {
     margin-bottom: 16px;
-  }
-  .architecture-flow {
-    flex-direction: column;
-    gap: 0;
-  }
-  .architecture-flow > li {
-    flex-direction: column;
-    align-items: stretch;
-    flex: none;
-  }
-  .architecture-node {
-    min-height: 0;
-    padding: 16px;
-    width: 100%;
-  }
-  .architecture-node > div {
-    margin-bottom: 10px;
-    font-size: 13px;
-  }
-  .architecture-node strong {
-    font-size: 14px;
-  }
-  .architecture-node p {
-    font-size: 14px;
-    margin-top: 7px;
-  }
-  .architecture-arrow {
-    text-align: center;
-    transform: rotate(90deg);
-    align-self: center;
-    padding: 8px;
-    font-size: 15px;
-  }
-  .architecture-bottom {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .architecture-label {
-    font-size: 13px;
-    letter-spacing: normal;
-  }
-  .architecture-bottom dl > div {
-    font-size: 13px;
-  }
-  .compact .architecture-flow {
-    flex-direction: row;
-    overflow: auto;
-    gap: 0;
-    padding-bottom: 10px;
-  }
-  .compact .architecture-flow > li {
-    flex-direction: row;
-    min-width: 155px;
-    flex: 1;
-  }
-  .compact .architecture-node {
-    min-height: 145px;
-    padding: 12px;
-  }
-  .compact .architecture-node strong {
-    font-size: 13px;
-  }
-  .compact .architecture-node p {
-    font-size: 13px;
-  }
-  .compact .architecture-arrow {
-    transform: none;
-    padding: 0 5px;
   }
   .source-workbench {
     display: flex;
@@ -1690,15 +1484,6 @@
 .source-file-tree > button {
   min-height: 40px;
 }
-@media (max-width: 1100px) {
-  .architecture-flow {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .architecture-flow > li {
-    min-width: 180px;
-  }
-}
 @media (max-width: 760px) {
   .item-slot-grid {
     grid-template-columns: 1fr;
@@ -1744,15 +1529,6 @@
   }
   .inspector-tabs small {
     display: none;
-  }
-  .compact .architecture-flow {
-    flex-wrap: nowrap;
-  }
-  .architecture-flow > li {
-    min-width: 0;
-  }
-  .compact .architecture-flow > li {
-    min-width: 190px;
   }
   .inventory-grid-label {
     flex-wrap: wrap;

@@ -1,5 +1,6 @@
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { inventory } from "../data/inventory";
+import { architectures } from "../data/architectures";
 import ArchitectureView from "../components/inventory/ArchitectureView";
 import SourceViewer from "../components/inventory/SourceViewer";
 import ImplementationNotes from "../components/inventory/ImplementationNotes";
@@ -95,7 +96,7 @@ export default function InventoryDetailPage() {
       <footer className="inspector-footer">
         <span>INVENCORE / {item.id.toUpperCase()}</span>
         <span>
-          {item.sources.length} SOURCE FILES · {item.steps.length} ARCHITECTURE
+          {item.sources.length} SOURCE FILES · {architectures[item.id].nodes.length} ARCHITECTURE
           NODES
         </span>
         <Link to="/">아이템 목록 ↗</Link>

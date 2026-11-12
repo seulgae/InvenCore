@@ -164,56 +164,6 @@
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
-.notes-flow {
-  list-style: none;
-  padding: 0 20px;
-  background: #22262d;
-  border: 1px solid var(--notes-border);
-  border-radius: 9px;
-}
-.notes-flow > li {
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
-  gap: 16px;
-  padding: 21px 0;
-  position: relative;
-}
-.notes-flow > li + li {
-  border-top: 1px solid #363e4a;
-}
-.notes-step-number {
-  display: grid;
-  place-items: center;
-  border: 1px solid #455c7d;
-  color: #b6cff2;
-  background: #2c394c;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font: 11px var(--font-code);
-  margin-top: 1px;
-}
-.notes-step-layer {
-  color: #98afd0;
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  font-weight: 650;
-}
-.implementation-notes .notes-flow h3 {
-  font: 600 14px/1.8 var(--font-code);
-  color: #d3dff1;
-  overflow-wrap: anywhere;
-  margin-top: 5px;
-}
-.implementation-notes .notes-flow p {
-  font-size: 15px;
-  color: #bfc9d8;
-  line-height: 1.9;
-  font-weight: 500;
-  margin-top: 7px;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
 .notes-limits {
   list-style: none;
   padding: 0;
@@ -457,18 +407,6 @@
   }
   .notes-layout {
     margin-top: 28px;
-  }
-  .notes-flow {
-    padding: 0 14px;
-  }
-  .notes-flow > li {
-    grid-template-columns: 28px minmax(0, 1fr);
-    gap: 12px;
-    padding: 18px 0;
-  }
-  .notes-step-number {
-    width: 26px;
-    height: 26px;
   }
   .notes-sidebar {
     grid-template-columns: 1fr;

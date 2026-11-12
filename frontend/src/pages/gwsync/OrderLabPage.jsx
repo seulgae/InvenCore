@@ -139,13 +139,6 @@ export default function OrderLabPage() {
   ).length;
   return (
     <div className="order-lab">
-      <KafkaPracticePanel
-        implementation={implementation}
-        onImplementation={setImplementation}
-        report={practiceReport}
-        onCheck={checkPractice}
-        pending={pending}
-      />
       <ParcelFactoryGame
         key={implementation}
         implementation={implementation}
@@ -156,6 +149,16 @@ export default function OrderLabPage() {
         control={control}
         error={error}
       />
+      <details className="factory-practice-details">
+        <summary>직접 Java로 구현하기 · TODO 과제 / Kafka 용어</summary>
+        <KafkaPracticePanel
+          implementation={implementation}
+          onImplementation={setImplementation}
+          report={practiceReport}
+          onCheck={checkPractice}
+          pending={pending}
+        />
+      </details>
       <details className="factory-engine-details">
         <summary>게임 뒤의 기술 보기 · 파티션 / 오프셋 / 소비 그룹</summary>
         <div className="factory-technical">

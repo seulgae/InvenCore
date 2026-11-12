@@ -1,5 +1,6 @@
 import { displayPath } from "../../data/inventory";
 import "../../styles/ImplementationNotes.css";
+import ArchitectureView from "./ArchitectureView";
 
 const fileRole = (path) => {
   if (path.includes("/service/")) return "처리 로직";
@@ -108,20 +109,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
                 전체 아키텍처 <span aria-hidden="true">↗</span>
               </button>
             </div>
-            <ol className="notes-flow">
-              {item.steps.map((step, index) => (
-                <li key={step.name}>
-                  <span className="notes-step-number" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <span className="notes-step-layer">{step.layer}</span>
-                    <h3>{step.name}</h3>
-                    <p>{step.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <ArchitectureView item={item} compact />
           </section>
 
           <section

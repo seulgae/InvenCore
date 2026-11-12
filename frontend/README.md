@@ -28,14 +28,14 @@ npm run build
 - `pages/InventoryDetailPage.jsx`: 노트·실행·소스·아키텍처·구현 자료 탭
 - `components/inventory/SourceViewer.jsx`: 파일 탐색·구문 강조·줄 번호·복사
 - `components/inventory/ImplementationReference.jsx`: 관련 의존성, 클래스 import, 메서드별 실제 코드
-- `components/inventory/ArchitectureView.jsx`: 카드 메타데이터 기반 호출 흐름
+- `components/inventory/ArchitectureView.jsx`, `data/architectures.js`: 전체 9개 카드의 분기·병렬·이벤트·저장 구조도. 아이콘·데이터 저장소 도형·방향 화살표, 단계별 설명 재생, 요소 선택과 실제 소스 링크, 읽기 쉬운 목록 보기를 제공합니다. Kafka·GW는 로컬/외부 구성도를 선택할 수 있으며 서버 설정은 변경하지 않습니다. CPU 메모리 계산, MyBatis SQL, JPA 저장, 로컬 파일과 캐시를 구분합니다. 구현 노트에는 핵심 4요소의 요약 그림을 표시합니다.
 - `components/inventory/ImplementationNotes.jsx`: 폭을 제한한 구현 노트, 핵심 구현·세로 처리 흐름·조건·핵심 소스 목록
 - `components/inventory/FeatureDemo.jsx`: 기존 화면과 실제 API 연결
 - `components/inventory/JavaPracticePanel.jsx`, `data/inventoryPractice.js`: Kafka 외 8개 카드의 Java TODO·힌트·소스 링크·실행 코드 검사. SSH 카드도 로그인 없이 독립 과제를 검사합니다. [전체 과제 안내](../docs/INVENTORY_PRACTICE.md)
 - `pages/benchmark/BenchmarkPage.jsx`: 병렬 스트림·인덱스 튜닝 비교, 시간 차트·반복값·실행 계획·최근 실행
 - `pages/gwsync/GwSyncPage.jsx`: JPA 원본·연동 대상·모드별 형상 캐시 비교, 생성·수정·논리 삭제와 상태 갱신
 - `pages/gwsync/OrderLabPage.jsx`: 주문 상태 이벤트 실험실. 키/파티션 전략, 두 소비 그룹 제어, offset·lag·재처리·업무 버전 방어 관찰
-- `components/inventory/ParcelFactoryGame.jsx`: 택배 공장 미니게임. 레일 선택·잠든 작업자·되감기 방어전의 성공 여부를 실제 처리 기록으로 판단합니다. 세부 Kafka 기록은 펼쳐 확인합니다.
+- `components/inventory/ParcelFactoryGame.jsx`: ‘택배를 부탁해!’ 미니게임. 순서대로 보내기·쉬는 동안 보관하기·중복 배송 방어를 다음 행동 버튼으로 진행합니다. 레일·작업 카드·작업자·트럭과 장부 직원이 실제 저장된 수신 기록을 0.42초 간격으로 재생합니다. 정상 발송은 네 단계 모두 정상 반영되고 서버 최종 상태가 SHIPPED인 택배만 셉니다. Java 실습·용어와 기술 화면은 게임 아래에서 펼칩니다.
 - `components/inventory/KafkaPracticePanel.jsx`, `data/kafkaLearning.js`: Java TODO 과제·코드 검사·구현 선택과 게임에 연결한 용어 20개 검색. 실제 Java 편집과 테스트는 IntelliJ·Gradle에서 진행합니다.
 - GW 형상은 컬럼별 입력칸으로 표시합니다. 원본 name·description은 직접 편집하고, 자동 컬럼과 대상·캐시는 읽기 전용으로 비교합니다. JSON 원문은 별도로 펼칠 수 있습니다.
 - `data/inventory.js`, `data/methodReference.js`: 카드 설명과 메서드 노트
