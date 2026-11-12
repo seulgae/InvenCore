@@ -1,8 +1,11 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import BreakRoomDialog from "../components/inventory/BreakRoomDialog";
 import { inventory } from "../data/inventory";
 import "../styles/Inventory.css";
 
 export default function InventoryPage() {
+  const [breakRoomOpen, setBreakRoomOpen] = useState(false);
   const [params, setParams] = useSearchParams();
   const category = params.get("category") || "All";
   const query = params.get("q") || "";
@@ -28,6 +31,7 @@ export default function InventoryPage() {
     );
   return (
     <div className="inventory-workspace">
+      {breakRoomOpen && <BreakRoomDialog onClose={() => setBreakRoomOpen(false)} />}
       <section className="inventory-main" aria-labelledby="inventory-title">
         <header className="workspace-heading">
           <div>
@@ -36,6 +40,7 @@ export default function InventoryPage() {
               <span>{inventory.length.toString().padStart(2, "0")}</span>
             </h1>
           </div>
+          <button className="break-room-entry" onClick={() => setBreakRoomOpen(true)} aria-haspopup="dialog"><i aria-hidden="true" />하기 싫을 때 ↗</button>
         </header>
         <div className="inventory-controls">
           <label className="workspace-search">

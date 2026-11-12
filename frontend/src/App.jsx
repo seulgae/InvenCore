@@ -8,6 +8,8 @@ import {
 import MainPage from "./pages/MainPage";
 import InventoryPage from "./pages/InventoryPage";
 import InventoryDetailPage from "./pages/InventoryDetailPage";
+import BreakRoomPage from "./pages/BreakRoomPage";
+import { endingBgmUrl } from "./services/endingMusic";
 import RequestBoardList from "./pages/requestboard/RequestBoardList";
 import RequestBoardDetail from "./pages/requestboard/RequestBoardDetail";
 import RequestBoardEdit from "./pages/requestboard/RequestBoardEdit";
@@ -24,8 +26,11 @@ function PrivateRoute({ children }) {
 
 function App() {
   return (
+    <>
+    <audio id="ending-bgm" src={endingBgmUrl} preload="auto" loop />
     <Router>
       <Routes>
+        <Route path="/break-room" element={<BreakRoomPage />} />
         {/* ✅ MainPage가 레이아웃 역할을 하도록 중첩 구조로 변경 */}
         <Route path="/" element={<MainPage />}>
           <Route index element={<InventoryPage />} />
@@ -47,6 +52,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </>
   );
 }
 
