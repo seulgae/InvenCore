@@ -1,39 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inven.core.backend.api.benchmark.mapper.BenchmarkMapper">
-    <!-- Table names are fixed SQL branches; values always use bound parameters. -->
+
+    <!-- 테이블 이름은 고정 분기로만 선택하고 입력값은 바인딩합니다. -->
     <sql id="table">
         <choose>
             <when test="indexed">bench_indexed</when>
             <otherwise>bench_plain</otherwise>
         </choose>
     </sql>
+
+    <!-- 동일 스키마의 성능 비교 테이블을 생성합니다. -->
     <update id="createTable">
         CREATE TABLE IF NOT EXISTS <include refid="table"/>
         (id BIGINT PRIMARY KEY, account_id INT NOT NULL, state INT NOT NULL, amount BIGINT NOT NULL)
     </update>
+
+    <!-- 데이터 준비 상태를 확인할 행 수를 조회합니다. -->
     <select id="countRows" resultType="long">
         SELECT COUNT(*) FROM <include refid="table"/>
     </select>
-    <delete id="clearTable">DELETE FROM <include refid="table"/></delete>
+
+    <!-- 데이터 크기를 다시 맞추기 위해 선택한 비교 테이블을 비웁니다. -->
+    <delete id="clearTable">
+        DELETE FROM <include refid="table"/>
+    </delete>
+
+    <!-- 같은 입력에서 같은 결과를 얻도록 결정적인 규칙으로 테스트 데이터를 생성합니다. -->
     <insert id="seedPlain">
         INSERT INTO bench_plain
         SELECT X, MOD(X, 10000), MOD(FLOOR(X / 10000.0), 4), MOD(X * 7919, 100000)
         FROM SYSTEM_RANGE(1, #{rows})
     </insert>
-    <insert id="copyIndexed">INSERT INTO bench_indexed SELECT * FROM bench_plain</insert>
+
+    <!-- 인덱스 유무만 비교할 수 있도록 기준 테이블의 데이터를 그대로 복제합니다. -->
+    <insert id="copyIndexed">
+        INSERT INTO bench_indexed SELECT * FROM bench_plain
+    </insert>
+
+    <!-- 조회 조건 순서에 맞춰 account_id·state 복합 인덱스를 생성합니다. -->
     <update id="createIndex">
         CREATE INDEX IF NOT EXISTS idx_bench_account_state ON bench_indexed (account_id, state)
     </update>
-    <update id="analyze">ANALYZE TABLE <include refid="table"/></update>
-    <select id="databaseVersion" resultType="string">SELECT H2VERSION()</select>
+
+    <!-- 옵티마이저가 사용할 테이블 통계를 갱신합니다. -->
+    <update id="analyze">
+        ANALYZE TABLE <include refid="table"/>
+    </update>
+
+    <!-- 측정 환경에 표시할 H2 버전을 조회합니다. -->
+    <select id="databaseVersion" resultType="string">
+        SELECT H2VERSION()
+    </select>
+
+    <!-- 고객 번호와 상태를 바인딩해 합계를 조회하며 빈 결과는 0으로 반환합니다. -->
     <sql id="aggregateQuery">
         SELECT COALESCE(SUM(amount), 0) FROM <include refid="table"/>
         WHERE account_id = #{accountId} AND state = #{state}
     </sql>
+
+    <!-- 인덱스 비교의 공통 집계를 실행합니다. MyBatis 결과 캐시는 사용하지 않습니다. -->
     <select id="sumAmount" resultType="long" useCache="false">
         <include refid="aggregateQuery"/>
     </select>
+
+    <!-- 같은 집계 쿼리의 실제 실행 계획과 스캔 정보를 확인합니다. -->
     <select id="explain" resultType="string" useCache="false">
         EXPLAIN ANALYZE <include refid="aggregateQuery"/>
     </select>

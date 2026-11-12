@@ -15,12 +15,15 @@
 | 댓글과 답글 | 부모 ID 기반 댓글·답글 조회·등록·수정·삭제 | 로그인 불필요, 백엔드 필요 |
 | JWT 인증 | 회원가입, BCrypt 비밀번호 해시, JWT 로그인 | 백엔드 필요 |
 | 서버용량조사 | Linux 서버 자원 수집·결과 저장 | 기본 비활성, 별도 설정과 로그인 필요 |
+| AWS CI/CD 배포 가이드 | 기존 배포 이력·명령어·설정·배포 자동화·복구 참고 자료 | AWS 미연결, 템플릿 비활성 |
 
 각 카드에 구현 노트, 실행, 소스 코드, 아키텍처, 클래스·메서드·라이브러리 탭이 있습니다. 소스·구조도는 백엔드 없이 확인할 수 있습니다. GW 예제는 기본 로컬 모드의 내부 이벤트·메모리 캐시와 외부 모드의 Kafka·Redis를 제공합니다. 성능 실험은 MyBatis Mapper XML을 사용하며, 기존 게시판·인증과 GW 예제는 JPA를 사용합니다.
 
 ## 기술 구성
 
-모든 카드의 **실행 · 구현 실습**에서 Java TODO 과제와 검사 버튼을 제공합니다. 기존 완성 예제와 독립된 샘플로 연습하며, 인덱스 과제는 별도 H2 DB를 사용하고 SSH 과제는 서버 접속 없이 응답만 파싱합니다. Kafka 과제는 작성한 코드로 게임도 실행할 수 있습니다. [전체 9개 카드 실습 안내](docs/INVENTORY_PRACTICE.md)에 파일 경로, 과제별 계약, 개별/전체 테스트 명령을 정리했습니다. 과제 테스트는 선택 실행이며 TODO 작성 전에는 실패하는 것이 정상입니다.
+기능 예제 9개 카드의 **실행 · 구현 실습**에서 Java TODO 과제와 검사 버튼을 제공합니다. 기존 완성 예제와 독립된 샘플로 연습하며, 인덱스 과제는 별도 H2 DB를 사용하고 SSH 과제는 서버 접속 없이 응답만 파싱합니다. Kafka 과제는 작성한 코드로 게임도 실행할 수 있습니다. [전체 9개 카드 실습 안내](docs/INVENTORY_PRACTICE.md)에 파일 경로, 과제별 계약, 개별/전체 테스트 명령을 정리했습니다. 과제 테스트는 선택 실행이며 TODO 작성 전에는 실패하는 것이 정상입니다.
+
+10번째 **AWS CI/CD 배포 가이드** 카드는 미래 배포를 위한 참고 자료입니다. [전체 AWS 가이드](docs/AWS_CICD.md)와 [비활성 템플릿](deployment/README.md)에 기존 SSH 배포 이력, EC2·IAM·OIDC·S3·SSM 설정, 테스트·빌드·systemd·Nginx·상태 확인·롤백을 정리했습니다. 실제 AWS 배포를 수행하지 않았으며, 기존 workflow는 비활성 상태로 유지합니다.
 
 - 백엔드: Java 17, Spring Boot 4.0.1, Gradle Wrapper, Spring MVC, JPA, MyBatis, Spring Security, Validation, JJWT, Apache SSHD
 - 프론트엔드: React 19, React Router 7, Axios, Vite 7, ESLint
@@ -227,6 +230,7 @@ Kafka는 파티션 안의 로그 순서를 제공하며 파티션 사이의 전�
 .\backend\gradlew.bat -p backend build
 cd frontend
 npm run lint
+npm test
 npm run build
 ```
 
@@ -241,3 +245,9 @@ GW 로컬 통합 테스트는 외부 연결 없이 생성·수정·삭제와 형
 `frontend/src/data/inventory.js`에 카드와 소스 연결을 등록하고 `FeatureDemo.jsx`에 실행 화면을 연결합니다. 백엔드 소스를 공개하려면 `frontend/config/inventorySourcePlugin.js` 허용 목록에도 정확한 경로를 추가합니다. 런타임 설정·개인키·환경 파일은 공개하지 않습니다. `build.gradle`은 기능별 의존성 표시를 위해 명시적으로 허용되어 있습니다.
 
 프론트엔드 화면 구성과 링크 규칙은 [frontend/README.md](frontend/README.md)를 참고하세요.
+
+## 소스 작성 기준
+
+Java는 공백 4칸, React·JavaScript는 공백 2칸을 사용하며 `.editorconfig`에 기준을 기록했습니다. 메서드 사이를 빈 줄로 구분하고 애너테이션·조건문·반복문·긴 인자 목록을 여러 줄로 정리합니다. 메서드 위에는 역할을 설명하고, 트랜잭션·오프셋·캐시 버전 방어 등은 필요한 처리 이유를 덧붙입니다. 실습 TODO는 구현하지 않은 상태를 유지합니다.
+
+인벤토리의 메서드 설명은 해당 소스의 Javadoc을 우선 읽으며, 주석이 없는 항목은 기존 메서드 노트를 사용합니다. `frontend`의 `npm test`는 여러 줄 Mapper 선언, 파라미터 애너테이션, 파일별 설명 구분을 검사합니다.

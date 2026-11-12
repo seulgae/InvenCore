@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../api/axios";
 import "../../styles/RequestBoardDetail.css";
 
+/** 게시글·첨부파일·댓글 및 답글을 표시합니다. */
 function RequestBoardDetail() {
   const [requestBoard, setRequestBoard] = useState(null);
   const [comments, setComments] = useState([]);
@@ -14,6 +15,7 @@ function RequestBoardDetail() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    /** 게시글 상세 정보를 조회해 현재 화면 또는 수정 폼에 반영합니다. */
     const fetchRequestBoard = async () => {
       try {
         const response = await apiClient.get(`/requestboards/${id}`);
@@ -24,6 +26,7 @@ function RequestBoardDetail() {
       }
     };
 
+    /** 현재 게시글의 댓글과 답글을 조회합니다. */
     const fetchComments = async () => {
       try {
         const response = await apiClient.get(`/comments/requestboard/${id}`);
@@ -39,6 +42,7 @@ function RequestBoardDetail() {
     }
   }, [id]);
 
+  /** 게시글 삭제를 요청하고 완료하면 목록으로 이동합니다. */
   const handleDelete = async () => {
     if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
       try {
@@ -52,6 +56,7 @@ function RequestBoardDetail() {
     }
   };
 
+  /** 입력한 새 댓글을 등록하고 댓글 목록을 다시 조회합니다. */
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!commentContent.trim()) {
@@ -74,6 +79,7 @@ function RequestBoardDetail() {
     }
   };
 
+  /** 선택한 부모 댓글에 답글을 등록하고 댓글 목록을 갱신합니다. */
   const handleReplySubmit = async (parentId) => {
     if (!replyContent[parentId] || !replyContent[parentId].trim()) {
       alert("답글 내용을 입력해주세요.");
@@ -96,6 +102,7 @@ function RequestBoardDetail() {
     }
   };
 
+  /** 선택한 댓글 삭제를 요청하고 목록을 갱신합니다. */
   const handleCommentDelete = async (commentId) => {
     if (window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
       try {
@@ -109,6 +116,7 @@ function RequestBoardDetail() {
     }
   };
 
+  /** 선택한 댓글의 답글 입력창을 열거나 닫습니다. */
   const toggleReplyForm = (commentId) => {
     setShowReplyForm({
       ...showReplyForm,
@@ -142,29 +150,20 @@ function RequestBoardDetail() {
         {requestBoard.fileName && (
           <div className="detail-attachment">
             <strong>첨부파일: </strong>
-            <a
-              href={`/api/requestboards/download/${id}`}
-              download={requestBoard.fileName}
-            >
+            <a href={`/api/requestboards/download/${id}`} download={requestBoard.fileName}>
               {requestBoard.fileName}
             </a>
           </div>
         )}
 
         <div className="detail-actions">
-          <button
-            onClick={() => navigate("/requestboard")}
-            className="back-button"
-          >
+          <button onClick={() => navigate("/requestboard")} className="back-button">
             목록으로
           </button>
 
           {
             <div className="item-actions">
-              <button
-                onClick={() => navigate(`/requestboard/edit/${id}`)}
-                className="edit-button"
-              >
+              <button onClick={() => navigate(`/requestboard/edit/${id}`)} className="edit-button">
                 수정
               </button>
               <button onClick={handleDelete} className="delete-button">
@@ -211,10 +210,7 @@ function RequestBoardDetail() {
                   <div className="comment-content">{comment.content}</div>
                   <div className="comment-actions">
                     {
-                      <button
-                        onClick={() => toggleReplyForm(comment.id)}
-                        className="reply-button"
-                      >
+                      <button onClick={() => toggleReplyForm(comment.id)} className="reply-button">
                         {showReplyForm[comment.id] ? "취소" : "답글"}
                       </button>
                     }
@@ -247,9 +243,7 @@ function RequestBoardDetail() {
                         <span className="char-count">
                           {(replyContent[comment.id] || "").length}/1000
                         </span>
-                        <button onClick={() => handleReplySubmit(comment.id)}>
-                          답글 작성
-                        </button>
+                        <button onClick={() => handleReplySubmit(comment.id)}>답글 작성</button>
                       </div>
                     </div>
                   )}

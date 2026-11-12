@@ -23,15 +23,17 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    // ✅ role 컬럼 추가
     @Column(nullable = false)
     @ColumnDefault("1") // ✅ 기본값 1 (일반사용자)
     private Integer role;
 
+    /**
+     * 전달받은 값으로 Member 인스턴스를 초기화합니다.
+     */
     @Builder
     public Member(String username, String password, Integer role) {
         this.username = username;
         this.password = password;
-        this.role = (role != null) ? role : 1; // ✅ 빌더 사용 시 role이 없으면 1로 설정
+        this.role = role != null ? role : 1; // ✅ 빌더 사용 시 role이 없으면 1로 설정
     }
 }

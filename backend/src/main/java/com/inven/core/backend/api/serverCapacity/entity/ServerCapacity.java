@@ -1,11 +1,11 @@
 package com.inven.core.backend.api.serverCapacity.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -61,8 +61,25 @@ public class ServerCapacity {
     @Column(name = "reg_dt", nullable = false, updatable = false)
     private LocalDateTime regDt;
 
+    /**
+     * 전달받은 값으로 ServerCapacity 인스턴스를 초기화합니다.
+     */
     @Builder
-    public ServerCapacity(String serverType, String serverNo, String memoryCapacity, String memoryUsed, String memoryAvailable, String memoryShared, String memoryBuffer, String memoryFree, String cpuStatus, String cpuUsage, String systemDiskTotal, String systemDiskUsed, String systemDiskUsagePercent) {
+    public ServerCapacity(
+        String serverType,
+        String serverNo,
+        String memoryCapacity,
+        String memoryUsed,
+        String memoryAvailable,
+        String memoryShared,
+        String memoryBuffer,
+        String memoryFree,
+        String cpuStatus,
+        String cpuUsage,
+        String systemDiskTotal,
+        String systemDiskUsed,
+        String systemDiskUsagePercent
+    ) {
         this.serverType = serverType;
         this.serverNo = serverNo;
         this.memoryCapacity = memoryCapacity;
@@ -77,8 +94,25 @@ public class ServerCapacity {
         this.systemDiskUsed = systemDiskUsed;
         this.systemDiskUsagePercent = systemDiskUsagePercent;
     }
-    
-    public void update(String serverType, String serverNo, String memoryCapacity, String memoryUsed, String memoryAvailable, String memoryShared, String memoryBuffer, String memoryFree, String cpuStatus, String cpuUsage, String systemDiskTotal, String systemDiskUsed, String systemDiskUsagePercent) {
+
+    /**
+     * 서버의 최신 용량 조사 결과와 조사 시각을 갱신합니다.
+     */
+    public void update(
+        String serverType,
+        String serverNo,
+        String memoryCapacity,
+        String memoryUsed,
+        String memoryAvailable,
+        String memoryShared,
+        String memoryBuffer,
+        String memoryFree,
+        String cpuStatus,
+        String cpuUsage,
+        String systemDiskTotal,
+        String systemDiskUsed,
+        String systemDiskUsagePercent
+    ) {
         this.serverType = serverType;
         this.serverNo = serverNo;
         this.memoryCapacity = memoryCapacity;

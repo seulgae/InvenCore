@@ -59,10 +59,7 @@ export const methodNotes = {
     "로컬 이벤트 수신",
     "내부 변경 이벤트 → 외부 모드와 동일한 GwProjectionService로 대상 버전 검증·JPA 반영",
   ],
-  cacheLocalSnapshot: [
-    "로컬 커밋 후 캐시",
-    "대상 트랜잭션 커밋 후 JSON 형상을 메모리 캐시에 저장",
-  ],
+  cacheLocalSnapshot: ["로컬 커밋 후 캐시", "대상 트랜잭션 커밋 후 JSON 형상을 메모리 캐시에 저장"],
   saveLocalSnapshot: [
     "메모리 형상 저장",
     "만료 항목 정리 → JSON 직렬화 → ConcurrentHashMap.compute로 revision 비교·TTL 저장",
@@ -91,10 +88,7 @@ export const methodNotes = {
     "발행 대기 조회",
     "revision > publishedRevision인 원본을 최대 20개 조회 → 변경 이벤트로 매핑",
   ],
-  confirmPublished: [
-    "Kafka 전송 확인",
-    "원본 행 잠금 → ack를 받은 버전까지 발행 확인",
-  ],
+  confirmPublished: ["Kafka 전송 확인", "원본 행 잠금 → ack를 받은 버전까지 발행 확인"],
   publishPending: [
     "Kafka 이벤트 발행",
     "커밋된 대기 데이터 조회 → ID를 key로 JSON 발행 → broker ack 대기 → 발행 버전 갱신. 실패 시 다음 주기 재시도",
@@ -123,44 +117,20 @@ export const methodNotes = {
     "Redis 형상 기록",
     "Lua에서 revision을 원자적으로 비교 → 이전 형상 덮어쓰기 방지 → JSON 스냅샷과 TTL 저장",
   ],
-  validate: [
-    "연동 이벤트 검증",
-    "스키마 버전·ID·revision·이름·설명 길이·변경 시각 검사",
-  ],
-  createTable: [
-    "비교 테이블 생성",
-    "XML의 indexed 분기로 고정된 테이블 선택 → 동일 스키마 생성",
-  ],
-  countRows: [
-    "데이터 수 확인",
-    "COUNT(*)로 현재 행 수 조회 → 재생성 필요 여부 판단",
-  ],
-  clearTable: [
-    "실험 데이터 초기화",
-    "크기를 변경할 때 실험 전용 테이블 데이터만 삭제",
-  ],
-  seedPlain: [
-    "결정적 데이터 생성",
-    "행 수를 바인딩해 SYSTEM_RANGE로 같은 규칙의 데이터 생성",
-  ],
-  copyIndexed: [
-    "동일 데이터 복제",
-    "기준 테이블의 모든 행을 인덱스 비교 테이블로 복제",
-  ],
-  createIndex: [
-    "복합 인덱스 생성",
-    "bench_indexed에만 (account_id, state) 복합 인덱스 생성",
-  ],
+  validate: ["연동 이벤트 검증", "스키마 버전·ID·revision·이름·설명 길이·변경 시각 검사"],
+  createTable: ["비교 테이블 생성", "XML의 indexed 분기로 고정된 테이블 선택 → 동일 스키마 생성"],
+  countRows: ["데이터 수 확인", "COUNT(*)로 현재 행 수 조회 → 재생성 필요 여부 판단"],
+  clearTable: ["실험 데이터 초기화", "크기를 변경할 때 실험 전용 테이블 데이터만 삭제"],
+  seedPlain: ["결정적 데이터 생성", "행 수를 바인딩해 SYSTEM_RANGE로 같은 규칙의 데이터 생성"],
+  copyIndexed: ["동일 데이터 복제", "기준 테이블의 모든 행을 인덱스 비교 테이블로 복제"],
+  createIndex: ["복합 인덱스 생성", "bench_indexed에만 (account_id, state) 복합 인덱스 생성"],
   analyze: ["통계 갱신", "ANALYZE TABLE로 옵티마이저 통계 갱신"],
   databaseVersion: ["DB 버전 조회", "H2VERSION() 결과를 측정 환경 정보에 표시"],
   sumAmount: [
     "동일 조건 집계",
     "고정 테이블 분기 → accountId·state 바인딩 → SUM(amount) 반환. MyBatis 결과 캐시 미사용",
   ],
-  explain: [
-    "실제 실행 계획 조회",
-    "동일 집계 SQL에 EXPLAIN ANALYZE 적용 → 인덱스·스캔 수 확인",
-  ],
+  explain: ["실제 실행 계획 조회", "동일 집계 SQL에 EXPLAIN ANALYZE 적용 → 인덱스·스캔 수 확인"],
   initialize: [
     "비교 데이터 준비",
     "MyBatis Mapper XML로 테이블 생성 → 행 수 확인 → 데이터 생성·복제 → 복합 인덱스 생성·통계 갱신 → 숫자 목록 구성 → 준비 상태 공개",
@@ -201,10 +171,7 @@ export const methodNotes = {
     "동시 실행 제어",
     "초기화 완료 여부 확인 → 서버 프로세스 공용 ReentrantLock 획득 시도",
   ],
-  release: [
-    "실험 잠금 해제",
-    "컨트롤러의 finally에서 잠금을 반환해 다음 측정을 허용",
-  ],
+  release: ["실험 잠금 해제", "컨트롤러의 finally에서 잠금을 반환해 다음 측정을 허용"],
   close: ["작업자 풀 종료", "애플리케이션 종료 시 전용 ForkJoinPool 정리"],
 
   checkAndSaveServerCapacity: [
@@ -235,10 +202,7 @@ export const methodNotes = {
     "로그인",
     "아이디·비밀번호를 사용해 로그인 요청을 처리합니다. 프론트 서비스는 응답 토큰을 저장하고, 백엔드 서비스는 BCrypt 비교 후 토큰을 발급합니다.",
   ],
-  register: [
-    "회원가입",
-    "아이디 중복 확인 → BCrypt 해시 → 일반 사용자 역할로 회원 저장",
-  ],
+  register: ["회원가입", "아이디 중복 확인 → BCrypt 해시 → 일반 사용자 역할로 회원 저장"],
   checkUsernameAvailability: [
     "아이디 중복 확인",
     "회원 조회 결과를 바탕으로 사용 가능한 아이디인지 반환",
@@ -247,14 +211,8 @@ export const methodNotes = {
     "JWT 발급",
     "사용자명·발급 시각·만료 시각 설정 → 비밀키로 서명 → JWT 문자열 반환",
   ],
-  validateToken: [
-    "JWT 검증",
-    "서명과 만료를 검증하며 파싱 성공 여부를 boolean으로 반환",
-  ],
-  getClaimsFromToken: [
-    "JWT Claims 파싱",
-    "서명 검증 키 설정 → 서명된 토큰 파싱 → payload 반환",
-  ],
+  validateToken: ["JWT 검증", "서명과 만료를 검증하며 파싱 성공 여부를 boolean으로 반환"],
+  getClaimsFromToken: ["JWT Claims 파싱", "서명 검증 키 설정 → 서명된 토큰 파싱 → payload 반환"],
   getUsernameFromToken: ["토큰 사용자 추출", "검증된 Claims의 subject를 반환"],
   doFilterInternal: [
     "요청 인증 필터",
@@ -268,18 +226,12 @@ export const methodNotes = {
     "페이지·검색 조회",
     "페이지·크기 범위 조정 → 검색어 유무에 따라 Repository 조회 → DTO 페이지 반환",
   ],
-  getRequestBoardById: [
-    "게시글 상세 조회",
-    "ID로 게시글 조회 → 없으면 예외 → DTO 반환",
-  ],
+  getRequestBoardById: ["게시글 상세 조회", "ID로 게시글 조회 → 없으면 예외 → DTO 반환"],
   updateRequestBoard: [
     "게시글 수정",
     "게시글 조회 → 입력 검증 → 파일 교체·삭제 처리 → 제목·내용 변경",
   ],
-  deleteRequestBoard: [
-    "게시글 삭제",
-    "게시글 조회 → 첨부파일 삭제 시도 → DB 게시글 삭제",
-  ],
+  deleteRequestBoard: ["게시글 삭제", "게시글 조회 → 첨부파일 삭제 시도 → DB 게시글 삭제"],
   downloadFile: [
     "첨부 다운로드",
     "게시글 조회 → 파일 경로 확인 → Resource 생성 → 존재·읽기 가능 여부 확인",
@@ -292,10 +244,7 @@ export const methodNotes = {
     "파일 형식 검사",
     "파일명에서 확장자 추출 → 소문자 변환 → 허용 확장자 집합과 비교",
   ],
-  createComment: [
-    "댓글·답글 등록",
-    "게시글 ID·부모 ID·내용·공용 demo 작성자를 엔티티에 담아 저장",
-  ],
+  createComment: ["댓글·답글 등록", "게시글 ID·부모 ID·내용·공용 demo 작성자를 엔티티에 담아 저장"],
   getCommentsByRequestBoardId: [
     "댓글 트리 조회",
     "부모 댓글 조회 → 부모별 답글 조회 → 부모 DTO에 답글 목록 연결",
@@ -303,10 +252,7 @@ export const methodNotes = {
   updateComment: ["댓글 수정", "ID 조회 → 내용 변경"],
   deleteComment: ["댓글 삭제", "ID 조회 → 직계 답글 삭제 → 원 댓글 삭제"],
   toDTO: ["응답 DTO 변환", "엔티티의 응답에 필요한 필드를 DTO에 복사"],
-  convertToDTO: [
-    "응답 DTO 변환",
-    "댓글 엔티티의 ID·소속·내용·작성자·생성 시각을 DTO에 복사",
-  ],
+  convertToDTO: ["응답 DTO 변환", "댓글 엔티티의 ID·소속·내용·작성자·생성 시각을 DTO에 복사"],
   logout: ["로그아웃", "브라우저 sessionStorage에서 토큰·사용자명·역할 제거"],
   join: ["회원가입 요청", "회원가입 API에 아이디와 비밀번호 전송"],
   handleSubmit: [
@@ -317,10 +263,7 @@ export const methodNotes = {
     "게시글 목록 요청",
     "조회 상태 초기화 → 검색어·페이지 요청 상태 갱신 → Effect에서 API 조회와 목록·로딩 상태 반영",
   ],
-  fetchServers: [
-    "서버 목록 요청",
-    "서버 설정 API 조회 → 모니터링 대상 상태 갱신",
-  ],
+  fetchServers: ["서버 목록 요청", "서버 설정 API 조회 → 모니터링 대상 상태 갱신"],
   fetchCapacities: [
     "용량 결과 요청",
     "API 조회 → 서버 번호별 데이터 맵 구성 → 상태 갱신 → 로딩 종료",
@@ -331,8 +274,30 @@ export const methodNotes = {
   ],
 };
 
-// Scan braces while ignoring strings and comments, so braces in log messages
-// and JSON literals do not truncate the displayed method body.
+/** 메서드 바로 위의 Javadoc을 읽어 파일별 설명을 우선 사용합니다. */
+function methodDescription(text, start, name, fallback) {
+  const before = text.slice(0, start);
+  const commentStart = before.lastIndexOf("/**");
+  if (commentStart >= 0) {
+    const end = before.indexOf("*/", commentStart);
+    // 주석과 선언 사이에는 공백과 애너테이션만 허용합니다.
+    const between = before.slice(end + 2).replace(/@[\w.]+(?:\s*\([^)]*\))?/g, "");
+    if (end >= 0 && !between.trim()) {
+      const description = before
+        .slice(commentStart + 3, end)
+        .split(/\r?\n/)
+        .map((line) => line.replace(/^\s*\*?\s?/, "").trim())
+        .filter((line) => line && !line.startsWith("@"))
+        .join(" ");
+      if (description) {
+        return [description.split(/(?<=[.!?])\s/)[0], description];
+      }
+    }
+  }
+  return methodNotes[name] || fallback;
+}
+
+/** 문자열과 주석의 중괄호를 제외하고 함수 본문이 끝나는 위치를 찾습니다. */
 function endOfBody(text, start) {
   let depth = 0,
     quote = "",
@@ -376,40 +341,37 @@ function endOfBody(text, start) {
   }
   return text.length;
 }
+
+/** Java·React·Mapper 소스에서 메서드별 코드와 설명을 추출합니다. */
 export function extractMethods(text, java) {
   if (text.includes("<mapper namespace=")) {
     return [
-      ...text.matchAll(
-        /<(select|insert|update|delete)\s+id="([^"]+)"[^>]*>[\s\S]*?<\/\1>/g,
-      ),
+      ...text.matchAll(/<(select|insert|update|delete)\s+id="([^"]+)"[^>]*>[\s\S]*?<\/\1>/g),
     ].map((match) => ({
       name: match[2],
       params: "Mapper 인터페이스의 @Param 바인딩",
       line: text.slice(0, match.index).split("\n").length,
       code: match[0],
-      note: methodNotes[match[2]] || [
-        "Mapper SQL",
-        "실제 XML SQL과 파라미터 바인딩을 확인합니다.",
-      ],
+      note: methodNotes[match[2]] || ["Mapper SQL", "실제 XML SQL과 파라미터 바인딩을 확인합니다."],
     }));
   }
   if (java && /\binterface\s+BenchmarkMapper\b/.test(text)) {
-    return [
-      ...text.matchAll(/^\s*(?:void|long|String)\s+(\w+)\s*\(([^\n]*)\);/gm),
-    ].map((match) => ({
-      name: match[1],
-      params: match[2] || "없음",
-      line: text.slice(0, match.index).split("\n").length,
-      code: match[0].trim(),
-      note: methodNotes[match[1]] || [
-        "Mapper 메서드",
-        "동일 ID의 XML SQL을 실행합니다.",
-      ],
-    }));
+    return [...text.matchAll(/^[ \t]*(?:void|long|String)\s+(\w+)\s*\(([\s\S]*?)\);/gm)].map(
+      (match) => ({
+        name: match[1],
+        params: match[2].trim() || "없음",
+        line: text.slice(0, match.index).split("\n").length,
+        code: match[0].trim(),
+        note: methodDescription(text, match.index, match[1], [
+          "Mapper 메서드",
+          "동일 ID의 XML SQL을 실행합니다.",
+        ]),
+      }),
+    );
   }
   const pattern = java
-    ? /^\s*(?:public|private|protected)\s+(?:(?:static|final|synchronized)\s+)*(?:[\w<>,?[\].]+\s+)+(\w+)\s*\(([^)]*)\)\s*(?:throws[^{]+)?\{/gm
-    : /^\s*(?:export\s+)?(?:const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*=>|(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\))\s*\{/gm;
+    ? /^[ \t]*(?:public|private|protected)\s+(?:(?:static|final|synchronized)\s+)*(?:[\w<>,?[\].]+\s+)+(\w+)\s*\(((?:[^()]|\([^()]*\))*)\)\s*(?:throws[^{]+)?\{/gm
+    : /^[ \t]*(?:export\s+(?:default\s+)?)?(?:const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*=>|(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\))\s*\{/gm;
   return [...text.matchAll(pattern)].map((match) => {
     const name = match[1] || match[3];
     const start = match.index + match[0].search(/\S/);
@@ -419,10 +381,10 @@ export function extractMethods(text, java) {
       params: match[2] || match[4] || "없음",
       line: text.slice(0, start).split("\n").length,
       code: text.slice(start, end),
-      note: methodNotes[name] || [
+      note: methodDescription(text, start, name, [
         java ? "클래스 메서드" : "화면 처리 함수",
         "아래 실제 구현에서 분기·호출 순서와 반환 처리를 확인할 수 있습니다.",
-      ],
+      ]),
     };
   });
 }

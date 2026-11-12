@@ -2,24 +2,30 @@ import { displayPath } from "../../data/inventory";
 import "../../styles/ImplementationNotes.css";
 import ArchitectureView from "./ArchitectureView";
 
+/** 소스 경로와 확장자로 파일의 역할을 분류합니다. */
 const fileRole = (path) => {
+  if (path.startsWith("docs/")) return "배포 문서";
+  if (path.startsWith("deployment/")) return path.endsWith(".sh") ? "배포 명령" : "배포 설정";
   if (path.includes("/service/")) return "처리 로직";
   if (path.includes("/controller/")) return "API";
   if (path.includes("/messaging/")) return "이벤트";
   if (path.includes("/cache/")) return "캐시";
-  if (path.includes("/repository/") || path.includes("/mapper/"))
-    return "데이터 접근";
+  if (path.includes("/repository/") || path.includes("/mapper/")) return "데이터 접근";
   if (path.includes("/entity/") || path.includes("/dto/")) return "데이터 모델";
   if (path.includes("/config/")) return "설정";
   return path.endsWith(".java") ? "백엔드" : "화면";
 };
 
+/** 카드의 기능, 실행 흐름, 제한 사항과 관련 소스를 표시합니다. */
 export default function ImplementationNotes({ item, onTab, onSource }) {
   const sources = item.sources.map((file, index) => ({
     path: displayPath(file.path),
     index,
   }));
   const priority = [
+    "배포 문서",
+    "배포 명령",
+    "배포 설정",
     "처리 로직",
     "API",
     "이벤트",
@@ -31,16 +37,12 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
     "설정",
   ];
   const ordered = [...sources].sort(
-    (a, b) =>
-      priority.indexOf(fileRole(a.path)) - priority.indexOf(fileRole(b.path)),
+    (a, b) => priority.indexOf(fileRole(a.path)) - priority.indexOf(fileRole(b.path)),
   );
+
+  /** 선택한 소스 파일을 여는 카드 내부 링크를 만듭니다. */
   const sourceLink = ({ path, index }) => (
-    <button
-      className="notes-file"
-      key={path}
-      onClick={() => onSource(index)}
-      title={path}
-    >
+    <button className="notes-file" key={path} onClick={() => onSource(index)} title={path}>
       <span className="notes-file-icon" aria-hidden="true">
         {path.endsWith(".java") ? "J" : "⌘"}
       </span>
@@ -68,10 +70,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
               <span key={tag}>{tag}</span>
             ))}
           </div>
-          <button
-            className="notes-primary-action"
-            onClick={() => onTab("demo")}
-          >
+          <button className="notes-primary-action" onClick={() => onTab("demo")}>
             실행 열기 <span aria-hidden="true">↗</span>
           </button>
         </div>
@@ -79,10 +78,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
 
       <div className="notes-layout">
         <article className="notes-article">
-          <section
-            className="notes-section"
-            aria-labelledby="notes-features-title"
-          >
+          <section className="notes-section" aria-labelledby="notes-features-title">
             <div className="notes-section-heading">
               <span className="notes-section-marker" aria-hidden="true">
                 01
@@ -112,10 +108,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
             <ArchitectureView item={item} compact />
           </section>
 
-          <section
-            className="notes-section"
-            aria-labelledby="notes-limits-title"
-          >
+          <section className="notes-section" aria-labelledby="notes-limits-title">
             <div className="notes-section-heading">
               <span className="notes-section-marker" aria-hidden="true">
                 03
@@ -132,10 +125,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
             </ul>
           </section>
 
-          <button
-            className="notes-reference-link"
-            onClick={() => onTab("reference")}
-          >
+          <button className="notes-reference-link" onClick={() => onTab("reference")}>
             <span className="notes-reference-icon" aria-hidden="true">
               {"{ }"}
             </span>
@@ -160,15 +150,12 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
                 <div>{ordered.slice(6).map(sourceLink)}</div>
               </details>
             )}
-            <button
-              className="notes-all-sources"
-              onClick={() => onTab("source")}
-            >
+            <button className="notes-all-sources" onClick={() => onTab("source")}>
               소스 탐색기 열기 <span aria-hidden="true">↗</span>
             </button>
           </section>
           <section className="notes-side-section notes-data">
-            <h2>데이터 구조</h2>
+            <h2>{item.kind === "guide" ? "산출물·보관 위치" : "데이터 구조"}</h2>
             <div>
               {item.tables.map((table) => (
                 <code key={table}>{table}</code>
@@ -176,7 +163,7 @@ export default function ImplementationNotes({ item, onTab, onSource }) {
             </div>
           </section>
           <section className="notes-side-section notes-endpoint">
-            <h2>연결 API</h2>
+            <h2>{item.kind === "guide" ? "배포 대상" : "연결 API"}</h2>
             <code>{item.endpoint}</code>
           </section>
         </aside>

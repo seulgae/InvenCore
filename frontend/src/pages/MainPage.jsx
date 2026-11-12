@@ -6,6 +6,7 @@ import LoginPage from "./auth/LoginPage";
 import JoinPage from "./auth/JoinPage";
 import { logout } from "../services/authService";
 
+/** 저장한 토큰의 만료 여부를 확인해 화면의 로그인 상태를 구성합니다. */
 function readSession() {
   return {
     username: sessionStorage.getItem("username"),
@@ -14,6 +15,7 @@ function readSession() {
   };
 }
 
+/** IDE 형태의 공통 탐색기와 탭, 로그인 팝업을 구성합니다. */
 export default function MainPage() {
   const [session, setSession] = useState(readSession);
   const [modal, setModal] = useState(null);
@@ -21,27 +23,23 @@ export default function MainPage() {
     () => window.matchMedia("(min-width: 651px)").matches,
   );
   const location = useLocation();
-  const currentItem = inventory.find(
-    (item) => location.pathname === `/inventory/${item.id}`,
-  );
-  const currentView =
-    new URLSearchParams(location.search).get("tab") || "overview";
+  const currentItem = inventory.find((item) => location.pathname === `/inventory/${item.id}`);
+  const currentView = new URLSearchParams(location.search).get("tab") || "overview";
   const activeItem = currentItem || inventory[0];
   const [searchParams, setSearchParams] = useSearchParams();
   const isLoggedIn = Boolean(session.token);
   const loginRequested = searchParams.get("auth") === "login";
   useEffect(() => {
+    /** 인증이 필요한 동작에서 로그인 화면을 열고 완료 후 이동할 위치를 저장합니다. */
     const requireLogin = () => {
       setSession(readSession());
       setModal("login");
     };
     window.addEventListener("invencore:authentication-required", requireLogin);
-    return () =>
-      window.removeEventListener(
-        "invencore:authentication-required",
-        requireLogin,
-      );
+    return () => window.removeEventListener("invencore:authentication-required", requireLogin);
   }, []);
+
+  /** 현재 인증 팝업을 닫습니다. */
   const closeModal = () => {
     setModal(null);
     if (loginRequested) {
@@ -50,6 +48,8 @@ export default function MainPage() {
       setSearchParams(next, { replace: true });
     }
   };
+
+  /** 저장한 인증 정보를 지우고 화면의 로그인 상태를 갱신합니다. */
   const handleLogout = () => {
     logout();
     setSession(readSession());
@@ -72,11 +72,8 @@ export default function MainPage() {
           InvenCore <span>⌄</span>
         </span>
         <span className="ide-branch">⑂ main</span>
-        <Link
-          className="ide-run-configuration"
-          to={`/inventory/${activeItem.id}?tab=demo`}
-        >
-          <span>▶</span> {activeItem.title} 실행
+        <Link className="ide-run-configuration" to={`/inventory/${activeItem.id}?tab=demo`}>
+          <span>▶</span> {activeItem.title} {activeItem.kind === "guide" ? "열기" : "실행"}
         </Link>
         <div className="navbar-auth">
           {isLoggedIn ? (
@@ -91,10 +88,7 @@ export default function MainPage() {
               <button className="nav-button" onClick={() => setModal("login")}>
                 로그인
               </button>
-              <button
-                className="nav-button nav-button-primary"
-                onClick={() => setModal("join")}
-              >
+              <button className="nav-button nav-button-primary" onClick={() => setModal("join")}>
                 회원가입 <span>↗</span>
               </button>
             </>
@@ -117,19 +111,13 @@ export default function MainPage() {
             className="ide-project-tree"
             aria-label="프로젝트 탐색기"
             onClick={(event) => {
-              if (
-                window.matchMedia("(max-width: 650px)").matches &&
-                event.target.closest("a")
-              )
+              if (window.matchMedia("(max-width: 650px)").matches && event.target.closest("a"))
                 setProjectOpen(false);
             }}
           >
             <header>
               <strong>Project</strong>
-              <button
-                aria-label="프로젝트 트리 닫기"
-                onClick={() => setProjectOpen(false)}
-              >
+              <button aria-label="프로젝트 트리 닫기" onClick={() => setProjectOpen(false)}>
                 −
               </button>
             </header>
@@ -152,21 +140,14 @@ export default function MainPage() {
                     .map((item) => (
                       <Link
                         key={item.id}
-                        className={
-                          currentItem?.id === item.id ? "selected" : ""
-                        }
+                        className={currentItem?.id === item.id ? "selected" : ""}
                         to={`/inventory/${item.id}`}
                       >
-                        <span className={`ide-file-icon item-${item.color}`}>
-                          {item.icon}
-                        </span>
+                        <span className={`ide-file-icon item-${item.color}`}>{item.icon}</span>
                         {item.title}
                       </Link>
                     ))}
-                  <Link
-                    className="ide-category-link"
-                    to={`/?category=${category}`}
-                  >
+                  <Link className="ide-category-link" to={`/?category=${category}`}>
                     이 영역의 카드 보기 ↗
                   </Link>
                 </details>
@@ -217,9 +198,7 @@ export default function MainPage() {
             {!currentItem && (
               <>
                 <span>›</span>
-                <strong>
-                  {location.pathname === "/" ? "Overview" : "실행 화면"}
-                </strong>
+                <strong>{location.pathname === "/" ? "Overview" : "실행 화면"}</strong>
               </>
             )}
           </div>
@@ -235,12 +214,12 @@ export default function MainPage() {
             />
           </main>
           <nav className="ide-bottom-tools" aria-label="구현 도구">
-            <Link to={`/inventory/${activeItem.id}?tab=demo`}>▷ 실행</Link>
-            <Link to={`/inventory/${activeItem.id}?tab=source`}>
-              〈〉 소스 코드
+            <Link to={`/inventory/${activeItem.id}?tab=demo`}>
+              {activeItem.kind === "guide" ? "▤ 배포 가이드" : "▷ 실행"}
             </Link>
+            <Link to={`/inventory/${activeItem.id}?tab=source`}>〈〉 소스 코드</Link>
             <Link to={`/inventory/${activeItem.id}?tab=reference`}>
-              ▤ 클래스 · 의존성
+              {activeItem.kind === "guide" ? "▤ 도구 · 설정" : "▤ 클래스 · 의존성"}
             </Link>
             <span>{currentItem ? currentView.toUpperCase() : "INVENTORY"}</span>
           </nav>
@@ -263,10 +242,7 @@ export default function MainPage() {
         />
       )}
       {modal === "join" && (
-        <JoinPage
-          onClose={closeModal}
-          onJoinSuccess={() => setModal("login")}
-        />
+        <JoinPage onClose={closeModal} onJoinSuccess={() => setModal("login")} />
       )}
     </div>
   );

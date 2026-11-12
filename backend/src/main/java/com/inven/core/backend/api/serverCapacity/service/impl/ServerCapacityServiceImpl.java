@@ -7,18 +7,6 @@ import com.inven.core.backend.api.serverCapacity.entity.ServerCapacityCheckLog;
 import com.inven.core.backend.api.serverCapacity.repository.ServerCapacityCheckLogRepository;
 import com.inven.core.backend.api.serverCapacity.repository.ServerCapacityRepository;
 import com.inven.core.backend.api.serverCapacity.service.ServerCapacityService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.apache.sshd.client.SshClient;
-import org.apache.sshd.client.channel.ClientChannel;
-import org.apache.sshd.client.channel.ClientChannelEvent;
-import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.channel.Channel;
-import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +18,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.channel.ClientChannelEvent;
+import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.channel.Channel;
+import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -44,28 +43,52 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
     @org.springframework.beans.factory.annotation.Value("${server-capacity.pem-file}")
     private String pemFileName;
 
+    /**
+     * 조사 및 결과 저장입니다. 사용자·서버별 마지막 조사 날짜 확인 → SSH 수집 → 기존 결과 갱신 또는 신규 저장
+     * → 조사 시각 저장
+     */
     @Override
     @Transactional
-    public ServerCapacityDTO checkAndSaveServerCapacity(ServerConfigDTO serverConfig, String username) throws Exception {
+    public ServerCapacityDTO checkAndSaveServerCapacity(
+        ServerConfigDTO serverConfig,
+        String username
+    ) throws Exception {
         log.info("사용자 [{}]의 서버 용량 확인 시작: {}", username, serverConfig.getHost());
 
-        Optional<ServerCapacityCheckLog> logOpt = checkLogRepository.findByUsernameAndServerNo(username, serverConfig.getServerNo());
-        if (logOpt.isPresent() && logOpt.get().getLastCheckedAt().toLocalDate().isEqual(LocalDate.now())) {
+        Optional<ServerCapacityCheckLog> logOpt = checkLogRepository.findByUsernameAndServerNo(
+            username,
+            serverConfig.getServerNo()
+        );
+        if (
+            logOpt.isPresent() &&
+            logOpt.get().getLastCheckedAt().toLocalDate().isEqual(LocalDate.now())
+        ) {
             throw new IllegalStateException("하루에 한 번만 용량을 조사할 수 있습니다.");
         }
 
         ServerCapacityDTO capacityDTO = getServerCapacityFromSsh(serverConfig);
 
-        Optional<ServerCapacity> existingCapacityOpt = serverCapacityRepository.findFirstByServerNoOrderByRegDtDesc(serverConfig.getServerNo());
+        Optional<ServerCapacity> existingCapacityOpt =
+            serverCapacityRepository.findFirstByServerNoOrderByRegDtDesc(
+                serverConfig.getServerNo()
+            );
         ServerCapacity serverCapacity;
         if (existingCapacityOpt.isPresent()) {
             serverCapacity = existingCapacityOpt.get();
             serverCapacity.update(
-                capacityDTO.getServerType(), capacityDTO.getServerNo(),
-                capacityDTO.getMemoryCapacity(), capacityDTO.getMemoryUsed(), capacityDTO.getMemoryAvailable(),
-                capacityDTO.getMemoryShared(), capacityDTO.getMemoryBuffer(), capacityDTO.getMemoryFree(),
-                capacityDTO.getCpuStatus(), capacityDTO.getCpuUsage(),
-                capacityDTO.getSystemDiskTotal(), capacityDTO.getSystemDiskUsed(), capacityDTO.getSystemDiskUsagePercent()
+                capacityDTO.getServerType(),
+                capacityDTO.getServerNo(),
+                capacityDTO.getMemoryCapacity(),
+                capacityDTO.getMemoryUsed(),
+                capacityDTO.getMemoryAvailable(),
+                capacityDTO.getMemoryShared(),
+                capacityDTO.getMemoryBuffer(),
+                capacityDTO.getMemoryFree(),
+                capacityDTO.getCpuStatus(),
+                capacityDTO.getCpuUsage(),
+                capacityDTO.getSystemDiskTotal(),
+                capacityDTO.getSystemDiskUsed(),
+                capacityDTO.getSystemDiskUsagePercent()
             );
             log.info("서버 용량 정보 업데이트: {}", serverConfig.getServerNo());
         } else {
@@ -88,27 +111,41 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
         }
         ServerCapacity saved = serverCapacityRepository.save(serverCapacity);
 
-        ServerCapacityCheckLog checkLog = logOpt.orElseGet(() -> ServerCapacityCheckLog.builder()
+        ServerCapacityCheckLog checkLog = logOpt.orElseGet(() ->
+            ServerCapacityCheckLog.builder()
                 .username(username)
                 .serverNo(serverConfig.getServerNo())
-                .build());
+                .build()
+        );
         checkLog.setLastCheckedAt(LocalDateTime.now());
         checkLogRepository.save(checkLog);
 
         return toDTO(saved);
     }
 
+    /**
+     * 저장된 용량 조회입니다. Repository 전체 조회 → 엔티티를 DTO로 변환해 목록 반환
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ServerCapacityDTO> getLatestServerCapacities() {
-        return serverCapacityRepository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return serverCapacityRepository
+            .findAll()
+            .stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
     }
 
-    private ServerCapacityDTO getServerCapacityFromSsh(ServerConfigDTO serverConfig) throws Exception {
+    /**
+     * SSH 자원 수집입니다. 외부 키 파일 경로 확인 → 키 로드 → SSH 연결·인증 → df/free/top 실행 →
+     * 출력 파싱 → 연결 종료
+     */
+    private ServerCapacityDTO getServerCapacityFromSsh(ServerConfigDTO serverConfig)
+        throws Exception {
         if (pemFileName == null || pemFileName.isBlank()) {
-            throw new IllegalArgumentException("SSH_PEM_FILE에 외부 개인키 파일 경로를 지정해 주세요.");
+            throw new IllegalArgumentException(
+                "SSH_PEM_FILE에 외부 개인키 파일 경로를 지정해 주세요."
+            );
         }
         Path pemPath = Path.of(pemFileName).toAbsolutePath().normalize();
         if (!Files.isRegularFile(pemPath) || !Files.isReadable(pemPath)) {
@@ -120,11 +157,15 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
         SshClient client = SshClient.setUpDefaultClient();
         client.start();
 
-        try (ClientSession session = client.connect(serverConfig.getUser(), serverConfig.getHost(), serverConfig.getPort())
-                                           .verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS).getSession()) {
-            // 3. 세션에 KeyPair를 직접 추가
+        try (
+            ClientSession session = client
+                .connect(serverConfig.getUser(), serverConfig.getHost(), serverConfig.getPort())
+                .verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .getSession()
+        ) {
+            // 현재 세션에 키 인증 수단을 등록합니다.
             session.addPublicKeyIdentity(keyPair);
-            // 4. 인증 수행
+            // 등록한 키로 제한 시간 내에 인증합니다.
             session.auth().verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             log.info("SSH 세션 연결 성공 (키 파일 인증): {}", serverConfig.getHost());
@@ -135,18 +176,24 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
                 channel.setOut(responseStream);
                 channel.setErr(new ByteArrayOutputStream());
                 channel.open().verify(SSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), TimeUnit.SECONDS.toMillis(SSH_TIMEOUT_SECONDS));
+                channel.waitFor(
+                    EnumSet.of(ClientChannelEvent.CLOSED),
+                    TimeUnit.SECONDS.toMillis(SSH_TIMEOUT_SECONDS)
+                );
             }
 
             String output = responseStream.toString();
             log.debug("SSH 명령어 실행 결과:\n{}", output);
             return parseSshOutput(output, serverConfig);
-
         } finally {
             client.stop();
         }
     }
 
+    /**
+     * 명령 출력 파싱입니다. 출력을 줄별로 분리 → 디스크 열 추출 → 메모리 열 추출 → CPU us 값 추출 → DTO
+     * 구성
+     */
     private ServerCapacityDTO parseSshOutput(String output, ServerConfigDTO serverConfig) {
         ServerCapacityDTO dto = new ServerCapacityDTO();
         dto.setServerType(serverConfig.getServerType());
@@ -190,6 +237,9 @@ public class ServerCapacityServiceImpl implements ServerCapacityService {
         return dto;
     }
 
+    /**
+     * 응답 DTO 변환입니다. 엔티티의 응답에 필요한 필드를 DTO에 복사
+     */
     private ServerCapacityDTO toDTO(ServerCapacity entity) {
         ServerCapacityDTO dto = new ServerCapacityDTO();
         dto.setSysSn(entity.getSysSn());

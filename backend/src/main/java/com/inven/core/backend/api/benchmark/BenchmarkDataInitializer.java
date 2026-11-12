@@ -6,7 +6,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BenchmarkDataInitializer implements ApplicationRunner {
+
     private final BenchmarkService service;
-    public BenchmarkDataInitializer(BenchmarkService service) { this.service = service; }
-    @Override public void run(ApplicationArguments args) { service.initialize(); }
+
+    /**
+     * 전달받은 값으로 BenchmarkDataInitializer 인스턴스를 초기화합니다.
+     */
+    public BenchmarkDataInitializer(BenchmarkService service) {
+        this.service = service;
+    }
+
+    /**
+     * 애플리케이션 시작 후 비교용 데이터와 인덱스를 준비합니다.
+     */
+    @Override
+    public void run(ApplicationArguments args) {
+        service.initialize();
+    }
 }

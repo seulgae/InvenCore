@@ -1,0 +1,4 @@
+templates/*.sh text eol=lf
+templates/*.yml text eol=lf
+templates/*.conf text eol=lf
+templates/*.service text eol=lf

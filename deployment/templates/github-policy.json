@@ -1,0 +1,9 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {"Effect":"Allow","Action":["s3:PutObject","s3:AbortMultipartUpload"],"Resource":"arn:aws:s3:::ARTIFACT_BUCKET/releases/*"},
+    {"Effect":"Allow","Action":"ssm:SendCommand","Resource":"arn:aws:ssm:AWS_REGION:ACCOUNT_ID:document/InvenCoreDeploy"},
+    {"Effect":"Allow","Action":"ssm:SendCommand","Resource":"arn:aws:ec2:AWS_REGION:ACCOUNT_ID:instance/INSTANCE_ID","Condition":{"StringEquals":{"ssm:resourceTag/Project":"InvenCore"}}},
+    {"Effect":"Allow","Action":"ssm:GetCommandInvocation","Resource":"*"}
+  ]
+}

@@ -2,8 +2,23 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Public implementation source allowlist. Never include config or key files.
+// Public implementation allowlist. Runtime config/keys are excluded; only sanitized deployment templates are listed.
 const allowedPaths = new Set([
+  "docs/AWS_CICD.md",
+  "deployment/templates/ci-cd.yml",
+  "deployment/templates/package-release.sh",
+  "deployment/templates/bootstrap.sh",
+  "deployment/templates/deploy.sh",
+  "deployment/templates/rollback.sh",
+  "deployment/templates/ssm-document.yml",
+  "deployment/templates/nginx.conf",
+  "deployment/templates/invencore.conf",
+  "deployment/templates/invencore.service",
+  "deployment/templates/application.env.example",
+  "deployment/templates/github-trust.json",
+  "deployment/templates/github-policy.json",
+  "deployment/templates/ec2-trust.json",
+  "deployment/templates/ec2-artifact-policy.json",
   "backend/src/main/java/com/inven/core/backend/api/practice/UserParallelCode.java",
   "backend/src/main/java/com/inven/core/backend/api/practice/UserIndexCode.java",
   "backend/src/main/java/com/inven/core/backend/api/practice/UserGwCode.java",
@@ -72,21 +87,22 @@ const allowedPaths = new Set([
 ]);
 const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
 const prefix = "virtual:inventory-source/";
+const textModuleSuffix = ".inventory-source.js";
 export default function inventorySourcePlugin() {
   return {
     name: "inventory-implementation-source",
     resolveId(id) {
       if (!id.startsWith(prefix)) return null;
       const path = id.slice(prefix.length);
-      if (!allowedPaths.has(path))
-        throw new Error("Source file is not in the inventory allowlist");
-      return `\0${id}`;
+      if (!allowedPaths.has(path)) throw new Error("Source file is not in the inventory allowlist");
+      // JSON/YAML/etc are displayed as source text, not parsed as configuration modules.
+      return `\0${id}${textModuleSuffix}`;
     },
     load(id) {
       if (!id.startsWith(`\0${prefix}`)) return null;
-      const path = id.slice(prefix.length + 1);
-      if (!allowedPaths.has(path))
-        throw new Error("Source file is not in the inventory allowlist");
+      if (!id.endsWith(textModuleSuffix)) return null;
+      const path = id.slice(prefix.length + 1, -textModuleSuffix.length);
+      if (!allowedPaths.has(path)) throw new Error("Source file is not in the inventory allowlist");
       const absolutePath = resolve(projectRoot, path);
       this.addWatchFile(absolutePath);
       return `export default ${JSON.stringify(readFileSync(absolutePath, "utf8"))};`;

@@ -17,6 +17,8 @@ npm run build
 
 ## 화면 구성
 
+- `components/inventory/DeploymentGuide.jsx`, `data/deploymentGuide.js`: 10번째 AWS CI/CD 참고 카드. 기존 배포 이력·준비 단계·명령어 복사·템플릿·도구/함수 역할·공식 문서를 제공합니다. API 연결 없이 동작하며 서버에서 명령을 실행하지 않습니다. 비밀값 없는 배포 템플릿만 소스 허용 목록에 추가합니다. [전체 가이드](../docs/AWS_CICD.md)
+
 - 엔딩 앞에는 약 8초간 터미널에서 파일이 삭제되는 연출을 표시합니다. 공개 소스 목록의 파일 경로만 화면에 출력하며 삭제 명령이나 백엔드 API는 실행하지 않습니다. 연출이 끝나면 BGM을 처음부터 재생하며 기존 60초 크레딧을 시작합니다. 전체 흐름은 약 68초입니다.
 
 - 엔딩 BGM: `src/assets/ending-bgm.m4a`를 번들에 포함합니다. 팝업의 엔딩 버튼 클릭으로 재생을 시작하며, 도입 1.5초 페이드인·마지막 4초 페이드아웃 후 화면 복귀 시 정지·초기화합니다. 짧은 음원은 반복됩니다. 음표 버튼으로 음소거할 수 있고 브라우저가 자동 재생을 막으면 재생 버튼을 표시합니다.
@@ -28,7 +30,7 @@ npm run build
 - `pages/InventoryDetailPage.jsx`: 노트·실행·소스·아키텍처·구현 자료 탭
 - `components/inventory/SourceViewer.jsx`: 파일 탐색·구문 강조·줄 번호·복사
 - `components/inventory/ImplementationReference.jsx`: 관련 의존성, 클래스 import, 메서드별 실제 코드
-- `components/inventory/ArchitectureView.jsx`, `data/architectures.js`: 전체 9개 카드의 분기·병렬·이벤트·저장 구조도. 아이콘·데이터 저장소 도형·방향 화살표, 단계별 설명 재생, 요소 선택과 실제 소스 링크, 읽기 쉬운 목록 보기를 제공합니다. Kafka·GW는 로컬/외부 구성도를 선택할 수 있으며 서버 설정은 변경하지 않습니다. CPU 메모리 계산, MyBatis SQL, JPA 저장, 로컬 파일과 캐시를 구분합니다. 구현 노트에는 핵심 4요소의 요약 그림을 표시합니다.
+- `components/inventory/ArchitectureView.jsx`, `data/architectures.js`: 전체 카드의 분기·병렬·이벤트·저장 구조도. 아이콘·데이터 저장소 도형·방향 화살표, 단계별 설명 재생, 요소 선택과 실제 소스 링크, 읽기 쉬운 목록 보기를 제공합니다. Kafka·GW는 로컬/외부 구성도를 선택할 수 있으며 서버 설정은 변경하지 않습니다. CPU 메모리 계산, MyBatis SQL, JPA 저장, 로컬 파일과 캐시를 구분합니다. 구현 노트에는 핵심 4요소의 요약 그림을 표시합니다.
 - `components/inventory/ImplementationNotes.jsx`: 폭을 제한한 구현 노트, 핵심 구현·세로 처리 흐름·조건·핵심 소스 목록
 - `components/inventory/FeatureDemo.jsx`: 기존 화면과 실제 API 연결
 - `components/inventory/JavaPracticePanel.jsx`, `data/inventoryPractice.js`: Kafka 외 8개 카드의 Java TODO·힌트·소스 링크·실행 코드 검사. SSH 카드도 로그인 없이 독립 과제를 검사합니다. [전체 과제 안내](../docs/INVENTORY_PRACTICE.md)
@@ -59,4 +61,6 @@ GW 연동 카드는 `/inventory/gw-sync?tab=demo`에서 실행합니다. 기본 
 
 소스 뷰어는 예제 복사본 대신 실제 파일을 읽습니다. 백엔드 구현 파일은 `config/inventorySourcePlugin.js`의 명시적 허용 목록으로만 공개합니다. 새 카드나 소스 추가 시 설명·구조도·라이브러리 목록·메서드 노트를 함께 확인하세요. 런타임 설정과 키 파일은 포함하지 않습니다.
 
-빌드하려면 형제 디렉터리인 `../backend`도 함께 있어야 합니다. 빌드 결과는 `dist/`에 생성됩니다. 외부 서버 배포 방법은 현재 저장소에서 별도로 구성하지 않습니다.
+빌드하려면 형제 디렉터리인 `../backend`도 함께 있어야 합니다. 빌드 결과는 `dist/`에 생성됩니다. 향후 외부 배포 설정은 [AWS CI/CD 참고 가이드](../docs/AWS_CICD.md)에서 확인합니다.
+
+메서드별 설명은 소스 바로 위의 Javadoc을 우선 표시합니다. `npm test`로 여러 줄 Mapper 선언과 설명 추출을 검사할 수 있습니다. 소스 작성 시 저장소 루트의 `.editorconfig`에 따라 들여쓰기와 줄바꿈을 맞춥니다.

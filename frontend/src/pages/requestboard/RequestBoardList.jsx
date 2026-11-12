@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/axios";
 import "../../styles/RequestBoardList.css";
 
+/** 검색과 페이지 이동을 지원하는 게시글 목록을 표시합니다. */
 function RequestBoardList() {
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ function RequestBoardList() {
   const [keyword, setKeyword] = useState("");
   const [appliedKeyword, setAppliedKeyword] = useState("");
 
+  /** 날짜를 게시판에서 읽기 쉬운 표시 형식으로 변환합니다. */
   const formatDate = (v) => {
     if (!v) return "-";
     const d = new Date(v);
@@ -28,6 +30,7 @@ function RequestBoardList() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
+  /** 지정한 검색 조건과 페이지로 게시글 목록을 요청합니다. */
   const fetchPage = (nextRequest) => {
     setLoading(true);
     setError("");
@@ -52,8 +55,7 @@ function RequestBoardList() {
         setPage(data.number ?? request.nextPage);
       })
       .catch((error) => {
-        if (error.code !== "ERR_CANCELED")
-          setError("게시글 목록을 불러오는 데 실패했습니다.");
+        if (error.code !== "ERR_CANCELED") setError("게시글 목록을 불러오는 데 실패했습니다.");
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
@@ -61,20 +63,24 @@ function RequestBoardList() {
     return () => controller.abort();
   }, [request]);
 
+  /** 게시글 작성 화면으로 이동합니다. */
   const handleCreateClick = () => navigate("/requestboard/regist");
 
+  /** 현재 검색어로 첫 페이지부터 목록을 다시 조회합니다. */
   const handleSearch = () => {
     const k = keyword.trim();
     setAppliedKeyword(k);
     fetchPage({ nextPage: 0, keyword: k });
   };
 
+  /** 검색 조건을 비우고 목록을 다시 조회합니다. */
   const handleClearSearch = () => {
     setKeyword("");
     setAppliedKeyword("");
     fetchPage({ nextPage: 0, keyword: "" });
   };
 
+  /** 선택한 게시판 페이지로 이동합니다. */
   const goPage = (p) => {
     if (p < 0 || p > totalPages - 1) return;
     fetchPage({ nextPage: p, keyword: appliedKeyword });
@@ -85,9 +91,7 @@ function RequestBoardList() {
       <div className="rb-header">
         <div className="rb-header-left">
           <h1 className="rb-title">요청 게시판</h1>
-          <p className="rb-subtitle">
-            요청사항을 등록하고 진행 상황을 확인하세요.
-          </p>
+          <p className="rb-subtitle">요청사항을 등록하고 진행 상황을 확인하세요.</p>
         </div>
 
         <div className="rb-header-actions">
@@ -117,11 +121,7 @@ function RequestBoardList() {
             초기화
           </button>
 
-          <button
-            className="rb-btn rb-btn-primary"
-            type="button"
-            onClick={handleCreateClick}
-          >
+          <button className="rb-btn rb-btn-primary" type="button" onClick={handleCreateClick}>
             등록
           </button>
         </div>
@@ -150,16 +150,12 @@ function RequestBoardList() {
             >
               <div className="rb-cell rb-cell-title">
                 <div className="rb-row-title">{it.title}</div>
-                <div className="rb-row-preview">
-                  {(it.content || "").replace(/\n/g, " ")}
-                </div>
+                <div className="rb-row-preview">{(it.content || "").replace(/\n/g, " ")}</div>
               </div>
 
               <div className="rb-cell rb-col-center">{it.author || "-"}</div>
 
-              <div className="rb-cell rb-col-center">
-                {formatDate(it.createdAt)}
-              </div>
+              <div className="rb-cell rb-col-center">{formatDate(it.createdAt)}</div>
             </button>
           ))
         )}

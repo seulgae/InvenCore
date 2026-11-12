@@ -13,10 +13,10 @@ const outcomes = {
   REJECTED: "학습 코드에서 반영 거부",
 };
 const storageKey = "invencore-order-lab-run";
+
+/** 주문 이벤트의 발행·소비 그룹·오프셋을 조작하는 실습 화면을 표시합니다. */
 export default function OrderLabPage() {
-  const [runId, setRunId] = useState(
-    () => sessionStorage.getItem(storageKey) || "",
-  );
+  const [runId, setRunId] = useState(() => sessionStorage.getItem(storageKey) || "");
   const [run, setRun] = useState(null);
   const [runtime, setRuntime] = useState(null);
   const [view, setView] = useState(null);
@@ -32,6 +32,8 @@ export default function OrderLabPage() {
   useEffect(() => {
     const controller = new AbortController();
     let fetching = false;
+
+    /** 현재 실습 실행과 소비 그룹 상태를 다시 조회합니다. */
     const load = async () => {
       if (fetching) return;
       fetching = true;
@@ -53,17 +55,13 @@ export default function OrderLabPage() {
             setRunId("");
             setView(null);
             setRun(null);
-            setNotice(
-              "서버 초기화로 이전 실습이 사라졌습니다. 새 실습을 생성하세요.",
-            );
+            setNotice("서버 초기화로 이전 실습이 사라졌습니다. 새 실습을 생성하세요.");
           }
         }
         setError("");
       } catch (error) {
         if (error.code !== "ERR_CANCELED")
-          setError(
-            error.response?.data?.message || "실습 서버에 연결하지 못했습니다.",
-          );
+          setError(error.response?.data?.message || "실습 서버에 연결하지 못했습니다.");
       } finally {
         fetching = false;
       }
@@ -75,6 +73,8 @@ export default function OrderLabPage() {
       controller.abort();
     };
   }, [runId, refresh]);
+
+  /** 실습 API 작업의 실행 중 상태와 실패 메시지를 공통 처리합니다. */
   const act = async (action) => {
     setPending(true);
     setError("");
@@ -90,6 +90,8 @@ export default function OrderLabPage() {
       setPending(false);
     }
   };
+
+  /** 선택한 배치 방식과 구현 모드로 주문 실습 실행을 시작합니다. */
   const start = (options) =>
     act(async () => {
       const { data } = await api.post("/order-lab/runs", {
@@ -106,6 +108,8 @@ export default function OrderLabPage() {
       setNotice("발행 대기에 저장했습니다. 발행·수신 결과를 자동 조회합니다.");
       return data;
     });
+
+  /** 선택한 소비 그룹에 일시정지·재개·재시작 명령을 전달합니다. */
   const control = (group, action, scopedRunId) =>
     act(async () => {
       const path =
@@ -121,6 +125,8 @@ export default function OrderLabPage() {
       return data;
     });
   const local = (runtime?.mode ?? "LOCAL_SIMULATION") === "LOCAL_SIMULATION";
+
+  /** Kafka TODO 코드의 기본 계약 검사를 요청합니다. */
   const checkPractice = () =>
     act(async () => {
       const { data } = await api.get("/order-lab/practice");
@@ -131,12 +137,8 @@ export default function OrderLabPage() {
   const receipts = [...(view?.deliveries || [])].reverse();
   const visible = receipts.filter((row) => row.group === filter);
   const keys = [...new Set(visible.map((row) => row.orderId))];
-  const ignored = receipts.filter((row) =>
-    ["DUPLICATE", "STALE"].includes(row.outcome),
-  ).length;
-  const gaps = receipts.filter(
-    (row) => row.outcome === "APPLIED_WITH_GAP",
-  ).length;
+  const ignored = receipts.filter((row) => ["DUPLICATE", "STALE"].includes(row.outcome)).length;
+  const gaps = receipts.filter((row) => row.outcome === "APPLIED_WITH_GAP").length;
   return (
     <div className="order-lab">
       <ParcelFactoryGame
@@ -166,8 +168,8 @@ export default function OrderLabPage() {
             <span>KAFKA / ORDER EVENT LAB</span>
             <h2>주문 상태 이벤트 실험실</h2>
             <p>
-              생성 → 결제 → 포장 → 발송. 같은 이벤트를 두 그룹이 독립적으로
-              읽고, 멈춘 위치에서 다시 이어갑니다.
+              생성 → 결제 → 포장 → 발송. 같은 이벤트를 두 그룹이 독립적으로 읽고, 멈춘 위치에서 다시
+              이어갑니다.
             </p>
           </header>
           <div className={`lab-mode ${local ? "local" : ""}`}>
@@ -189,22 +191,22 @@ export default function OrderLabPage() {
             <article>
               <span>01 · 순서</span>
               <p>
-                주문 ID로 묶어 발행하고 같은 주문의 파티션·오프셋을 확인합니다.
-                파티션 분산 방식과 비교하세요.
+                주문 ID로 묶어 발행하고 같은 주문의 파티션·오프셋을 확인합니다. 파티션 분산 방식과
+                비교하세요.
               </p>
             </article>
             <article>
               <span>02 · 분리</span>
               <p>
-                주문 처리 그룹을 일시정지한 뒤 발행합니다. 감사 그룹은 계속
-                처리하고 멈춘 그룹에는 lag가 쌓입니다.
+                주문 처리 그룹을 일시정지한 뒤 발행합니다. 감사 그룹은 계속 처리하고 멈춘 그룹에는
+                lag가 쌓입니다.
               </p>
             </article>
             <article>
               <span>03 · 재처리</span>
               <p>
-                처리가 끝나면 일시정지 → 처음부터 재처리 → 재개. 수신 기록은
-                늘어도 최종 상태는 뒤로 가지 않습니다.
+                처리가 끝나면 일시정지 → 처음부터 재처리 → 재개. 수신 기록은 늘어도 최종 상태는 뒤로
+                가지 않습니다.
               </p>
             </article>
           </div>
@@ -252,10 +254,7 @@ export default function OrderLabPage() {
               {notice}
             </p>
           )}
-          <section
-            className="lab-groups"
-            aria-label="소비 그룹과 파티션 오프셋"
-          >
+          <section className="lab-groups" aria-label="소비 그룹과 파티션 오프셋">
             {runtime?.groups.map((group) => (
               <article key={group.group}>
                 <header>
@@ -270,9 +269,7 @@ export default function OrderLabPage() {
                         ? "정지 요청 중"
                         : "소비 중"}
                   </span>
-                  <strong>
-                    lag {group.partitions.reduce((sum, p) => sum + p.lag, 0)}
-                  </strong>
+                  <strong>lag {group.partitions.reduce((sum, p) => sum + p.lag, 0)}</strong>
                 </header>
                 <div className="lab-group-actions">
                   <button
@@ -287,10 +284,7 @@ export default function OrderLabPage() {
                   >
                     재개
                   </button>
-                  <button
-                    disabled={pending}
-                    onClick={() => control(group.group, "restart")}
-                  >
+                  <button disabled={pending} onClick={() => control(group.group, "restart")}>
                     소비자 재시작
                   </button>
                   <button
@@ -302,9 +296,7 @@ export default function OrderLabPage() {
                 </div>
                 <div className="lab-table-scroll">
                   <table>
-                    <caption>
-                      커밋 오프셋 = 다음에 읽을 위치 · lag = 끝 − 커밋
-                    </caption>
+                    <caption>커밋 오프셋 = 다음에 읽을 위치 · lag = 끝 − 커밋</caption>
                     <thead>
                       <tr>
                         <th>파티션</th>
@@ -331,9 +323,9 @@ export default function OrderLabPage() {
             ))}
           </section>
           <p className="lab-footnote">
-            재시작은 같은 그룹의 커밋 위치에서 이어 읽습니다. 재처리는 전용 실습
-            토픽 전체에 적용되어 이전 실행의 주문도 다시 읽을 수 있습니다.
-            일시정지 완료를 확인한 뒤 재처리하고 재개하세요.
+            재시작은 같은 그룹의 커밋 위치에서 이어 읽습니다. 재처리는 전용 실습 토픽 전체에
+            적용되어 이전 실행의 주문도 다시 읽을 수 있습니다. 일시정지 완료를 확인한 뒤 재처리하고
+            재개하세요.
           </p>
           {runId && (
             <section className="lab-observation">
@@ -364,10 +356,7 @@ export default function OrderLabPage() {
               </div>
               <label className="lab-filter">
                 조회할 그룹
-                <select
-                  value={filter}
-                  onChange={(event) => setFilter(event.target.value)}
-                >
+                <select value={filter} onChange={(event) => setFilter(event.target.value)}>
                   {Object.entries(groups).map(([key, label]) => (
                     <option value={key} key={key}>
                       {label}
@@ -382,21 +371,15 @@ export default function OrderLabPage() {
                       <code>{key}</code>
                       <span>
                         최종:{" "}
-                        {view?.projections.find(
-                          (p) => p.group === filter && p.orderId === key,
-                        )?.status || "대기"}
+                        {view?.projections.find((p) => p.group === filter && p.orderId === key)
+                          ?.status || "대기"}
                       </span>
                     </header>
                     <div>
                       {visible
                         .filter((row) => row.orderId === key)
                         .map((row) => (
-                          <span
-                            key={row.id}
-                            className={
-                              row.outcome !== "APPLIED" ? "changed" : ""
-                            }
-                          >
+                          <span key={row.id} className={row.outcome !== "APPLIED" ? "changed" : ""}>
                             <strong>
                               {row.sequence} · {row.status}
                             </strong>
@@ -413,8 +396,7 @@ export default function OrderLabPage() {
               <div className="lab-table-scroll">
                 <table>
                   <caption>
-                    처리 기록 순서 · 최근 240개 · 오프셋은 파티션 안에서만
-                    비교합니다
+                    처리 기록 순서 · 최근 240개 · 오프셋은 파티션 안에서만 비교합니다
                   </caption>
                   <thead>
                     <tr>
@@ -444,8 +426,7 @@ export default function OrderLabPage() {
               </div>
               {!visible.length && (
                 <p className="lab-footnote">
-                  아직 이 그룹의 처리 기록이 없습니다. 일시정지 여부와 발행
-                  상태를 확인하세요.
+                  아직 이 그룹의 처리 기록이 없습니다. 일시정지 여부와 발행 상태를 확인하세요.
                 </p>
               )}
             </section>
@@ -454,42 +435,38 @@ export default function OrderLabPage() {
             <summary>실험에서 확인할 수 있는 것과 보장 범위</summary>
             <ul>
               <li>
-                같은 주문은 고정된 3개 파티션의 같은 위치로 보냅니다. KEYED는
-                Kafka 기본 키 해시와 같은 Murmur2로 계산한 파티션을 명시하고,
-                SPREAD는 업무 순번에 따라 파티션을 바꿉니다.
+                같은 주문은 고정된 3개 파티션의 같은 위치로 보냅니다. KEYED는 Kafka 기본 키 해시와
+                같은 Murmur2로 계산한 파티션을 명시하고, SPREAD는 업무 순번에 따라 파티션을
+                바꿉니다.
               </li>
               <li>
-                Kafka의 순서는 파티션 로그의 순서입니다. 같은 키라도 여러
-                생산자가 업무 순서를 다르게 발행하면 잘못된 업무 순서 자체를
-                Kafka가 고쳐주지는 않습니다.
+                Kafka의 순서는 파티션 로그의 순서입니다. 같은 키라도 여러 생산자가 업무 순서를
+                다르게 발행하면 잘못된 업무 순서 자체를 Kafka가 고쳐주지는 않습니다.
               </li>
               <li>
-                분산 실험에서 매번 역순이 관측되는 것은 아닙니다. 결과가 우연히
-                순서대로여도 파티션 사이의 전역 순서가 보장되는 것은 아닙니다.
+                분산 실험에서 매번 역순이 관측되는 것은 아닙니다. 결과가 우연히 순서대로여도 파티션
+                사이의 전역 순서가 보장되는 것은 아닙니다.
               </li>
               <li>
-                각 그룹은 같은 이벤트를 독립적으로 소비합니다. 외부 모드의 같은
-                그룹 안에서는 파티션별로 소비자를 할당해 병렬 처리합니다.
+                각 그룹은 같은 이벤트를 독립적으로 소비합니다. 외부 모드의 같은 그룹 안에서는
+                파티션별로 소비자를 할당해 병렬 처리합니다.
               </li>
               <li>
-                JPA 대상 반영 후 수동으로 오프셋을 커밋합니다. DB 반영과 커밋은
-                하나의 트랜잭션이 아니므로 재전달이 가능하고, 업무 버전 비교가
-                중복·과거 상태를 무시합니다. 정확히 한 번 처리를 주장하지
-                않습니다.
+                JPA 대상 반영 후 수동으로 오프셋을 커밋합니다. DB 반영과 커밋은 하나의 트랜잭션이
+                아니므로 재전달이 가능하고, 업무 버전 비교가 중복·과거 상태를 무시합니다. 정확히 한
+                번 처리를 주장하지 않습니다.
               </li>
               <li>
-                끝 오프셋과 lag는 실습 토픽 전체 기준입니다. 처리 기록과 최종
-                상태는 현재 실행 기준이며 최근 240개만 화면에 표시합니다.
+                끝 오프셋과 lag는 실습 토픽 전체 기준입니다. 처리 기록과 최종 상태는 현재 실행
+                기준이며 최근 240개만 화면에 표시합니다.
               </li>
               <li>
-                일반 GW 연동은 최신 형상을 합칠 수 있지만, 이 실습은 4단계
-                이벤트를 각각 저장·발행합니다. 기존 GW 데이터·토픽에는 제어
-                명령을 보내지 않습니다.
+                일반 GW 연동은 최신 형상을 합칠 수 있지만, 이 실습은 4단계 이벤트를 각각
+                저장·발행합니다. 기존 GW 데이터·토픽에는 제어 명령을 보내지 않습니다.
               </li>
               <li>
-                H2와 로컬 모형 상태는 서버 재시작 시 초기화됩니다. 실제 Kafka
-                모드의 브로커 장애 복제·처리량 벤치마크는 이 실습 범위에
-                포함하지 않습니다.
+                H2와 로컬 모형 상태는 서버 재시작 시 초기화됩니다. 실제 Kafka 모드의 브로커 장애
+                복제·처리량 벤치마크는 이 실습 범위에 포함하지 않습니다.
               </li>
             </ul>
           </details>

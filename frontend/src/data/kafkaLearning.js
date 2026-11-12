@@ -5,8 +5,7 @@ export const kafkaTerms = [
     game: "작업 카드 한 장",
     meaning:
       "한 번 발생한 변경을 담은 메시지입니다. 이 예제는 주문의 접수·결제·포장·발송을 각각 별도 이벤트로 저장합니다.",
-    caution:
-      "eventId는 이벤트 식별자이고 offset은 저장된 파티션에서의 위치입니다.",
+    caution: "eventId는 이벤트 식별자이고 offset은 저장된 파티션에서의 위치입니다.",
   },
   {
     name: "Producer",
@@ -27,8 +26,7 @@ export const kafkaTerms = [
     name: "Topic",
     ko: "토픽",
     game: "주문 작업 카드 기록함",
-    meaning:
-      "이름으로 구분한 이벤트 로그입니다. 실습 전용 토픽은 invencore.order.lab.v1입니다.",
+    meaning: "이름으로 구분한 이벤트 로그입니다. 실습 전용 토픽은 invencore.order.lab.v1입니다.",
     caution:
       "읽었다고 레코드가 삭제되는 것은 아닙니다. 보관 정책에 따라 남아 있어 재처리할 수 있습니다.",
   },
@@ -36,16 +34,14 @@ export const kafkaTerms = [
     name: "Partition",
     ko: "파티션",
     game: "색깔 레일 하나",
-    meaning:
-      "토픽을 나눈 순서 있는 로그입니다. 순서는 같은 파티션 안에서만 보장됩니다.",
+    meaning: "토픽을 나눈 순서 있는 로그입니다. 순서는 같은 파티션 안에서만 보장됩니다.",
     caution: "서로 다른 레일의 앞뒤 순서는 비교할 수 없습니다.",
   },
   {
     name: "Key",
     ko: "키",
     game: "같은 택배를 묶는 주문 ID",
-    meaning:
-      "같은 업무의 이벤트를 같은 파티션으로 보내는 기준으로 쓸 수 있습니다.",
+    meaning: "같은 업무의 이벤트를 같은 파티션으로 보내는 기준으로 쓸 수 있습니다.",
     caution:
       "파티션 수와 분배 규칙이 고정돼 있어야 같은 키가 같은 파티션으로 갑니다. Kafka가 잘못 발행한 업무 순서를 고쳐주지는 않습니다.",
   },
@@ -78,8 +74,7 @@ export const kafkaTerms = [
     name: "Concurrency",
     ko: "소비 동시성",
     game: "한 팀의 작업자 수",
-    meaning:
-      "이 예제의 실제 Kafka 모드는 그룹마다 3개 리스너 소비자를 만듭니다.",
+    meaning: "이 예제의 실제 Kafka 모드는 그룹마다 3개 리스너 소비자를 만듭니다.",
     caution:
       "파티션이 3개라면 같은 그룹에 소비자를 더 늘려도 동시에 담당할 파티션이 없는 소비자는 대기합니다. 속도 증가를 보장하지 않습니다.",
   },
@@ -141,8 +136,7 @@ export const kafkaTerms = [
     name: "At-least-once",
     ko: "한 번 이상 전달",
     game: "처리한 카드가 다시 올 수 있음",
-    meaning:
-      "DB 저장 후 Kafka 커밋 전에 중단되면 같은 이벤트가 다시 전달될 수 있습니다.",
+    meaning: "DB 저장 후 Kafka 커밋 전에 중단되면 같은 이벤트가 다시 전달될 수 있습니다.",
     caution:
       "재전달을 고려한 업무 멱등성이 필요합니다. 이 예제는 정확히 한 번 처리를 주장하지 않습니다.",
   },
@@ -159,8 +153,7 @@ export const kafkaTerms = [
     name: "Rebalance",
     ko: "소비자 재할당",
     game: "팀원이 바뀌어 레일 담당 다시 정하기",
-    meaning:
-      "소비자가 그룹에 들어오거나 나갈 때 파티션 담당이 달라질 수 있습니다.",
+    meaning: "소비자가 그룹에 들어오거나 나갈 때 파티션 담당이 달라질 수 있습니다.",
     caution:
       "파티션 할당과 재처리를 고려해야 합니다. 로컬 모형은 실제 그룹 코디네이터를 재현하지 않습니다.",
   },
@@ -168,8 +161,7 @@ export const kafkaTerms = [
     name: "Retention",
     ko: "보관 정책",
     game: "카드 기록을 남겨두는 기간·크기",
-    meaning:
-      "브로커의 정책에 따라 레코드를 보관합니다. 남아 있는 범위에서만 재처리할 수 있습니다.",
+    meaning: "브로커의 정책에 따라 레코드를 보관합니다. 남아 있는 범위에서만 재처리할 수 있습니다.",
     caution:
       "항상 offset 0부터 다시 읽을 수 있는 것은 아닙니다. 가장 이른 남은 위치는 beginning offset으로 확인합니다.",
   },
@@ -201,8 +193,7 @@ export const kafkaExercises = [
     method: "selectPartition",
     rule: "KEYED는 같은 주문의 4단계를 같은 파티션에, SPREAD는 0→1→2→0으로 보내세요. 반환값은 0~2입니다.",
     hint: "고정된 파티션 수에서 주문 ID를 해시하세요. 음수 나머지에 주의하세요.",
-    observe:
-      "레일 선택 미션에서 한 주문의 카드가 같은 레일에 모이는지 확인합니다.",
+    observe: "레일 선택 미션에서 한 주문의 카드가 같은 레일에 모이는지 확인합니다.",
   },
   {
     id: "offset",
@@ -210,8 +201,7 @@ export const kafkaExercises = [
     method: "nextOffset",
     rule: "처리한 오프셋 뒤의 위치를 반환하세요. 0 처리 후 1, 41 처리 후 42가 다음 읽을 위치입니다.",
     hint: "오프셋은 long입니다. 마지막 처리 번호와 다음 위치를 구분하세요.",
-    observe:
-      "내 코드가 로컬 체크포인트와 실제 Kafka consumer.commitSync에 전달됩니다.",
+    observe: "내 코드가 로컬 체크포인트와 실제 Kafka consumer.commitSync에 전달됩니다.",
   },
   {
     id: "idempotency",
@@ -219,7 +209,6 @@ export const kafkaExercises = [
     method: "shouldApply",
     rule: "저장 버전보다 새로운 업무 sequence만 true로 반환하세요. 같은 버전과 과거 버전은 false입니다.",
     hint: "이 비교의 기준은 업무 sequence입니다. 파티션의 offset을 비교하지 않습니다.",
-    observe:
-      "되감기 미션에서 발송 건수는 그대로이고 중복 작업 차단 수가 증가해야 합니다.",
+    observe: "되감기 미션에서 발송 건수는 그대로이고 중복 작업 차단 수가 증가해야 합니다.",
   },
 ];

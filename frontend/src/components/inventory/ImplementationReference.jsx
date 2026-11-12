@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { displayPath } from "../../data/inventory";
 import { extractMethods } from "../../data/methodReference";
 import frontendPackage from "../../../package.json";
+import { DeploymentReference } from "./DeploymentGuide";
 
 const families = {
   "spring-boot-starter-webmvc": "REST 컨트롤러·HTTP 요청 처리",
   "spring-boot-starter-data-jpa": "Repository·엔티티 저장·트랜잭션",
-  "mybatis-spring-boot-starter":
-    "Mapper 자동 등록·XML SQL 실행·SqlSession 관리",
+  "mybatis-spring-boot-starter": "Mapper 자동 등록·XML SQL 실행·SqlSession 관리",
   "spring-boot-starter-kafka": "Kafka 이벤트 발행·수신·재시도·DLT",
   "spring-boot-starter-data-redis": "Redis JSON 스냅샷·TTL·버전 비교 Lua",
   "spring-boot-starter-security": "요청 인증과 접근 제어·BCrypt",
@@ -43,18 +43,8 @@ const related = {
     "h2",
     "lombok",
   ],
-  "parallel-stream": [
-    "spring-boot-starter-webmvc",
-    "mybatis-spring-boot-starter",
-    "lombok",
-    "h2",
-  ],
-  "index-tuning": [
-    "spring-boot-starter-webmvc",
-    "mybatis-spring-boot-starter",
-    "lombok",
-    "h2",
-  ],
+  "parallel-stream": ["spring-boot-starter-webmvc", "mybatis-spring-boot-starter", "lombok", "h2"],
+  "index-tuning": ["spring-boot-starter-webmvc", "mybatis-spring-boot-starter", "lombok", "h2"],
   capacity: [
     "sshd-core",
     "sshd-common",
@@ -90,7 +80,18 @@ const related = {
     "lombok",
   ],
 };
+
+/** 카드 종류에 따라 애플리케이션 구현 자료 또는 배포 참고 자료를 표시합니다. */
 export default function ImplementationReference({ item }) {
+  return item.kind === "guide" ? (
+    <DeploymentReference item={item} />
+  ) : (
+    <ApplicationImplementationReference item={item} />
+  );
+}
+
+/** 실제 소스와 Gradle 설정을 읽어 클래스·메서드·관련 의존성을 정리합니다. */
+function ApplicationImplementationReference({ item }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   useEffect(() => {
@@ -122,8 +123,7 @@ export default function ImplementationReference({ item }) {
         구현 자료를 불러오지 못했습니다. 탭을 다시 열어 주세요.
       </p>
     );
-  if (!data)
-    return <p className="inspector-state">빌드 파일과 클래스 분석 중...</p>;
+  if (!data) return <p className="inspector-state">빌드 파일과 클래스 분석 중...</p>;
   const dependencies = [
     ...data.gradle.matchAll(
       /^\s*(implementation|runtimeOnly|compileOnly|annotationProcessor|developmentOnly|testImplementation|testRuntimeOnly)\s+'([^']+)'/gm,
@@ -141,9 +141,7 @@ export default function ImplementationReference({ item }) {
     });
   const frontendDependencies = Object.fromEntries(
     Object.entries(frontendPackage.dependencies).filter(([name]) =>
-      data.files.some(
-        (file) => file.path.startsWith("frontend/") && file.text.includes(name),
-      ),
+      data.files.some((file) => file.path.startsWith("frontend/") && file.text.includes(name)),
     ),
   );
   const dependencySnippet = data.gradle
@@ -172,20 +170,13 @@ export default function ImplementationReference({ item }) {
       <section id="reference-libraries">
         <h2>라이브러리 · 빌드 설정</h2>
         <p>
-          이 프로젝트는 Maven의 pom.xml 대신{" "}
-          <strong>backend/build.gradle</strong>을 사용합니다. 아래에는 이 기능에
-          관련된 의존성만 표시합니다.
+          이 프로젝트는 Maven의 pom.xml 대신 <strong>backend/build.gradle</strong>을 사용합니다.
+          아래에는 이 기능에 관련된 의존성만 표시합니다.
         </p>
         <p className="reference-caption">
-          Spring Boot{" "}
-          {
-            data.gradle.match(
-              /id 'org.springframework.boot' version '([^']+)'/,
-            )?.[1]
-          }{" "}
-          · Java {data.gradle.match(/JavaLanguageVersion.of\((\d+)\)/)?.[1]} ·
-          버전을 생략한 항목은 의존성 관리에서 결정됩니다. 아래 표는 최종 해석된
-          의존성 트리가 아닌 직접 선언 목록입니다.
+          Spring Boot {data.gradle.match(/id 'org.springframework.boot' version '([^']+)'/)?.[1]} ·
+          Java {data.gradle.match(/JavaLanguageVersion.of\((\d+)\)/)?.[1]} · 버전을 생략한 항목은
+          의존성 관리에서 결정됩니다. 아래 표는 최종 해석된 의존성 트리가 아닌 직접 선언 목록입니다.
         </p>
         <div className="reference-table-scroll">
           <table className="reference-table">
@@ -235,40 +226,30 @@ export default function ImplementationReference({ item }) {
                     react: "컴포넌트·상태·훅",
                     "react-dom": "브라우저 렌더링",
                     "react-router-dom": "화면 라우팅",
-                    axios:
-                      item.id === "auth"
-                        ? "HTTP 요청·인증 인터셉터"
-                        : "HTTP API 요청",
+                    axios: item.id === "auth" ? "HTTP 요청·인증 인터셉터" : "HTTP API 요청",
                   }[name]
                 }
               </li>
             ))}
           </ul>
           <pre tabIndex={0}>
-            <code>
-              {JSON.stringify({ dependencies: frontendDependencies }, null, 2)}
-            </code>
+            <code>{JSON.stringify({ dependencies: frontendDependencies }, null, 2)}</code>
           </pre>
         </details>
       </section>
       <section id="reference-classes">
         <h2>사용 클래스 · 모듈</h2>
-        <p>
-          카드에 연결된 실제 소스의 클래스 선언과 import를 기준으로 표시합니다.
-        </p>
+        <p>카드에 연결된 실제 소스의 클래스 선언과 import를 기준으로 표시합니다.</p>
         <div className="reference-class-grid">
           {data.files.map((file) => {
             const java = file.path.endsWith(".java");
             const name =
-              file.text.match(/\b(?:class|interface)\s+(\w+)/)?.[1] ||
-              file.path.split("/").pop();
+              file.text.match(/\b(?:class|interface)\s+(\w+)/)?.[1] || file.path.split("/").pop();
             const imports = java
               ? [...file.text.matchAll(/^import\s+([^;]+);/gm)].map((m) => m[1])
-              : [
-                  ...file.text.matchAll(
-                    /^import\s+(.+?)\s+from\s+['"]([^'"]+)['"]/gm,
-                  ),
-                ].map((m) => `${m[1]} ← ${m[2]}`);
+              : [...file.text.matchAll(/^import\s+(.+?)\s+from\s+['"]([^'"]+)['"]/gm)].map(
+                  (m) => `${m[1]} ← ${m[2]}`,
+                );
             const layer = file.path.includes("/mappers/")
               ? "MyBatis XML · SQL 정의"
               : file.path.includes("/mapper/")
@@ -311,26 +292,21 @@ export default function ImplementationReference({ item }) {
       <section id="reference-methods">
         <h2>메서드별 기능 · 처리 로직</h2>
         <p>
-          클래스·파일별로 분류했습니다. 메서드를 펼치면 입력 파라미터, 처리
-          순서와 해당 메서드의 실제 코드를 확인할 수 있습니다.
+          클래스·파일별로 분류했습니다. 메서드를 펼치면 입력 파라미터, 처리 순서와 해당 메서드의
+          실제 코드를 확인할 수 있습니다.
         </p>
         {data.files.map((file) => {
-          const methods = extractMethods(
-            file.text,
-            file.path.endsWith(".java"),
-          ).filter((method) => !/^[A-Z]/.test(method.name));
+          const methods = extractMethods(file.text, file.path.endsWith(".java")).filter(
+            (method) => !/^[A-Z]/.test(method.name),
+          );
           return (
             <div className="reference-method-group" key={file.path}>
               <h3>
-                {file.path.split("/").pop()}{" "}
-                <small>{methods.length} methods</small>
+                {file.path.split("/").pop()} <small>{methods.length} methods</small>
               </h3>
               {methods.length ? (
                 methods.map((method, index) => (
-                  <details
-                    className="reference-detail"
-                    key={`${method.name}-${index}`}
-                  >
+                  <details className="reference-detail" key={`${method.name}-${index}`}>
                     <summary>
                       <code>{method.name}()</code>
                       <span>{method.note[0]}</span>
@@ -349,10 +325,7 @@ export default function ImplementationReference({ item }) {
                           {file.path}:{method.line}
                         </dd>
                       </dl>
-                      <pre
-                        tabIndex={0}
-                        aria-label={`${method.name} 메서드 코드`}
-                      >
+                      <pre tabIndex={0} aria-label={`${method.name} 메서드 코드`}>
                         <code>{method.code}</code>
                       </pre>
                     </div>
@@ -360,8 +333,8 @@ export default function ImplementationReference({ item }) {
                 ))
               ) : (
                 <p className="reference-caption">
-                  명시적인 메서드 본문이 없는 선언 파일입니다. Repository
-                  선언·Lombok 생성 메서드는 소스 탭에서 확인할 수 있습니다.
+                  명시적인 메서드 본문이 없는 선언 파일입니다. Repository 선언·Lombok 생성 메서드는
+                  소스 탭에서 확인할 수 있습니다.
                 </p>
               )}
             </div>

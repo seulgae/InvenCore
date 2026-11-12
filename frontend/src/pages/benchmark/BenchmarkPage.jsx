@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../api/axios";
 import "../../styles/Benchmark.css";
-const number = (value) =>
-  Number(value).toLocaleString("ko-KR", { maximumFractionDigits: 3 });
+
+/** 측정값을 화면에서 읽기 쉬운 숫자 형식으로 변환합니다. */
+const number = (value) => Number(value).toLocaleString("ko-KR", { maximumFractionDigits: 3 });
+
+/** 측정 시간을 밀리초 단위로 표시합니다. */
 const milliseconds = (value) => `${number(value)} ms`;
 
+/** 순차·병렬 또는 인덱스 유무의 측정 결과를 비교해 표시합니다. */
 export default function BenchmarkPage({ kind = "streams" }) {
   const [environment, setEnvironment] = useState(null);
   const [result, setResult] = useState(null);
@@ -22,12 +26,12 @@ export default function BenchmarkPage({ kind = "streams" }) {
       })
       .catch((error) => {
         if (error.code !== "ERR_CANCELED")
-          setError(
-            "실험 서버에 연결하지 못했습니다. 백엔드를 실행하고 상태를 다시 확인하세요.",
-          );
+          setError("실험 서버에 연결하지 못했습니다. 백엔드를 실행하고 상태를 다시 확인하세요.");
       });
     return () => controller.abort();
   }, [reload]);
+
+  /** 벤치마크 실행을 요청하고 비교 결과와 실행 상태를 갱신합니다. */
   const run = async () => {
     setRunning(true);
     setError("");
@@ -40,46 +44,36 @@ export default function BenchmarkPage({ kind = "streams" }) {
       setHistory((previous) => [data, ...previous].slice(0, 8));
     } catch (error) {
       setError(
-        error.response?.data?.message ||
-          "측정에 실패했습니다. 서버 연결과 실행 상태를 확인하세요.",
+        error.response?.data?.message || "측정에 실패했습니다. 서버 연결과 실행 상태를 확인하세요.",
       );
     } finally {
       setRunning(false);
     }
   };
   const isStream = kind === "streams";
-  const maximum = result
-    ? Math.max(result.baseline.medianMs, result.optimized.medianMs, 0.001)
-    : 1;
+  const maximum = result ? Math.max(result.baseline.medianMs, result.optimized.medianMs, 0.001) : 1;
   return (
     <div className="benchmark-page">
       <header className="benchmark-heading">
         <div>
           <span className="benchmark-eyebrow">
-            LIVE PERFORMANCE LAB /{" "}
-            {isStream ? "PARALLEL STREAM" : "COMPOSITE INDEX"}
+            LIVE PERFORMANCE LAB / {isStream ? "PARALLEL STREAM" : "COMPOSITE INDEX"}
           </span>
-          <h2>
-            {isStream ? "순차 · 병렬 스트림 비교" : "복합 인덱스 전 · 후 비교"}
-          </h2>
+          <h2>{isStream ? "순차 · 병렬 스트림 비교" : "복합 인덱스 전 · 후 비교"}</h2>
           <p>
             {isStream
               ? "같은 숫자 목록을 같은 CPU 연산으로 처리합니다. stream()과 parallelStream()의 실제 실행 시간을 비교합니다."
               : "MyBatis Mapper XML로 동일 데이터의 두 테이블에 같은 집계 SQL을 실행합니다. 한쪽에만 (account_id, state) 복합 인덱스가 있습니다."}
           </p>
         </div>
-        <span
-          className={`benchmark-ready ${environment?.ready ? "ready" : ""}`}
-        >
+        <span className={`benchmark-ready ${environment?.ready ? "ready" : ""}`}>
           {environment?.ready ? "DATA READY" : "NOT READY"}
         </span>
       </header>
       <div className="benchmark-environment">
         <div>
           <span>데이터 / 테이블</span>
-          <strong>
-            {environment ? `${number(environment.rowsPerTable)}행` : "—"}
-          </strong>
+          <strong>{environment ? `${number(environment.rowsPerTable)}행` : "—"}</strong>
         </div>
         <div>
           <span>할당된 논리 CPU</span>
@@ -120,8 +114,7 @@ export default function BenchmarkPage({ kind = "streams" }) {
       )}
       {running && (
         <p className="benchmark-progress" role="status">
-          동일한 부하를 두 방식으로 실행하고 있습니다. 이전 결과는 아래에
-          유지됩니다.
+          동일한 부하를 두 방식으로 실행하고 있습니다. 이전 결과는 아래에 유지됩니다.
         </p>
       )}
       {result ? (
@@ -169,10 +162,8 @@ export default function BenchmarkPage({ kind = "streams" }) {
                   />
                 </div>
                 <p>
-                  최소 {milliseconds(measurement.minMs)} / 최대{" "}
-                  {milliseconds(measurement.maxMs)} ·{" "}
-                  {number(result.operationsPerSample)}{" "}
-                  {isStream ? "목록 처리" : "쿼리"}/회
+                  최소 {milliseconds(measurement.minMs)} / 최대 {milliseconds(measurement.maxMs)} ·{" "}
+                  {number(result.operationsPerSample)} {isStream ? "목록 처리" : "쿼리"}/회
                 </p>
               </div>
             ))}
@@ -224,9 +215,8 @@ export default function BenchmarkPage({ kind = "streams" }) {
                 <h3>비교 SQL</h3>
                 <pre>{result.sql}</pre>
                 <p>
-                  테이블만 다르고 데이터·조건·조회 횟수는 같습니다. 두 테이블
-                  모두 기본키 인덱스는 있으며, 비교 대상은 추가 복합
-                  인덱스입니다.
+                  테이블만 다르고 데이터·조건·조회 횟수는 같습니다. 두 테이블 모두 기본키 인덱스는
+                  있으며, 비교 대상은 추가 복합 인덱스입니다.
                 </p>
               </div>
               <div className="benchmark-plans">
@@ -246,22 +236,19 @@ export default function BenchmarkPage({ kind = "streams" }) {
         <div className="benchmark-empty">
           <span>◴</span>
           <h3>아직 측정하지 않았습니다</h3>
-          <p>
-            실행하면 현재 서버에서 측정한 값이 표시됩니다. 성과 수치를 미리
-            채우지 않습니다.
-          </p>
+          <p>실행하면 현재 서버에서 측정한 값이 표시됩니다. 성과 수치를 미리 채우지 않습니다.</p>
         </div>
       )}
       <aside className="benchmark-method">
         <h3>측정 조건</h3>
         <ul>
           <li>
-            서버 시작 시 기본 30만 행씩 두 테이블에 준비합니다. BENCHMARK_ROWS로
-            1,000~1,000,000행 범위를 조절할 수 있습니다.
+            서버 시작 시 기본 30만 행씩 두 테이블에 준비합니다. BENCHMARK_ROWS로 1,000~1,000,000행
+            범위를 조절할 수 있습니다.
           </li>
           <li>
-            두 방식은 사전 결과 확인 후 워밍업 2회, 본 측정 5회를 실행합니다.
-            중앙값으로 비교하며 실행 순서를 번갈아 바꿉니다.
+            두 방식은 사전 결과 확인 후 워밍업 2회, 본 측정 5회를 실행합니다. 중앙값으로 비교하며
+            실행 순서를 번갈아 바꿉니다.
           </li>
           <li>
             {isStream
@@ -269,13 +256,12 @@ export default function BenchmarkPage({ kind = "streams" }) {
               : "H2 메모리 DB의 MyBatis 조회 실험입니다. 연결 획득·Mapper 호출·SQL 실행·집계 시간이 포함됩니다. MyBatis 2차 캐시는 끄고 1차 캐시는 STATEMENT 범위로 제한합니다. 운영 DB 성능과 같지 않습니다."}
           </li>
           <li>
-            CPU 수·JIT·GC·서버 부하·DB 캐시에 따라 결과가 달라집니다. 병렬화나
-            인덱스가 항상 더 빠르지는 않습니다. JMH 수준의 정밀 벤치마크가 아닌
-            비교 학습용 실험입니다.
+            CPU 수·JIT·GC·서버 부하·DB 캐시에 따라 결과가 달라집니다. 병렬화나 인덱스가 항상 더
+            빠르지는 않습니다. JMH 수준의 정밀 벤치마크가 아닌 비교 학습용 실험입니다.
           </li>
           <li>
-            서버 전체에서 한 번에 한 실험만 실행합니다. 데이터는 자동 준비되지만
-            측정은 버튼을 누를 때만 실행합니다.
+            서버 전체에서 한 번에 한 실험만 실행합니다. 데이터는 자동 준비되지만 측정은 버튼을 누를
+            때만 실행합니다.
           </li>
         </ul>
       </aside>
@@ -297,9 +283,7 @@ export default function BenchmarkPage({ kind = "streams" }) {
               <tbody>
                 {history.map((entry, index) => (
                   <tr key={`${entry.measuredAt}-${index}`}>
-                    <td>
-                      {new Date(entry.measuredAt).toLocaleTimeString("ko-KR")}
-                    </td>
+                    <td>{new Date(entry.measuredAt).toLocaleTimeString("ko-KR")}</td>
                     <td>{milliseconds(entry.baseline.medianMs)}</td>
                     <td>{milliseconds(entry.optimized.medianMs)}</td>
                     <td>{number(entry.speedup)}×</td>

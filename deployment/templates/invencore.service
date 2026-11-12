@@ -1,0 +1,27 @@
+[Unit]
+Description=InvenCore Spring Boot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=invencore
+Group=invencore
+WorkingDirectory=/var/lib/invencore
+EnvironmentFile=/etc/invencore/application.env
+ExecStart=/usr/bin/java -jar /srv/invencore/current/app.jar
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+SuccessExitStatus=143
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/invencore
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

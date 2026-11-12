@@ -1,29 +1,44 @@
 package com.inven.core.backend;
 
-import com.inven.core.backend.api.benchmark.BenchmarkService;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.inven.core.backend.api.benchmark.BenchmarkResult;
+import com.inven.core.backend.api.benchmark.BenchmarkService;
 import com.inven.core.backend.api.benchmark.mapper.BenchmarkMapper;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.LocalCacheScope;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.ibatis.session.LocalCacheScope;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
- properties = {"benchmark.rows=2000", "spring.datasource.url=jdbc:h2:mem:benchmark-tests;DB_CLOSE_DELAY=-1"})
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "benchmark.rows=2000",
+        "spring.datasource.url=jdbc:h2:mem:benchmark-tests;DB_CLOSE_DELAY=-1",
+    }
+)
 class BenchmarkTests {
-    @Autowired BenchmarkService service;
-    @Autowired BenchmarkMapper mapper;
-    @Autowired SqlSessionFactory sqlSessionFactory;
-    @LocalServerPort int port;
 
-    @Test void seedsOnStartupAndReusesSameDataset() {
+    @Autowired
+    BenchmarkService service;
+
+    @Autowired
+    BenchmarkMapper mapper;
+
+    @Autowired
+    SqlSessionFactory sqlSessionFactory;
+
+    @LocalServerPort
+    int port;
+
+    @Test
+    void seedsOnStartupAndReusesSameDataset() {
         assertTrue(service.status().ready());
         assertEquals(2000, service.status().rowsPerTable());
         service.initialize();
@@ -32,20 +47,26 @@ class BenchmarkTests {
         assertEquals(2000, mapper.countRows(true));
     }
 
-    @Test void mybatisExecutesBothVariantsWithoutResultCaching() {
+    @Test
+    void mybatisExecutesBothVariantsWithoutResultCaching() {
         assertFalse(sqlSessionFactory.getConfiguration().isCacheEnabled());
-        assertEquals(LocalCacheScope.STATEMENT, sqlSessionFactory.getConfiguration().getLocalCacheScope());
+        assertEquals(
+            LocalCacheScope.STATEMENT,
+            sqlSessionFactory.getConfiguration().getLocalCacheScope()
+        );
         assertTrue(mapper.sumAmount(false, 100, 0) > 0);
         assertEquals(mapper.sumAmount(false, 100, 0), mapper.sumAmount(true, 100, 0));
     }
 
-    @Test void sequentialAndParallelResultsAreEquivalent() {
+    @Test
+    void sequentialAndParallelResultsAreEquivalent() {
         var comparison = service.streams();
         verify(comparison);
         assertEquals(1, comparison.operationsPerSample());
     }
 
-    @Test void indexedQueryHasSameResultAndUsesCompositeIndex() {
+    @Test
+    void indexedQueryHasSameResultAndUsesCompositeIndex() {
         var comparison = service.indexes();
         verify(comparison);
         assertTrue(comparison.optimizedPlan().toUpperCase().contains("IDX_BENCH_ACCOUNT_STATE"));
@@ -54,19 +75,50 @@ class BenchmarkTests {
         assertEquals(8, comparison.operationsPerSample());
     }
 
-    @Test void publicApiAndConcurrentRunGuard() throws Exception {
+    @Test
+    void publicApiAndConcurrentRunGuard() throws Exception {
         var client = HttpClient.newHttpClient();
         URI base = URI.create("http://localhost:" + port + "/api/benchmarks");
-        assertEquals(200, client.send(HttpRequest.newBuilder(base).GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode());
+        assertEquals(
+            200,
+            client
+                .send(
+                    HttpRequest.newBuilder(base).GET().build(),
+                    HttpResponse.BodyHandlers.ofString()
+                )
+                .statusCode()
+        );
         assertTrue(service.tryAcquire());
         try {
-            var response = client.send(HttpRequest.newBuilder(URI.create(base + "/streams")).POST(HttpRequest.BodyPublishers.noBody()).build(), HttpResponse.BodyHandlers.ofString());
+            var response = client.send(
+                HttpRequest.newBuilder(URI.create(base + "/streams"))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build(),
+                HttpResponse.BodyHandlers.ofString()
+            );
             assertEquals(409, response.statusCode());
-        } finally { service.release(); }
-        var success = client.send(HttpRequest.newBuilder(URI.create(base + "/streams")).POST(HttpRequest.BodyPublishers.noBody()).build(), HttpResponse.BodyHandlers.ofString());
+        } finally {
+            service.release();
+        }
+        var success = client.send(
+            HttpRequest.newBuilder(URI.create(base + "/streams"))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
         assertEquals(200, success.statusCode());
         assertTrue(success.body().contains("resultsMatch"));
-        assertEquals(400, client.send(HttpRequest.newBuilder(URI.create(base + "/unsupported")).POST(HttpRequest.BodyPublishers.noBody()).build(), HttpResponse.BodyHandlers.ofString()).statusCode());
+        assertEquals(
+            400,
+            client
+                .send(
+                    HttpRequest.newBuilder(URI.create(base + "/unsupported"))
+                        .POST(HttpRequest.BodyPublishers.noBody())
+                        .build(),
+                    HttpResponse.BodyHandlers.ofString()
+                )
+                .statusCode()
+        );
     }
 
     private void verify(BenchmarkResult.Comparison result) {

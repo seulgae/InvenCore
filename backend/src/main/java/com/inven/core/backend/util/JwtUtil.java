@@ -3,12 +3,11 @@ package com.inven.core.backend.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
@@ -16,8 +15,13 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final long expiration;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret,
-                   @Value("${jwt.expiration}") long expiration) {
+    /**
+     * 전달받은 값으로 JwtUtil 인스턴스를 초기화합니다.
+     */
+    public JwtUtil(
+        @Value("${jwt.secret}") String secret,
+        @Value("${jwt.expiration}") long expiration
+    ) {
         // HS256 알고리즘을 위한 SecretKey 생성
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiration = expiration;
@@ -33,11 +37,11 @@ public class JwtUtil {
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(secretKey)
-                .compact();
+            .subject(username)
+            .issuedAt(now)
+            .expiration(expiryDate)
+            .signWith(secretKey)
+            .compact();
     }
 
     /**
@@ -70,10 +74,6 @@ public class JwtUtil {
      * @return Claims 객체
      */
     private Claims getClaimsFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 }

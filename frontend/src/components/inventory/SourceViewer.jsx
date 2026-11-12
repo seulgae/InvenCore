@@ -4,7 +4,13 @@ import { displayPath } from "../../data/inventory";
 
 const tokenPattern =
   /(\/\/.*$|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b(?:import|from|export|default|const|let|return|if|else|try|catch|finally|async|await|new|throw|public|private|protected|class|void|package|implements|boolean|null|true|false|static|final|this|for|int|long)\b|@[A-Za-z]+|\b\d+\b)/g;
+
+/** 소스 한 줄을 구문 강조 토큰으로 나누어 표시합니다. */
 function CodeLine({ line }) {
+  // 메서드 설명은 한 가지 색으로 표시해 주석 안의 Java 키워드가 강조되지 않게 합니다.
+  if (/^\s*(?:\/\*|\*(?:\s|\/|$)|<!--|#)/.test(line)) {
+    return <span className="syntax-comment">{line}</span>;
+  }
   return line.split(tokenPattern).map((token, index) => {
     const type = token.startsWith("//")
       ? "comment"
@@ -26,6 +32,8 @@ function CodeLine({ line }) {
     );
   });
 }
+
+/** 선택한 소스를 불러와 줄 번호·줄바꿈·복사 기능과 함께 표시합니다. */
 function SourceFile({ file }) {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState("loading");
@@ -48,6 +56,8 @@ function SourceFile({ file }) {
       active = false;
     };
   }, [file]);
+
+  /** 화면에 표시한 원문을 클립보드에 복사하고 결과를 안내합니다. */
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -104,15 +114,17 @@ function SourceFile({ file }) {
     </section>
   );
 }
+
+/** 카드의 소스 탐색기와 선택한 파일 내용을 렌더링합니다. */
 export default function SourceViewer({ item }) {
   const [params, setParams] = useSearchParams();
   const requested = Number(params.get("file") || 0);
   const selected =
-    Number.isInteger(requested) &&
-    requested >= 0 &&
-    requested < item.sources.length
+    Number.isInteger(requested) && requested >= 0 && requested < item.sources.length
       ? requested
       : 0;
+
+  /** 선택한 파일 번호를 URL에 반영해 소스 화면을 전환합니다. */
   const selectFile = (index) => {
     const next = new URLSearchParams(params);
     next.set("file", String(index));
@@ -134,17 +146,26 @@ export default function SourceViewer({ item }) {
               title={path}
               onClick={() => selectFile(index)}
             >
-              <span
-                className={`file-extension ${path.endsWith(".java") ? "java" : ""}`}
-              >
-                {path.endsWith(".java") ? "J" : "JS"}
+              <span className={`file-extension ${path.endsWith(".java") ? "java" : ""}`}>
+                {{
+                  java: "J",
+                  sh: "SH",
+                  yml: "YML",
+                  json: "{}",
+                  conf: "CFG",
+                  service: "SVC",
+                  md: "MD",
+                  example: "ENV",
+                }[path.split(".").pop()] || "JS"}
               </span>
               <span>
                 {path.split("/").pop()}
                 <small>
                   {path.includes("/backend/") || path.startsWith("backend/")
                     ? "backend"
-                    : "frontend"}
+                    : path.startsWith("deployment/") || path.startsWith("docs/")
+                      ? "reference"
+                      : "frontend"}
                 </small>
               </span>
             </button>
@@ -154,10 +175,7 @@ export default function SourceViewer({ item }) {
           PROJECT SOURCE<small>빌드 시점의 실제 구현 파일</small>
         </div>
       </nav>
-      <SourceFile
-        file={item.sources[selected]}
-        key={item.sources[selected].path}
-      />
+      <SourceFile file={item.sources[selected]} key={item.sources[selected].path} />
     </div>
   );
 }

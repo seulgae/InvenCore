@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 public class ServerConfigDTO {
 
-	/* 서버 호스트 */
-	private String host;
+    /* 서버 호스트 */
+    private String host;
 
-	/* 서버 포트 */
-	private int port;
+    /* 서버 포트 */
+    private int port;
 
-	/* 사용자명 */
-	private String user;
+    /* 사용자명 */
+    private String user;
 
-	/* 서버 타입 (WEB/WAS/DB) */
-	private String serverType;
+    /* 서버 타입 (WEB/WAS/DB) */
+    private String serverType;
 
-	/* 서버 번호 */
-	private String serverNo;
+    /* 서버 번호 */
+    private String serverNo;
 }

@@ -1,23 +1,22 @@
 import { inventoryPractice } from "./inventoryPractice";
-// Only explicitly selected implementation files are exposed in the source viewer.
-// Configuration, credentials, private keys and environment files are never imported.
+import { deploymentSources } from "./deploymentGuide";
+// 소스 뷰어에는 명시적으로 선택한 구현 파일만 공개합니다.
+// 런타임 설정·인증정보·개인키는 가져오지 않으며 배포 예시는 민감정보가 없는 템플릿만 사용합니다.
 const backend = "../../../backend/src/main/java/com/inven/core/backend/";
+
+/** 소스 파일의 표시 경로와 지연 로딩 함수를 구성합니다. */
 const source = (path, load) => ({ path, load });
 const sources = {
   orderLab: [
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/practice/UserKafkaCode.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/UserKafkaCode.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/UserKafkaCode.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/practice/OrderLabPractice.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/OrderLabPractice.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/practice/OrderLabPractice.java"),
     ),
     source(
       "frontend/src/components/inventory/KafkaPracticePanel.jsx",
@@ -34,144 +33,104 @@ const sources = {
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDto.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDto.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDto.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEvent.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEvent.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEvent.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDelivery.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDelivery.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDelivery.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjection.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjection.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjection.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEventRepository.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEventRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEventRepository.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDeliveryRepository.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDeliveryRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabDeliveryRepository.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjectionRepository.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjectionRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabProjectionRepository.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabStore.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabStore.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabStore.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEngine.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEngine.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabEngine.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabPublisher.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabPublisher.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabPublisher.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabLocalEngine.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabLocalEngine.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabLocalEngine.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConsumer.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConsumer.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConsumer.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConfig.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConfig.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaConfig.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaEngine.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaEngine.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabKafkaEngine.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabController.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/orderlab/OrderLabController.java"),
     ),
   ],
   gwSync: [
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncConfig.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncConfig.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncConfig.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwCacheStore.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwCacheStore.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwCacheStore.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwLocalSnapshotCache.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwLocalSnapshotCache.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwLocalSnapshotCache.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventPublisher.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventPublisher.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventPublisher.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventListener.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventListener.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwLocalEventListener.java"),
     ),
     source(
       "frontend/src/pages/gwsync/GwSyncPage.jsx",
@@ -180,123 +139,89 @@ const sources = {
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwSource.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwSource.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwSource.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwTarget.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwTarget.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/entity/GwTarget.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/dto/GwSyncDto.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/dto/GwSyncDto.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/dto/GwSyncDto.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/event/GwChangedEvent.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/event/GwChangedEvent.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/event/GwChangedEvent.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwSourceRepository.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwSourceRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwSourceRepository.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwTargetRepository.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwTargetRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/repository/GwTargetRepository.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwSourceService.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwSourceService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwSourceService.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwProjectionService.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwProjectionService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwProjectionService.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwQueryService.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwQueryService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/service/GwQueryService.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventPublisher.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventPublisher.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventPublisher.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventListener.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventListener.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/messaging/GwEventListener.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwSnapshotCache.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwSnapshotCache.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/cache/GwSnapshotCache.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/controller/GwSyncController.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/controller/GwSyncController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/controller/GwSyncController.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncProperties.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncProperties.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwSyncProperties.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwKafkaConfig.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwKafkaConfig.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/gwsync/config/GwKafkaConfig.java"),
     ),
   ],
   benchmark: [
     source(
       "backend/src/main/java/com/inven/core/backend/api/benchmark/mapper/BenchmarkMapper.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/mapper/BenchmarkMapper.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/mapper/BenchmarkMapper.java"),
     ),
     source(
       "backend/src/main/resources/mappers/benchmark/BenchmarkMapper.xml",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/resources/mappers/benchmark/BenchmarkMapper.xml"
-        ),
+        import("virtual:inventory-source/backend/src/main/resources/mappers/benchmark/BenchmarkMapper.xml"),
     ),
     source(
       "frontend/src/pages/benchmark/BenchmarkPage.jsx",
@@ -305,30 +230,22 @@ const sources = {
     source(
       "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkService.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkController.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkDataInitializer.java"),
     ),
     source(
       "backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java",
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/benchmark/BenchmarkResult.java"),
     ),
   ],
   auth: [
@@ -339,23 +256,17 @@ const sources = {
     source(
       `${backend}api/member/service/MemberService.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/member/service/MemberService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/member/service/MemberService.java"),
     ),
     source(
       `${backend}security/JwtAuthenticationFilter.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/security/JwtAuthenticationFilter.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/security/JwtAuthenticationFilter.java"),
     ),
     source(
       `${backend}util/JwtUtil.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/util/JwtUtil.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/util/JwtUtil.java"),
     ),
   ],
   board: [
@@ -366,23 +277,17 @@ const sources = {
     source(
       `${backend}api/requestboard/controller/RequestBoardController.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"),
     ),
     source(
       `${backend}api/requestboard/service/impl/RequestBoardServiceImpl.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"),
     ),
     source(
       `${backend}api/requestboard/repository/RequestBoardRepository.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/repository/RequestBoardRepository.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/repository/RequestBoardRepository.java"),
     ),
   ],
   comments: [
@@ -393,23 +298,17 @@ const sources = {
     source(
       `${backend}api/comment/controller/CommentController.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/controller/CommentController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/controller/CommentController.java"),
     ),
     source(
       `${backend}api/comment/service/CommentService.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/service/CommentService.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/service/CommentService.java"),
     ),
     source(
       `${backend}api/comment/entity/Comment.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/entity/Comment.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/comment/entity/Comment.java"),
     ),
   ],
   files: [
@@ -420,23 +319,17 @@ const sources = {
     source(
       `${backend}api/requestboard/controller/RequestBoardController.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/controller/RequestBoardController.java"),
     ),
     source(
       `${backend}api/requestboard/service/impl/RequestBoardServiceImpl.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/service/impl/RequestBoardServiceImpl.java"),
     ),
     source(
       `${backend}api/requestboard/entity/RequestBoard.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/entity/RequestBoard.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/requestboard/entity/RequestBoard.java"),
     ),
   ],
   capacity: [
@@ -447,26 +340,22 @@ const sources = {
     source(
       `${backend}api/serverCapacity/controller/ServerCapacityController.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/ServerCapacityController.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/ServerCapacityController.java"),
     ),
     source(
       `${backend}api/serverCapacity/service/impl/ServerCapacityServiceImpl.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/impl/ServerCapacityServiceImpl.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/impl/ServerCapacityServiceImpl.java"),
     ),
     source(
       `${backend}api/serverCapacity/entity/ServerCapacity.java`,
       () =>
-        import(
-          "virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/entity/ServerCapacity.java"
-        ),
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/entity/ServerCapacity.java"),
     ),
   ],
 };
+
+/** 기능의 실행 흐름을 설명할 단계 항목을 구성합니다. */
 const step = (layer, name, description) => ({ layer, name, description });
 export const inventory = [
   {
@@ -479,8 +368,7 @@ export const inventory = [
     color: "blue",
     tags: ["Mini Game", "Kafka", "Replay"],
     endpoint: "POST /api/order-lab/runs",
-    summary:
-      "택배 공장의 세 미션으로 순서 지키기·밀린 작업 이어가기·중복 배송 막기를 체험합니다.",
+    summary: "택배 공장의 세 미션으로 순서 지키기·밀린 작업 이어가기·중복 배송 막기를 체험합니다.",
     description:
       "Java TODO 세 곳을 직접 작성해 같은 게임에 적용할 수 있습니다. 키 분배·다음 오프셋·업무 버전 방어를 구현하고 계약 검사 후 내 코드 모드로 실행합니다. 게임과 연결한 Kafka 용어 사전과 상세 기록도 제공합니다.",
     features: [
@@ -509,21 +397,9 @@ export const inventory = [
         "OrderLabKafkaConsumer / OrderLabLocalEngine",
         "두 그룹 독립 소비 · 외부 모드는 그룹별 3개 소비자",
       ),
-      step(
-        "PROJECT",
-        "OrderLabStore.consume",
-        "업무 버전·누락 검사 · 처리 기록과 최종 상태 저장",
-      ),
-      step(
-        "OBSERVE",
-        "OrderLabKafkaEngine.state",
-        "브로커 시작·끝·그룹별 커밋 오프셋과 lag 조회",
-      ),
-      step(
-        "CONTROL",
-        "OrderLabEngine.control",
-        "일시정지·재개·재시작·시작 오프셋 seek",
-      ),
+      step("PROJECT", "OrderLabStore.consume", "업무 버전·누락 검사 · 처리 기록과 최종 상태 저장"),
+      step("OBSERVE", "OrderLabKafkaEngine.state", "브로커 시작·끝·그룹별 커밋 오프셋과 lag 조회"),
+      step("CONTROL", "OrderLabEngine.control", "일시정지·재개·재시작·시작 오프셋 seek"),
     ],
     tables: ["order_lab_event", "order_lab_delivery", "order_lab_projection"],
     sources: sources.orderLab,
@@ -553,11 +429,7 @@ export const inventory = [
       "Redis는 최종적 일관성의 파생 캐시이며, 갱신 실패 시 TTL까지 이전 형상을 보관할 수 있습니다.",
     ],
     steps: [
-      step(
-        "SOURCE",
-        "GwSourceService",
-        "JPA 원본·발행 대기 revision을 같은 트랜잭션으로 저장",
-      ),
+      step("SOURCE", "GwSourceService", "JPA 원본·발행 대기 revision을 같은 트랜잭션으로 저장"),
       step(
         "PUBLISH",
         "GwLocalEventPublisher / GwEventPublisher",
@@ -568,11 +440,7 @@ export const inventory = [
         "GwLocalEventListener / GwEventListener",
         "내부 이벤트 수신 또는 Kafka JSON 매핑 → 공통 JPA 반영",
       ),
-      step(
-        "TARGET",
-        "GwProjectionService",
-        "동일 ID 잠금 · revision 비교 · JPA 대상 반영",
-      ),
+      step("TARGET", "GwProjectionService", "동일 ID 잠금 · revision 비교 · JPA 대상 반영"),
       step(
         "CACHE",
         "GwLocalSnapshotCache / GwSnapshotCache",
@@ -593,10 +461,8 @@ export const inventory = [
     color: "blue",
     tags: ["parallelStream", "ForkJoinPool", "MyBatis"],
     endpoint: "POST /api/benchmarks/streams",
-    summary:
-      "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
-    description:
-      "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
+    summary: "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
+    description: "동일한 CPU 연산을 순차·병렬 스트림으로 실행하고 실제 시간을 비교합니다.",
     features: [
       "시작 시 30만 행과 숫자 목록 자동 준비",
       "전용 ForkJoinPool 최대 4개 작업자",
@@ -646,10 +512,8 @@ export const inventory = [
     color: "blue",
     tags: ["MyBatis", "H2", "EXPLAIN ANALYZE"],
     endpoint: "POST /api/benchmarks/indexes",
-    summary:
-      "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
-    description:
-      "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
+    summary: "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
+    description: "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
     features: [
       "동일 데이터의 인덱스 유무 테이블 자동 준비",
       "복합 인덱스 (account_id, state)",
@@ -717,11 +581,7 @@ export const inventory = [
     steps: [
       step("CLIENT", "ServerCapacityPage", "서버 선택 및 조사 요청"),
       step("API", "ServerCapacityController", "로그인 사용자와 요청 DTO 전달"),
-      step(
-        "SERVICE",
-        "ServerCapacityServiceImpl",
-        "일일 제한 확인 · SSH 명령 실행 · 파싱",
-      ),
+      step("SERVICE", "ServerCapacityServiceImpl", "일일 제한 확인 · SSH 명령 실행 · 파싱"),
       step("REMOTE", "Linux / SSH", "df -h / · free -m · top -bn1"),
       step("PERSISTENCE", "JPA Repository", "용량 정보와 조사 시각 저장"),
     ],
@@ -755,11 +615,7 @@ export const inventory = [
       step("API", "MemberController", "로그인 및 회원가입 요청 수신"),
       step("SERVICE", "MemberService", "BCrypt 비교 · 회원 조회"),
       step("TOKEN", "JwtUtil", "서명된 JWT 발급·검증"),
-      step(
-        "FILTER",
-        "JwtAuthenticationFilter",
-        "Bearer 토큰 → SecurityContext",
-      ),
+      step("FILTER", "JwtAuthenticationFilter", "Bearer 토큰 → SecurityContext"),
     ],
     tables: ["Member"],
     sources: sources.auth,
@@ -811,11 +667,7 @@ export const inventory = [
     summary: "게시글과 파일을 하나의 요청으로 저장.",
     description:
       "FormData에 JSON DTO와 첨부파일을 함께 담아 전송합니다. 서버는 허용 확장자를 확인하고 UUID를 붙인 이름으로 로컬 디렉터리에 저장합니다.",
-    features: [
-      "최대 5MB 첨부파일",
-      "UUID 파일명과 원본 파일명 분리",
-      "첨부 교체·삭제 및 다운로드",
-    ],
+    features: ["최대 5MB 첨부파일", "UUID 파일명과 원본 파일명 분리", "첨부 교체·삭제 및 다운로드"],
     caveats: [
       "파일은 DB가 아닌 서버 로컬 디렉터리에 저장됩니다.",
       "기존 파일을 먼저 삭제하는 교체 순서로 인해 새 업로드 실패 시 파일이 유실될 수 있습니다.",
@@ -863,16 +715,50 @@ export const inventory = [
     tables: ["Comment"],
     sources: sources.comments,
   },
+  {
+    id: "aws-cicd",
+    number: "10",
+    title: "AWS CI/CD 배포 가이드",
+    subtitle: "DEPLOYMENT PLAYBOOK / REFERENCE",
+    category: "배포·운영",
+    kind: "guide",
+    icon: "↗",
+    color: "amber",
+    tags: ["AWS EC2", "GitHub Actions", "참고 템플릿"],
+    endpoint: "Amazon Linux 2023 · EC2 · Nginx · systemd",
+    summary: "기존 AWS 배포 이력부터 테스트·자동 배포·상태 확인·롤백까지.",
+    description:
+      "Git에서 찾은 기존 SSH 배포 이력을 정리하고, 다음 배포를 위한 OIDC·S3·SSM 기반 EC2 배포 가이드를 제공합니다. 명령어와 설정을 복사해 검토할 수 있으며, 지금 AWS에 연결하거나 자동 배포를 실행하지 않습니다.",
+    features: [
+      "기존 GitHub Actions 배포·비활성화 이력 확인",
+      "AWS 기본 설정·IAM·OIDC·SSM·Nginx·systemd 참고 구성",
+      "테스트·빌드·릴리스 패키징·상태 확인·자동/수동 롤백",
+    ],
+    caveats: [
+      "새 전용 Amazon Linux 2023 EC2를 가정한 참고 템플릿입니다. 기존 서버의 현재 구성과 실제 AWS 자원은 확인하지 않았습니다.",
+      "템플릿은 자동 실행 경로 밖에 있습니다. 실제 값 설정과 AWS 검증 후 활성화하며, 재시작 방식이므로 무중단 배포는 아닙니다.",
+      "현재 H2 메모리 DB는 재시작하면 계정·게시글·파일 메타데이터가 초기화됩니다. 운영 DB·HTTPS·백업·공개 범위는 별도 검토가 필요합니다.",
+    ],
+    steps: [
+      step("HISTORY", "Git history", "SSH 배포 및 비활성화 이력 확인"),
+      step("BUILD", "GitHub Actions", "테스트·빌드·동일 commit 릴리스 패키징"),
+      step("IDENTITY", "OIDC / IAM", "production 환경에 제한한 임시 역할"),
+      step("DELIVERY", "S3 / SSM", "비공개 산출물과 검토한 배포 문서"),
+      step("RUNTIME", "EC2 / systemd / Nginx", "릴리스 전환·API·정적 화면 제공"),
+      step("RECOVERY", "Health / Rollback", "상태 확인 실패 시 이전 코드 복구"),
+    ],
+    tables: ["release.tar.gz", "S3 releases/", "EC2 releases/", "업로드 별도 보관"],
+    sources: deploymentSources,
+  },
 ];
-// Add the matching editable assignment to each card's source browser.
+// 각 카드의 소스 목록에 해당 Java 실습 파일을 연결합니다.
 for (const item of inventory) {
   const practice = inventoryPractice[item.id];
   if (practice) item.sources = [source(practice.path, practice.load), ...item.sources];
 }
-export const categories = [
-  "All",
-  ...new Set(inventory.map((item) => item.category)),
-];
+export const categories = ["All", ...new Set(inventory.map((item) => item.category))];
+
+/** 소스 파일 경로를 화면에 표시할 경로로 변환합니다. */
 export function displayPath(path) {
   return path.replace("../../../backend/", "backend/");
 }

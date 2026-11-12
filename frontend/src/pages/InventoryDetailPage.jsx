@@ -15,15 +15,16 @@ const tabs = [
   { id: "architecture", label: "아키텍처", icon: "⌗" },
   { id: "reference", label: "클래스·메서드·라이브러리", icon: "{ }" },
 ];
+
+/** 선택한 카드의 노트·실행·소스·구조도 탭을 구성합니다. */
 export default function InventoryDetailPage() {
   const { itemId } = useParams();
   const [params, setParams] = useSearchParams();
   const item = inventory.find((entry) => entry.id === itemId);
-  const active = tabs.some((tab) => tab.id === params.get("tab"))
-    ? params.get("tab")
-    : "overview";
-  const selectTab = (id) =>
-    setParams(id === "overview" ? {} : { tab: id }, { replace: true });
+  const active = tabs.some((tab) => tab.id === params.get("tab")) ? params.get("tab") : "overview";
+
+  /** 현재 탭을 URL에 반영해 탭을 전환합니다. */
+  const selectTab = (id) => setParams(id === "overview" ? {} : { tab: id }, { replace: true });
   if (!item)
     return (
       <div className="empty-inventory">
@@ -52,7 +53,7 @@ export default function InventoryDetailPage() {
           </div>
         </div>
         <button className="inspector-run" onClick={() => selectTab("demo")}>
-          ▷ 실행 · 구현 실습
+          {item.kind === "guide" ? "▤ 배포 가이드 열기" : "▷ 실행 · 구현 실습"}
         </button>
       </header>
       <nav className="inspector-tabs" aria-label="아이템 보기">
@@ -65,7 +66,11 @@ export default function InventoryDetailPage() {
             onClick={() => selectTab(tab.id)}
           >
             <span>{tab.icon}</span>
-            {tab.label}
+            {item.kind === "guide" && tab.id === "demo"
+              ? "배포 가이드"
+              : item.kind === "guide" && tab.id === "reference"
+                ? "도구·설정·스크립트"
+                : tab.label}
             {tab.id === "source" && <small>{item.sources.length}</small>}
           </button>
         ))}
@@ -85,10 +90,7 @@ export default function InventoryDetailPage() {
             item={item}
             onTab={selectTab}
             onSource={(index) =>
-              setParams(
-                { tab: "source", file: String(index) },
-                { replace: true },
-              )
+              setParams({ tab: "source", file: String(index) }, { replace: true })
             }
           />
         )}
