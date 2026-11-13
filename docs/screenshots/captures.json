@@ -1,0 +1,113 @@
+{
+  "date": "2026-11-13",
+  "environment": {
+    "frontend": "http://localhost:5175",
+    "backend": "http://127.0.0.1:18080",
+    "database": "H2 in-memory",
+    "gwMode": "local",
+    "benchmarkRows": 300000
+  },
+  "notes": [
+    "임시 로컬 프로세스와 합성 샘플 데이터로 실행했습니다.",
+    "Kafka·Redis 외부 서버, 원격 SSH 수집, 실제 AWS 배포는 수행하지 않았습니다.",
+    "미구현 TODO는 수정하지 않았고 검사 실패 화면은 학습 상태를 나타냅니다."
+  ],
+  "captures": [
+    {
+      "file": "parallel-stream-result.jpg",
+      "url": "http://localhost:5175/inventory/parallel-stream?tab=demo",
+      "caption": "30만 행 기준 순차·병렬 CPU 연산의 실제 측정 결과. 환경별로 달라집니다.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "index-tuning-result.jpg",
+      "url": "http://localhost:5175/inventory/index-tuning?tab=demo",
+      "caption": "동일한 30만 행 두 테이블에 대한 복합 인덱스 유무의 실제 집계 시간 비교.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "gw-sync-created.jpg",
+      "url": "http://localhost:5175/inventory/gw-sync?tab=demo",
+      "caption": "기본 local 모드에서 원본 v1·대상 v1과 메모리 형상 캐시를 연동한 실제 화면.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "gw-sync-updated.jpg",
+      "url": "http://localhost:5175/inventory/gw-sync?tab=demo",
+      "caption": "원본 수정 후 revision 2가 대상과 캐시에 반영된 local 모드 실행 화면.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "kafka-order-complete.jpg",
+      "url": "http://localhost:5175/inventory/kafka-lab?tab=demo",
+      "caption": "local 학습 모형에서 같은 레일의 접수→결제→포장→발송을 실제 처리 기록으로 확인한 화면.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "kafka-paused-backlog.jpg",
+      "url": "http://localhost:5175/inventory/kafka-lab?tab=demo",
+      "caption": "주문 처리 그룹은 일시정지하고 감사 그룹만 12개 이벤트를 기록한 local 모형.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "kafka-replay-result.jpg",
+      "url": "http://localhost:5175/inventory/kafka-lab?tab=demo",
+      "caption": "local 모드에서 재처리한 과거·중복 작업 4장을 차단하고 정상 발송은 1개를 유지한 화면.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "auth-registered.jpg",
+      "url": "http://localhost:5175/inventory/auth?tab=demo",
+      "caption": "문서용 임시 계정 ReadmeDemo의 회원가입 완료. 비밀번호·토큰 원문은 포함하지 않았습니다.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "auth-logged-in.jpg",
+      "url": "http://localhost:5175/inventory/auth?tab=demo",
+      "caption": "동일한 임시 계정의 로그인 완료와 AUTHENTICATED 상태.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "board-list.jpg",
+      "url": "http://localhost:5175/requestboard",
+      "caption": "문서용 샘플 게시글 등록 완료 후 조회한 실제 목록.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "files-attached.jpg",
+      "url": "http://localhost:5175/requestboard/1",
+      "caption": "실제 저장한 첨부파일의 다운로드 링크가 표시된 게시글 상세.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "comments-thread.jpg",
+      "url": "http://localhost:5175/requestboard/1",
+      "caption": "실제 저장된 부모 댓글과 직계 답글. 작성자는 공개 예제의 demo입니다.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "capacity-practice.jpg",
+      "url": "http://localhost:5175/inventory/capacity?tab=demo",
+      "caption": "SSH 비활성 상태에서 고정 df 샘플 과제만 검사한 화면. TODO 미구현은 의도된 학습 상태이며 원격 수집 성공 화면이 아닙니다.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "aws-cicd-guide.jpg",
+      "url": "http://localhost:5175/inventory/aws-cicd?tab=demo",
+      "caption": "AWS 배포 가이드의 배포·상태 확인 단계. 템플릿 설명 화면이며 실제 AWS 명령은 실행하지 않았습니다.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "aws-cicd-architecture.jpg",
+      "url": "http://localhost:5175/inventory/aws-cicd?tab=architecture",
+      "caption": "아직 배포하지 않은 AWS 참고 구조도. GitHub Actions·S3·SSM·EC2의 역할을 설명하는 화면.",
+      "date": "2026-11-13"
+    },
+    {
+      "file": "inventory-overview.jpg",
+      "url": "http://localhost:5175/",
+      "caption": "현재 기술 인벤토리의 카드 목록. 총 10개 예제가 등록되어 있습니다.",
+      "date": "2026-11-13"
+    }
+  ]
+}

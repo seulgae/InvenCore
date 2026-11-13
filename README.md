@@ -2,6 +2,8 @@
 
 기능을 실행하고 구현 코드·클래스·메서드·아키텍처를 함께 살펴보는 개인 기술 인벤토리입니다. React와 Spring Boot로 구성되어 있으며, IntelliJ 스타일의 다크 작업창에서 기능별 카드를 탐색합니다.
 
+[패키지별 예제 README·실행 이미지 모아보기](docs/EXAMPLES.md) · [백엔드 패키지 안내](backend/README.md) · [캡처 목록](docs/screenshots/README.md)
+
 ## 현재 제공하는 예제
 
 | 카드 | 구현 내용 | 실행 조건 |
