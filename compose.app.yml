@@ -1,0 +1,51 @@
+# Independent from compose.yml (optional Kafka/Redis) and the existing PostgreSQL stack.
+services:
+  backend:
+    image: invencore-backend:${APP_IMAGE_TAG:-local}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 2
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=65.0
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in an untracked environment file}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081,http://127.0.0.1:8081}
+      GW_SYNC_ENABLED: ${GW_SYNC_ENABLED:-true}
+      GW_SYNC_MODE: local
+      BENCHMARK_ROWS: ${BENCHMARK_ROWS:-300000}
+      FILE_UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+
+  frontend:
+    image: invencore-frontend:${APP_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 1
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8081}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 10s
+
+volumes:
+  # Attachments only. This does NOT persist H2 in-memory tables.
+  uploads:

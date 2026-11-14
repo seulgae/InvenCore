@@ -4,6 +4,8 @@ IntelliJ 스타일 다크 작업창에서 기술 카드를 탐색하고, 실제 
 
 [기능 패키지별 README·실제 실행 이미지](../docs/EXAMPLES.md) · [공통 인벤토리 컴포넌트](src/components/inventory/README.md)
 
+Docker는 저장소 루트를 build context로 한 `frontend/Dockerfile`과 `frontend/nginx.conf`를 사용합니다. [Ubuntu 앱 배포 안내](../deployment/docker/README.md)에 별도 Compose, CORS와 H2 데이터 보존 범위를 정리했습니다.
+
 ## 실행과 검사
 
 이 디렉터리에서 실행합니다. Node.js 22.12 이상이 필요합니다.

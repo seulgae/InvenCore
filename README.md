@@ -4,6 +4,8 @@
 
 [패키지별 예제 README·실행 이미지 모아보기](docs/EXAMPLES.md) · [백엔드 패키지 안내](backend/README.md) · [캡처 목록](docs/screenshots/README.md)
 
+[Hyper-V Ubuntu Docker 배포·회원가입 403 해결](deployment/docker/README.md): 앱용 `compose.app.yml`은 기존 Kafka·Redis `compose.yml`과 별도입니다. 기본 DB는 현재 H2 메모리이며 PostgreSQL은 연결하지 않습니다.
+
 ## 현재 제공하는 예제
 
 | 카드 | 구현 내용 | 실행 조건 |
