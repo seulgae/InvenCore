@@ -257,3 +257,316 @@ GW 로컬 통합 테스트는 외부 연결 없이 생성·수정·삭제와 형
 Java는 공백 4칸, React·JavaScript는 공백 2칸을 사용하며 `.editorconfig`에 기준을 기록했습니다. 메서드 사이를 빈 줄로 구분하고 애너테이션·조건문·반복문·긴 인자 목록을 여러 줄로 정리합니다. 메서드 위에는 역할을 설명하고, 트랜잭션·오프셋·캐시 버전 방어 등은 필요한 처리 이유를 덧붙입니다. 실습 TODO는 구현하지 않은 상태를 유지합니다.
 
 인벤토리의 메서드 설명은 해당 소스의 Javadoc을 우선 읽으며, 주석이 없는 항목은 기존 메서드 노트를 사용합니다. `frontend`의 `npm test`는 여러 줄 Mapper 선언, 파라미터 애너테이션, 파일별 설명 구분을 검사합니다.
+
+====
+
+## Hyper-V Ubuntu 홈서버 운영 명령어
+
+InvenCore 홈서버 운영 시 자주 사용하는 명령어 모음입니다.
+
+### 1. 서버 환경
+
+| 항목 | 설정 |
+|---|---|
+| 운영체제 | Ubuntu Server 24.04 LTS |
+| 가상화 | Windows Hyper-V |
+| Ubuntu 내부 IP | `192.168.250.10` |
+| SSH 사용자 | `seulgae` |
+| 프로젝트 경로 | `/opt/homeserver/apps/InvenCore` |
+| 운영 스크립트 | `/opt/homeserver/scripts` |
+| Compose 파일 | `compose.app.yml` |
+| Compose 프로젝트 | `invencore-app` |
+| 프론트엔드 내부 주소 | `http://127.0.0.1:8082` |
+| 외부 HTTPS 주소 | `https://seulgae-server.tailac4b36.ts.net` |
+| 이미지 저장소 | GitHub Container Registry (GHCR) |
+
+### 2. Ubuntu 서버 SSH 접속
+
+Windows PowerShell에서 실행합니다.
+
+```powershell
+ssh -i "$env:USERPROFILE\.ssh\homeserver_ed25519" seulgae@192.168.250.10
+```
+
+### 3. Docker 컨테이너 상태 확인
+
+```bash
+# 실행 중인 컨테이너 확인
+sudo docker ps
+
+# 종료된 컨테이너까지 확인
+sudo docker ps -a
+
+# CPU 및 메모리 사용량 확인
+sudo docker stats
+
+# Docker 서비스 상태 확인
+sudo systemctl status docker
+```
+
+### 4. InvenCore Docker Compose 관리
+
+```bash
+cd /opt/homeserver/apps/InvenCore
+```
+
+아래 명령어는 프로젝트 루트에서 실행합니다.
+
+**컨테이너 상태 확인**
+
+```bash
+sudo docker compose --env-file .env.docker \
+  -p invencore-app -f compose.app.yml ps
+```
+
+**실행**
+
+```bash
+sudo docker compose --env-file .env.docker \
+  -p invencore-app -f compose.app.yml up -d
+```
+
+**중지**
+
+```bash
+sudo docker compose --env-file .env.docker \
+  -p invencore-app -f compose.app.yml stop
+```
+
+**재시작**
+
+```bash
+sudo docker compose --env-file .env.docker \
+  -p invencore-app -f compose.app.yml restart
+```
+
+주의: 현재 기본 데이터베이스는 H2 인메모리 DB이므로 백엔드 컨테이너를 재시작하거나 재생성하면 회원·게시글 등 데이터가 초기화될 수 있습니다.
+
+### 5. 실시간 로그 확인
+
+**Spring Boot 백엔드 로그**
+
+```bash
+sudo docker logs -f --tail 100 invencore-app-backend-1
+```
+
+**Nginx 프론트엔드 로그**
+
+```bash
+sudo docker logs -f --tail 100 invencore-app-frontend-1
+```
+
+**최근 10분간 백엔드 오류 확인**
+
+```bash
+sudo docker logs --since 10m invencore-app-backend-1 2>&1 \
+  | grep -Ei -C 5 'ERROR|WARN|Exception|Caused by|CORS|failed'
+```
+
+**Compose 전체 로그**
+
+```bash
+cd /opt/homeserver/apps/InvenCore
+
+sudo docker compose --env-file .env.docker \
+  -p invencore-app -f compose.app.yml \
+  logs -f --tail 100
+```
+
+로그 확인을 종료하려면 `Ctrl + C`를 누릅니다. 컨테이너 자체는 종료되지 않습니다.
+
+운영 스크립트 폴더:
+
+```bash
+cd /opt/homeserver/scripts
+ls -l
+```
+
+기존 `logs.sh`는 최초 테스트 컨테이너 이름을 참조하므로, 현재 Compose 환경에 맞춰 수정하기 전까지는 위 Docker Compose 로그 명령어를 사용합니다.
+
+### 6. GitHub 최신 소스 확인
+
+```bash
+cd /opt/homeserver/apps/InvenCore
+
+# 현재 브랜치 및 변경사항 확인
+git status --short --branch
+
+# 원격 변경사항 가져오기
+git fetch origin
+
+# 서버에 아직 반영되지 않은 커밋 확인
+git log --oneline HEAD..origin/main -5
+
+# 로컬 변경사항 및 충돌 여부 확인 후 업데이트
+git pull --ff-only origin main
+```
+
+`git reset --hard`, `git clean -fd`는 별도 백업 및 확인 없이 실행하지 않습니다.
+
+### 7. GitHub Actions 및 GHCR
+
+GitHub Actions:
+
+https://github.com/seulgae/InvenCore/actions
+
+GitHub Packages:
+
+https://github.com/users/seulgae/packages
+
+워크플로 파일:
+
+```text
+.github/workflows/docker-publish.yml
+```
+
+GHCR 이미지 다운로드:
+
+```bash
+sudo docker pull ghcr.io/seulgae/invencore-backend:latest
+
+sudo docker pull ghcr.io/seulgae/invencore-frontend:latest
+```
+
+이미지 목록 확인:
+
+```bash
+sudo docker images
+```
+
+현재 GitHub Actions는 Docker 이미지 빌드 및 GHCR 게시까지 수행합니다. **Ubuntu 서버에 자동으로 재배포하는 CD는 별도 구축이 필요합니다.**
+
+또한 현재 `compose.app.yml`은 로컬 이미지 빌드 방식을 사용하므로, GHCR 이미지를 Pull한 것만으로 실행 중인 컨테이너가 교체되지는 않습니다.
+
+### 8. 애플리케이션 상태 확인
+
+**Ubuntu 내부 API 헬스체크**
+
+```bash
+curl -i http://127.0.0.1:8082/api/health
+```
+
+정상 응답 예시:
+
+```json
+{
+  "message": "서버가 정상적으로 동작 중입니다.",
+  "status": "UP"
+}
+```
+
+**프론트엔드 HTTP 상태 확인**
+
+```bash
+curl -I http://127.0.0.1:8082/
+```
+
+### 9. Tailscale Funnel 관리
+
+**Tailscale 연결 상태**
+
+```bash
+tailscale status
+```
+
+**Tailscale 서비스 확인**
+
+```bash
+sudo systemctl status tailscaled
+```
+
+**Funnel 상태 확인**
+
+```bash
+sudo tailscale funnel status
+```
+
+**Funnel 활성화**
+
+```bash
+sudo tailscale funnel --bg 8082
+```
+
+**Funnel 비활성화**
+
+```bash
+sudo tailscale funnel --https=443 off
+```
+
+외부 접속 주소:
+
+https://seulgae-server.tailac4b36.ts.net
+
+Tailscale Funnel은 외부 인터넷에 사이트 및 API를 공개합니다. 활성화 전 인증·인가와 민감 API의 보안 설정을 점검해야 합니다.
+
+### 10. Windows에서 SSH 터널 연결
+
+Windows PowerShell에서 실행합니다.
+
+```powershell
+ssh -i "$env:USERPROFILE\.ssh\homeserver_ed25519" `
+  -N -L 8082:127.0.0.1:8082 `
+  seulgae@192.168.250.10
+```
+
+Windows 브라우저 접속 주소:
+
+```text
+http://localhost:8082
+```
+
+SSH 터널 종료는 해당 PowerShell 창에서 `Ctrl + C`를 누릅니다.
+
+### 11. PostgreSQL 상태 확인
+
+PostgreSQL은 현재 InvenCore와 별개로 실행 중이며, InvenCore 애플리케이션은 H2를 사용합니다.
+
+```bash
+cd /opt/homeserver/apps/postgres
+
+# PostgreSQL 상태 확인
+sudo docker compose ps
+
+# 연결 준비 상태 확인
+sudo docker compose exec postgres \
+  pg_isready -U appuser -d homeserver
+
+# PostgreSQL 로그
+sudo docker compose logs -f --tail 100 postgres
+```
+
+PostgreSQL 데이터는 Docker Volume에 저장됩니다. DB Volume 삭제 및 `docker compose down -v`는 데이터 손실 위험이 있으므로 사용하지 않습니다.
+
+### 12. Ubuntu 서버 자원 모니터링
+
+```bash
+# 메모리 확인
+free -h
+
+# 디스크 사용량
+df -h
+
+# CPU 및 프로세스 확인
+top
+
+# Docker 디스크 사용량
+sudo docker system df
+
+# Ubuntu 서비스 상태
+systemctl --failed
+
+# UFW 방화벽 상태
+sudo ufw status numbered
+```
+
+---
+
+**운영 주의사항**
+
+- 현재 배포된 InvenCore는 H2 인메모리 DB를 사용하므로 재배포 전에 데이터 보존 여부를 확인합니다.
+- PostgreSQL 전환은 아직 완료되지 않았습니다.
+- 실제 JWT 키, DB 비밀번호, SSH 개인키, `.env.docker` 내용은 GitHub에 커밋하지 않습니다.
+- GitHub Actions의 이미지 게시 성공과 Ubuntu 서버의 배포 성공은 별개입니다.
+- Tailscale Funnel을 사용하므로 일반적인 공유기 포트포워딩은 필요하지 않습니다.
+- 외부 접속은 Windows PC, Hyper-V Ubuntu, Docker 컨테이너, Tailscale 서비스가 정상 실행 중이어야 가능합니다.
+- 서버 재배포 자동화, 데이터 영속화, Windows 호스트 및 내부망 격리 검증은 추가 구축 과제입니다.
