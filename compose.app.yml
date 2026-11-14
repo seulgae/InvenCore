@@ -11,7 +11,7 @@ services:
     environment:
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=65.0
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in an untracked environment file}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081,http://127.0.0.1:8081}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8081,http://127.0.0.1:8081,http://localhost:8082,http://127.0.0.1:8082,https://seulgae-server.tailac4b36.ts.net}
       GW_SYNC_ENABLED: ${GW_SYNC_ENABLED:-true}
       GW_SYNC_MODE: local
       BENCHMARK_ROWS: ${BENCHMARK_ROWS:-300000}

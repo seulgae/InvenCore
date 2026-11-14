@@ -25,7 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:8081,http://127.0.0.1:8081}")
+    // 기본 Origin은 application.yml 한 곳에서 관리하고 환경변수로 대체할 수 있습니다.
+    @Value("${app.cors.allowed-origins}")
     private String allowedOriginsString;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

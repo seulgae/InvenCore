@@ -6,6 +6,8 @@
 
 [Hyper-V Ubuntu Docker 배포·회원가입 403 해결](deployment/docker/README.md): 앱용 `compose.app.yml`은 기존 Kafka·Redis `compose.yml`과 별도입니다. 기본 DB는 현재 H2 메모리이며 PostgreSQL은 연결하지 않습니다.
 
+[Tailscale HTTPS 로그인·GHCR 배포](deployment/docker/HTTPS_FUNNEL.md): 정확한 HTTPS Origin 허용, 프록시 헤더 처리, 환경변수 보존 및 H2 병행 검증 절차입니다. Docker CI는 이미지 게시 전 테스트하며 Ubuntu 자동 배포는 수행하지 않습니다.
+
 ## 현재 제공하는 예제
 
 | 카드 | 구현 내용 | 실행 조건 |

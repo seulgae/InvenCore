@@ -1,0 +1,7 @@
+# Use with compose.app.yml. Pin APP_IMAGE_TAG to the successful CI commit SHA.
+# Existing build definitions are retained; deployment commands must use --no-build.
+services:
+  backend:
+    image: ghcr.io/seulgae/invencore-backend:${APP_IMAGE_TAG:?Set the successful CI commit SHA}
+  frontend:
+    image: ghcr.io/seulgae/invencore-frontend:${APP_IMAGE_TAG:?Set the successful CI commit SHA}

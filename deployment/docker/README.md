@@ -1,5 +1,7 @@
 # Hyper-V Ubuntu · Docker 앱 배포
 
+Tailscale HTTPS Origin 수정과 GHCR SHA 고정 배포는 [HTTPS Funnel 안내](HTTPS_FUNNEL.md)를 먼저 확인하세요. 해당 절차는 기존 `.env.docker`와 H2 컨테이너를 유지한 병행 검증을 제공합니다.
+
 2026-11-14 기준입니다. 회원가입 CORS 수정과 새 앱 배포 파일을 다룹니다. 기존 `docker run` 컨테이너와 PostgreSQL 스택을 유지한 채 별도 Compose 프로젝트를 먼저 검증합니다. 이 문서의 명령은 안내이며 원격 서버에서 자동 실행하지 않았습니다.
 
 ## 1. 회원가입 403 원인과 검증

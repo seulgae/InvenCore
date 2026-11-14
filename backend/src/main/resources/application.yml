@@ -48,6 +48,8 @@ spring:
 
 server:
   port: 8080
+  # CORS는 명시적 Origin 목록으로 처리합니다. 클라이언트 Forwarded 헤더를 신뢰하지 않습니다.
+  forward-headers-strategy: none
   servlet:
     encoding:
       charset: UTF-8
@@ -60,8 +62,8 @@ logging:
 
 app:
   cors:
-    # Docker 프론트 + SSH 터널의 공개 Origin도 명시적으로 허용합니다.
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8081,http://127.0.0.1:8081}
+    # 환경변수를 지정하면 이 기본 목록을 대체하므로 기존 .env.docker도 함께 갱신합니다.
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8081,http://127.0.0.1:8081,http://localhost:8082,http://127.0.0.1:8082,https://seulgae-server.tailac4b36.ts.net}
 
 jwt:
   secret: ${JWT_SECRET:v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s}
