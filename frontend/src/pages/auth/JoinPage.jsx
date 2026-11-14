@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { join, checkUsernameAvailability } from "../../services/authService";
 import { checkServerHealth } from "../../services/healthService";
+import PasswordInput from "../../components/PasswordInput";
 import "../../styles/Modal.css";
 import "../../styles/Auth.css";
 
@@ -181,8 +182,7 @@ function JoinPage({ onClose, onJoinSuccess }) {
             </div>
             <div className="form-group">
               <label htmlFor="password">비밀번호</label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 value={password}
                 onChange={handlePasswordChange}
@@ -192,8 +192,7 @@ function JoinPage({ onClose, onJoinSuccess }) {
             </div>
             <div className="form-group">
               <label htmlFor="confirmPassword">비밀번호 확인</label>
-              <input
-                type="password"
+              <PasswordInput
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}

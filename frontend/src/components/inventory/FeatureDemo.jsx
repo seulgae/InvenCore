@@ -10,6 +10,7 @@ import { join, login } from "../../services/authService";
 import RequestBoardList from "../../pages/requestboard/RequestBoardList";
 import RequestBoardRegist from "../../pages/requestboard/RequestBoardRegist";
 import ServerCapacityPage from "../../pages/servercapacity/ServerCapacityPage";
+import PasswordInput from "../PasswordInput";
 
 /** 로그인·회원가입 API를 시험할 입력 화면을 렌더링합니다. */
 function AuthDemo() {
@@ -94,9 +95,8 @@ function AuthDemo() {
           </label>
           <label>
             비밀번호
-            <input
+            <PasswordInput
               name="password"
-              type="password"
               autoComplete={mode === "login" ? "current-password" : "new-password"}
               required
               minLength={mode === "register" ? 8 : 1}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { login } from "../../services/authService";
 import { checkServerHealth } from "../../services/healthService";
+import PasswordInput from "../../components/PasswordInput";
 import "../../styles/Modal.css";
 import "../../styles/Auth.css";
 
@@ -109,8 +110,7 @@ function LoginPage({ onClose, onLoginSuccess }) {
             </div>
             <div className="form-group">
               <label htmlFor="password">비밀번호</label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 value={password}
                 onChange={handlePasswordChange}
