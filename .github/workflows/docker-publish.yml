@@ -131,6 +131,9 @@ jobs:
             -p 127.0.0.1:18082:80 "$FRONTEND_IMAGE:$GITHUB_SHA"
           python3 deployment/docker/verify-http.py http://127.0.0.1:18082 --host-query
           python3 deployment/docker/verify-external.py http://127.0.0.1:18082
+          APP_DIR="$PWD" HOST_CAPACITY_DIR="$RUNNER_TEMP/invencore-host" INFRA_NETWORK=invencore-ci \
+            KAFKA_BOOTSTRAP_SERVERS=invencore-ci-kafka:19092 REDIS_HOST=invencore-ci-redis \
+            bash deployment/docker/deploy.sh "$GITHUB_SHA" --env-file "$RUNNER_TEMP/invencore-ci.env" --check --local-images
 
       - name: Login to GHCR
         uses: docker/login-action@v3

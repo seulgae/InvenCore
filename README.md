@@ -106,6 +106,7 @@ Python 검사는 `python3 -m unittest discover -s deployment/docker -p 'test_*.p
 - [Ubuntu 직접 자원 조회 설치](deployment/monitoring/README.md)
 - [Tailscale HTTPS·CORS·SHA 배포](deployment/docker/HTTPS_FUNNEL.md)
 - [Docker 기본 안내](deployment/docker/README.md)
+- [현재 서버용 deploy.sh 설치·실행](deployment/docker/DEPLOY_SCRIPT.md)
 - [모든 예제 패키지 README·과거 실행 캡처](docs/EXAMPLES.md)
 - [Java 실습](docs/INVENTORY_PRACTICE.md) · [Kafka 실습](docs/KAFKA_PRACTICE.md) · [용어](docs/KAFKA_GLOSSARY.md)
 

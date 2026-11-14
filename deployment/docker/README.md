@@ -1,3 +1,5 @@
+> GHCR 운영 배포는 [현재 deploy.sh 안내](DEPLOY_SCRIPT.md)를 사용하세요. 아래 짧은 태그 예시는 로컬 직접 빌드용이며 GHCR SHA 태그로 사용할 수 없습니다.
+
 # Hyper-V Ubuntu · Docker 앱 배포
 
 > DB 전환 후에는 DB_URL/DB_USERNAME/DB_PASSWORD 설정이 필수입니다. 후보 앱은 별도 PostgreSQL DB/스키마로 검증하세요. 이 문서의 과거 H2 동작 설명은 전환 전 기록입니다. 저장소의 docs/POSTGRESQL.md를 먼저 확인하세요.

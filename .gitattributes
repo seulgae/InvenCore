@@ -1,1 +1,2 @@
 deployment/monitoring/*.sh text eol=lf
+deployment/docker/*.sh text eol=lf

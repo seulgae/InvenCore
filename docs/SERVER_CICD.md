@@ -103,6 +103,8 @@ sudo chmod 600 .env.docker
 
 ## 6. 서버 수동 배포
 
+권장 진입점은 [현재 서버용 deploy.sh](../deployment/docker/DEPLOY_SCRIPT.md)입니다. 전체 SHA 지정, 기존 환경 파일 유지, 인프라·소켓 점검 후 앱만 교체합니다. 아래는 같은 Compose 구성을 직접 실행할 때의 참고입니다.
+
 현재 운영 프로젝트 이름 `invencore-app`과 환경 파일을 유지합니다. 서버 로컬 변경을 확인하고 충돌은 직접 해결한 후 진행합니다. private 패키지는 `sudo docker login ghcr.io`로 인증합니다. 토큰을 명령 인수나 문서에 기록하지 않습니다.
 
 ```bash

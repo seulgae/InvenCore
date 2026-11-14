@@ -7,7 +7,7 @@ services:
       HOST_CAPACITY_SOCKET: /run/invencore-host/capacity.sock
     volumes:
       - type: bind
-        source: /run/invencore-host
+        source: ${HOST_CAPACITY_DIR:-/run/invencore-host}
         target: /run/invencore-host
         read_only: true
         bind:
