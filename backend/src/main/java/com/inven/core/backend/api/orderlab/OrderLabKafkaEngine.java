@@ -124,7 +124,8 @@ public class OrderLabKafkaEngine implements OrderLabEngine {
                 groups.add(
                     new GroupState(
                         group,
-                        container.isContainerPaused(),
+                        container.isContainerPaused() &&
+                            listeners.get(group).hasAssignments(topic, 3),
                         container.isPauseRequested(),
                         partitions
                     )
@@ -163,6 +164,7 @@ public class OrderLabKafkaEngine implements OrderLabEngine {
                 container.start();
             }
             case "replay" -> {
+                requireAssignments(listener);
                 if (!container.isContainerPaused()) {
                     throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
@@ -185,6 +187,7 @@ public class OrderLabKafkaEngine implements OrderLabEngine {
     @Override
     public synchronized void replayFrom(Group group, Map<Integer, Long> offsets) {
         var listener = listeners.get(group);
+        requireAssignments(listener);
         if (!registry.getListenerContainer(listener.getListenerId()).isContainerPaused()) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
@@ -192,5 +195,15 @@ public class OrderLabKafkaEngine implements OrderLabEngine {
             );
         }
         listener.replayOffsets(offsets);
+    }
+
+    /** 재시작 직후 이전 커밋 lag가 0이어도 새 소비자의 seek 콜백은 아직 없을 수 있습니다. */
+    private void requireAssignments(OrderLabKafkaConsumer listener) {
+        if (!listener.hasAssignments(topic, 3)) {
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Kafka 파티션 할당이 준비 중입니다. 잠시 후 다시 시도하세요."
+            );
+        }
     }
 }

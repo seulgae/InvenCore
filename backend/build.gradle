@@ -54,6 +54,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = 'full'
+	}
 	systemProperty 'orderlab.practice', providers.gradleProperty('orderLabPractice').isPresent().toString()
 	systemProperty 'inventory.practice', providers.gradleProperty('inventoryPractice').isPresent().toString()
 }

@@ -6,9 +6,11 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.AbstractConsumerSeekAware;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.ObjectMapper;
 
 public class OrderLabKafkaConsumer extends AbstractConsumerSeekAware {
@@ -88,7 +90,27 @@ public class OrderLabKafkaConsumer extends AbstractConsumerSeekAware {
      * 바꾸지 않습니다.
      */
     public void replayBeginning() {
+        requireAssignments();
         seekToBeginning();
+    }
+
+    /** 정지 요청과 파티션 재할당 완료는 별개입니다. 세 파티션의 seek 콜백 준비를 확인합니다. */
+    public boolean hasAssignments(String topic, int partitions) {
+        var callbacks = getTopicsAndCallbacks();
+        for (int partition = 0; partition < partitions; partition++) {
+            var assigned = callbacks.get(new TopicPartition(topic, partition));
+            if (assigned == null || assigned.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    private void requireAssignments() {
+        if (getTopicsAndCallbacks().isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Kafka 파티션 할당이 준비 중입니다. 잠시 후 다시 시도하세요."
+            );
+        }
     }
 
     /**
@@ -96,6 +118,7 @@ public class OrderLabKafkaConsumer extends AbstractConsumerSeekAware {
      * seek 요청. 이전 실행 전체를 되감지 않습니다.
      */
     public void replayOffsets(java.util.Map<Integer, Long> offsets) {
+        requireAssignments();
         getTopicsAndCallbacks().forEach((partition, callbacks) -> {
             Long offset = offsets.get(partition.partition());
             if (offset != null) {

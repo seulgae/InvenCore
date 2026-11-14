@@ -225,6 +225,9 @@ class OrderLabKafkaTests {
     }
 
     private void await(BooleanSupplier condition) throws Exception {
+        var caller = StackWalker.getInstance().walk(frames ->
+            frames.skip(1).findFirst().orElseThrow()
+        );
         Instant deadline = Instant.now().plusSeconds(25);
         while (Instant.now().isBefore(deadline)) {
             try {
@@ -235,6 +238,6 @@ class OrderLabKafkaTests {
             }
             Thread.sleep(150);
         }
-        fail("Kafka 실습 상태 반영 시간 초과");
+        fail("Kafka 실습 상태 반영 시간 초과: " + caller);
     }
 }
