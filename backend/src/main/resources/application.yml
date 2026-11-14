@@ -72,11 +72,13 @@ jwt:
 file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
-# Optional SSH example; no server details or keys are bundled.
+# Host snapshots are collected on Ubuntu; SSH remains an explicit optional mode.
 feature:
   server-capacity:
-    enabled: ${FEATURE_SERVER_CAPACITY_ENABLED:false}
+    enabled: ${FEATURE_SERVER_CAPACITY_ENABLED:true}
 server-capacity:
+  mode: ${SERVER_CAPACITY_MODE:host}
+  host-file: ${HOST_CAPACITY_FILE:/run/invencore-host/capacity.json}
   pem-file: ${SSH_PEM_FILE:}
   servers: ${MONITORED_SERVERS:}
 

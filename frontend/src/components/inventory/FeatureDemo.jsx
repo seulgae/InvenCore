@@ -302,7 +302,7 @@ function LiveFeatureDemo({ item }) {
       </div>
       {item.id === "capacity" && (
         <p className="demo-configuration-note">
-          SSH 모니터 · 기능 활성화, 서버 목록 및 SSH 키 설정 필요 · 기본 비활성화
+          Ubuntu 호스트 모니터 · 로그인 및 호스트 수집기 연결 필요 · 10초 주기 수집
         </p>
       )}
       <JavaPracticePanel key={item.id} item={item} />

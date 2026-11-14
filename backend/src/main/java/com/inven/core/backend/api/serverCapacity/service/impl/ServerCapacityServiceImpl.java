@@ -26,14 +26,14 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "feature.server-capacity.enabled", havingValue = "true")
+@ConditionalOnExpression("${feature.server-capacity.enabled:true} and '${server-capacity.mode:host}' == 'ssh'")
 public class ServerCapacityServiceImpl implements ServerCapacityService {
 
     private final ServerCapacityRepository serverCapacityRepository;

@@ -20,7 +20,7 @@
 | 파일 첨부 | 게시글과 파일 전송, 확장자 검사, 다운로드·교체·삭제 | 로그인 불필요, 백엔드 필요 |
 | 댓글과 답글 | 부모 ID 기반 댓글·답글 조회·등록·수정·삭제 | 로그인 불필요, 백엔드 필요 |
 | JWT 인증 | 회원가입, BCrypt 비밀번호 해시, JWT 로그인 | 백엔드 필요 |
-| 서버용량조사 | Linux 서버 자원 수집·결과 저장 | 기본 비활성, 별도 설정과 로그인 필요 |
+| 서버용량조사 | Ubuntu VM 전체 CPU·메모리·디스크 모니터링 | 호스트 수집기·읽기 전용 연결·로그인 필요 |
 | AWS CI/CD 배포 가이드 | 기존 배포 이력·명령어·설정·배포 자동화·복구 참고 자료 | AWS 미연결, 템플릿 비활성 |
 
 각 카드에 구현 노트, 실행, 소스 코드, 아키텍처, 클래스·메서드·라이브러리 탭이 있습니다. 소스·구조도는 백엔드 없이 확인할 수 있습니다. GW 예제는 기본 로컬 모드의 내부 이벤트·메모리 캐시와 외부 모드의 Kafka·Redis를 제공합니다. 성능 실험은 MyBatis Mapper XML을 사용하며, 기존 게시판·인증과 GW 예제는 JPA를 사용합니다.
@@ -112,7 +112,8 @@ frontend/
 | `GET /api/requestboards/download/{id}` | 첨부 다운로드 |
 | `GET /api/comments/requestboard/{id}` | 댓글·답글 조회 |
 | `POST /api/comments`, `PUT`, `DELETE /api/comments/{id}` | 댓글·답글 변경 |
-| `GET /api/server-capacity`, `GET /api/server-capacity/servers`, `POST /api/server-capacity/check` | 선택적 서버용량조사 |
+| `GET /api/server-capacity/host` | 인증된 Ubuntu 전체 자원 모니터링 |
+| `GET /api/server-capacity`, `GET /api/server-capacity/servers`, `POST /api/server-capacity/check` | 선택적인 기존 SSH 모드 |
 
 게시판 API는 공용 샘플 데이터를 변경합니다. 게시판 요청에는 JWT를 전송하지 않으며, JWT 예제와 서버용량조사의 인증은 별도로 유지됩니다.
 
@@ -220,11 +221,16 @@ Kafka는 파티션 안의 로그 순서를 제공하며 파티션 사이의 전�
 
 실제 브로커 복제 장애·성능 벤치마크·Kafka Streams는 구현 범위에 포함하지 않습니다. H2와 로컬 모형은 서버 재시작 시 초기화됩니다. 외부 모드는 원본 주문이 없는 이전 Kafka 이벤트를 무시합니다.
 
-### 선택적 서버용량조사
+### Ubuntu 호스트 용량 조사
+
+기본은 `SERVER_CAPACITY_MODE=host`입니다. Ubuntu에서 전용 수집기를 실행하고 집계 디렉터리를 컨테이너에 읽기 전용으로 연결합니다. CPU·메모리·루트 디스크를 10초마다 표시하며, 오래된 수집 결과는 거부합니다. [설치·계산 기준·안전 배포](deployment/monitoring/README.md)를 확인하세요.
+
+### 선택적 기존 SSH 모드
 
 실제 서버 주소·계정·개인키는 저장소에 포함하지 않습니다. 기존 접속 정보와 키, 과거 배포 예시는 제거했습니다. 기능을 사용하는 경우에만 다음 값을 외부에서 지정합니다.
 
 - `FEATURE_SERVER_CAPACITY_ENABLED=true`
+- `SERVER_CAPACITY_MODE=ssh`
 - `SSH_PEM_FILE`: 실행 머신에서 읽을 수 있는 외부 개인키 파일 경로
 - `MONITORED_SERVERS`: `서버번호,타입,호스트,포트,사용자` 형식. 여러 서버는 세미콜론으로 구분
 
@@ -570,3 +576,5 @@ sudo ufw status numbered
 - Tailscale Funnel을 사용하므로 일반적인 공유기 포트포워딩은 필요하지 않습니다.
 - 외부 접속은 Windows PC, Hyper-V Ubuntu, Docker 컨테이너, Tailscale 서비스가 정상 실행 중이어야 가능합니다.
 - 서버 재배포 자동화, 데이터 영속화, Windows 호스트 및 내부망 격리 검증은 추가 구축 과제입니다.
+
+Ubuntu 전체 자원 모니터링 설정: [호스트 수집기·읽기 전용 연결](deployment/monitoring/README.md).

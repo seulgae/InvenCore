@@ -334,6 +334,39 @@ const sources = {
   ],
   capacity: [
     source(
+      "backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java",
+      () =>
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java"),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityService.java",
+      () =>
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityService.java"),
+    ),
+    source(
+      "backend/src/main/java/com/inven/core/backend/api/serverCapacity/dto/HostCapacityDTO.java",
+      () =>
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/dto/HostCapacityDTO.java"),
+    ),
+    source(
+      "deployment/monitoring/collect-host-capacity.py",
+      () => import("virtual:inventory-source/deployment/monitoring/collect-host-capacity.py"),
+    ),
+    source(
+      "deployment/monitoring/invencore-host-capacity.service",
+      () =>
+        import("virtual:inventory-source/deployment/monitoring/invencore-host-capacity.service"),
+    ),
+    source(
+      "deployment/monitoring/invencore-host-capacity.timer",
+      () => import("virtual:inventory-source/deployment/monitoring/invencore-host-capacity.timer"),
+    ),
+    source(
+      "compose.monitoring.yml",
+      () => import("virtual:inventory-source/compose.monitoring.yml"),
+    ),
+
+    source(
       "frontend/src/pages/servercapacity/ServerCapacityPage.jsx",
       () => import("../pages/servercapacity/ServerCapacityPage.jsx?raw"),
     ),
@@ -558,34 +591,35 @@ export const inventory = [
     id: "capacity",
     number: "01",
     title: "서버용량조사",
-    subtitle: "SSH RESOURCE MONITOR",
+    subtitle: "UBUNTU HOST RESOURCE MONITOR",
     category: "서버 모니터링",
     icon: ">_",
     color: "amber",
-    tags: ["SSH", "Linux", "Spring Boot"],
-    endpoint: "POST /api/server-capacity/check",
+    tags: ["Ubuntu", "Docker", "Spring Boot"],
+    endpoint: "GET /api/server-capacity/host",
     route: "/servercapacity",
-    summary: "SSH 연결부터 자원 수집, 결과 저장까지.",
+    summary: "Ubuntu 전체 자원 사용량을 한눈에.",
     description:
-      "Apache SSHD로 Linux 서버에 키 인증을 수행하고 df, free, top의 출력을 파싱합니다. 수집한 서버별 자원 정보는 JPA로 저장합니다.",
+      "Ubuntu 호스트의 CPU·메모리·루트 디스크를 수집하고, 읽기 전용 JSON을 통해 컨테이너의 인증된 API와 연결합니다. 수집 시각과 실제 사용률을 카드로 표시합니다.",
     features: [
-      "서버별 디스크 · 메모리 · CPU 조회",
-      "사용자·서버별 하루 한 번 조사 제한",
-      "기존 서버 정보 갱신과 최근 결과 조회",
+      "CPU·메모리·디스크 사용률 카드",
+      "10초 자동 갱신과 수동 새로고침",
+      "수집 중단·오래된 결과 감지",
     ],
     caveats: [
-      "기본 설정에서는 비활성화되어 있습니다. 서버 목록, SSH 키, 기능 활성화 설정이 필요합니다.",
-      "명령은 Linux 기준이며 CPU 사용률은 top 출력의 us 값을 사용합니다.",
-      "서버 연결 정보는 요청 DTO에서 받습니다. 운영 시 서버 측 허용 대상 검증이 필요합니다.",
+      "Ubuntu에 호스트 수집기와 타이머를 설치하고 compose.monitoring.yml을 함께 적용해야 합니다.",
+      "Hyper-V Ubuntu VM 전체 기준입니다. Windows 전체나 개별 컨테이너 제한을 나타내지 않습니다.",
+      "로그인이 필요하며 30초 이상 오래된 결과는 503으로 처리합니다. 기본 호스트 모드에서는 JPA에 이력을 저장하지 않습니다.",
+      "기존 SSH·JPA 예제는 SERVER_CAPACITY_MODE=ssh로 별도 활성화합니다. 현재 화면은 호스트 모니터링용입니다.",
     ],
     steps: [
-      step("CLIENT", "ServerCapacityPage", "서버 선택 및 조사 요청"),
-      step("API", "ServerCapacityController", "로그인 사용자와 요청 DTO 전달"),
-      step("SERVICE", "ServerCapacityServiceImpl", "일일 제한 확인 · SSH 명령 실행 · 파싱"),
-      step("REMOTE", "Linux / SSH", "df -h / · free -m · top -bn1"),
-      step("PERSISTENCE", "JPA Repository", "용량 정보와 조사 시각 저장"),
+      step("HOST", "collect-host-capacity.py", "Ubuntu /proc·루트 디스크 수집"),
+      step("TIMER", "systemd timer", "10초마다 집계 JSON 원자적 교체"),
+      step("MOUNT", "compose.monitoring.yml", "수집 디렉터리만 읽기 전용 공유"),
+      step("API", "HostCapacityService", "형식·수집 시각 검증 후 인증된 조회"),
+      step("CLIENT", "ServerCapacityPage", "사용률 카드와 수집 시각 표시"),
     ],
-    tables: ["ServerCapacity", "ServerCapacityCheckLog"],
+    tables: [],
     sources: sources.capacity,
   },
   {

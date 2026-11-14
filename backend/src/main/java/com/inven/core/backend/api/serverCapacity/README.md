@@ -1,3 +1,19 @@
+# 현재 기본 기능: Ubuntu 호스트 모니터링
+
+2026-11-14부터 기본 실행은 **host 모드**입니다. `GET /api/server-capacity/host`에서 로그인한 사용자가 Ubuntu VM 전체 CPU·메모리·루트 디스크 집계를 읽습니다. 컨테이너 한도나 Windows 전체 사용량이 아닙니다.
+
+- `HostCapacityController`: 인증된 읽기, no-store, 수집 실패 503.
+- `HostCapacityService`: 고정 JSON 경로, 스키마·바이트·사용률·수집 시각 검증. 30초 이상 오래된 결과 거부.
+- `HostCapacityDTO`: 집계 수치와 UTC 수집 시각. 내부 접속정보 없음.
+- Ubuntu 수집기는 전용 계정과 systemd timer로 실행하고, 집계 디렉터리만 컨테이너에 읽기 전용 공유합니다.
+- 기본 host 모드는 DB 이력 저장이나 일일 조회 제한이 없습니다. 이전 SSH 파싱 과제는 유지됩니다.
+
+설치·계산식·안전 배포: [호스트 모니터링 안내](../../../../../../../../../../deployment/monitoring/README.md).
+
+---
+
+아래는 **명시적인 `SERVER_CAPACITY_MODE=ssh`에서만 사용하는 기존 SSH·JPA 예제**의 기록입니다. 기본 host 모드나 새 UI의 동작 설명이 아닙니다. SSH 모드에는 기존 기능 활성화·서버 목록·키 설정이 필요합니다.
+
 # 서버용량조사 · 선택적 SSH 예제
 
 카드 `capacity`의 백엔드 패키지입니다. Apache SSHD로 Linux 서버에서 디스크·메모리·CPU 정보를 수집합니다. 현재 기본 설정은 비활성화이며 외부 서버 접속정보나 개인키를 제공하지 않습니다.

@@ -1,4 +1,8 @@
 export const methodNotes = {
+  getHostCapacity: [
+    "Ubuntu 전체 자원 조회",
+    "인증된 요청 → 고정 수집 파일 검증 → 최신 집계 응답 · 캐시 저장 금지",
+  ],
   selectPartition: [
     "직접 구현하는 파티션 선택",
     "TODO 1: KEYED의 동일 주문 고정·다른 주문 분산, SPREAD의 단계별 순환 분배를 작성합니다. LEARNER 이벤트의 실제 목적지에 적용됩니다.",

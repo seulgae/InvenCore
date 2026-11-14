@@ -39,6 +39,7 @@ jobs:
           chmod +x backend/gradlew
           ./backend/gradlew -p backend --no-daemon test
           python3 -m unittest discover -s deployment/docker -p 'test_*.py' -v
+          python3 -m unittest discover -s deployment/monitoring -p 'test_*.py' -v
 
       - name: Build backend for verification
         uses: docker/build-push-action@v6
@@ -68,6 +69,7 @@ jobs:
           printf 'JWT_SECRET=%s\n' "$(openssl rand -hex 48)" > "$RUNNER_TEMP/invencore-ci.env"
           export APP_IMAGE_TAG="$GITHUB_SHA"
           docker compose --env-file "$RUNNER_TEMP/invencore-ci.env" -f compose.app.yml -f compose.ghcr.yml config --quiet
+          docker compose --env-file "$RUNNER_TEMP/invencore-ci.env" -f compose.app.yml -f compose.ghcr.yml -f compose.monitoring.yml config --quiet
           docker run --rm --add-host backend:127.0.0.1 "$FRONTEND_IMAGE:$GITHUB_SHA" nginx -t
           docker network create invencore-ci
           docker run -d --name invencore-ci-probe --network invencore-ci --network-alias backend \

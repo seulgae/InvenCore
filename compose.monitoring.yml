@@ -1,0 +1,14 @@
+# Optional Ubuntu host snapshot mount. Install the host collector before enabling.
+services:
+  backend:
+    environment:
+      FEATURE_SERVER_CAPACITY_ENABLED: "true"
+      SERVER_CAPACITY_MODE: host
+      HOST_CAPACITY_FILE: /run/invencore-host/capacity.json
+    volumes:
+      - type: bind
+        source: /var/lib/invencore-host-capacity
+        target: /run/invencore-host
+        read_only: true
+        bind:
+          create_host_path: false

@@ -4,6 +4,8 @@ import ArchitectureView from "./ArchitectureView";
 
 /** 소스 경로와 확장자로 파일의 역할을 분류합니다. */
 const fileRole = (path) => {
+  if (path.startsWith("deployment/monitoring/"))
+    return path.endsWith(".py") ? "호스트 수집 로직" : "수집기 설정";
   if (path.startsWith("docs/")) return "배포 문서";
   if (path.startsWith("deployment/")) return path.endsWith(".sh") ? "배포 명령" : "배포 설정";
   if (path.includes("/service/")) return "처리 로직";

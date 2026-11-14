@@ -10,7 +10,7 @@
 
 | 카드 | 백엔드·설정 패키지 README | 프론트엔드 패키지 README | 실제 화면 / 확인 범위 |
 | --- | --- | --- | --- |
-| 서버용량조사 | [serverCapacity](../backend/src/main/java/com/inven/core/backend/api/serverCapacity/README.md) | [servercapacity](../frontend/src/pages/servercapacity/README.md) | [파싱 과제 검사](screenshots/capacity-practice.jpg). SSH는 기본 비활성, 실제 원격 수집 안 함 |
+| 서버용량조사 | [serverCapacity](../backend/src/main/java/com/inven/core/backend/api/serverCapacity/README.md) | [servercapacity](../frontend/src/pages/servercapacity/README.md) | [파싱 과제 검사](screenshots/capacity-practice.jpg). 이전 파싱 과제 캡처. 현재 호스트 모니터링 설치는 [별도 안내](../deployment/monitoring/README.md) 참조 |
 | JWT 인증 | [member](../backend/src/main/java/com/inven/core/backend/api/member/README.md) | [auth](../frontend/src/pages/auth/README.md) | [회원가입](screenshots/auth-registered.jpg) · [로그인](screenshots/auth-logged-in.jpg) |
 | 요청 게시판 | [requestboard · CRUD](../backend/src/main/java/com/inven/core/backend/api/requestboard/README.md) | [requestboard](../frontend/src/pages/requestboard/README.md) | [실제 등록 후 목록](screenshots/board-list.jpg) |
 | 파일 첨부 | [requestboard · Multipart](../backend/src/main/java/com/inven/core/backend/api/requestboard/README.md) | [requestboard](../frontend/src/pages/requestboard/README.md) | [첨부 링크](screenshots/files-attached.jpg), 실제 다운로드 원문 일치 확인 |

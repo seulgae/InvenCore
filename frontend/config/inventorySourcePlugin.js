@@ -4,6 +4,14 @@ import { fileURLToPath } from "node:url";
 
 // Public implementation allowlist. Runtime config/keys are excluded; only sanitized deployment templates are listed.
 const allowedPaths = new Set([
+  "backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java",
+  "backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityService.java",
+  "backend/src/main/java/com/inven/core/backend/api/serverCapacity/dto/HostCapacityDTO.java",
+  "deployment/monitoring/collect-host-capacity.py",
+  "deployment/monitoring/invencore-host-capacity.service",
+  "deployment/monitoring/invencore-host-capacity.timer",
+  "compose.monitoring.yml",
+
   "docs/AWS_CICD.md",
   "deployment/templates/ci-cd.yml",
   "deployment/templates/package-release.sh",

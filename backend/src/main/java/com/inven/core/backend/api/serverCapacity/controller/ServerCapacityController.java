@@ -11,7 +11,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/server-capacity")
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "feature.server-capacity.enabled", havingValue = "true")
+@ConditionalOnExpression("${feature.server-capacity.enabled:true} and '${server-capacity.mode:host}' == 'ssh'")
 public class ServerCapacityController {
 
     private final ServerCapacityService serverCapacityService;
