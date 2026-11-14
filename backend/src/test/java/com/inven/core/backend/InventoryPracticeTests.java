@@ -34,7 +34,7 @@ class InventoryPracticeTests {
         UserFilesCode f,
         UserCommentsCode t
     ) {
-        return new InventoryPractice(p, i, g, c, a, b, f, t);
+        return new InventoryPractice(PostgreSqlIntegrationTest.dataSource(), p, i, g, c, a, b, f, t);
     }
 
     @Test
@@ -59,7 +59,7 @@ class InventoryPracticeTests {
     }
 
     @Test
-    void contractsAcceptIndependentWorkingImplementationsIncludingActualH2Plan() {
+    void contractsAcceptIndependentWorkingImplementationsIncludingActualPostgreSqlPlan() {
         // Test-only solutions validate the checker. They do not fill or bypass the learner files.
         var p = mock(UserParallelCode.class);
         when(p.aggregate(anyList(), anyBoolean(), any())).thenAnswer(call -> {
@@ -154,6 +154,8 @@ class InventoryPracticeTests {
             assertTrue(practice.inspect(id).ready(), () ->
                 practice.inspect(id).checks().toString()
             );
+        // Each run must rollback its temporary table/index, including on pooled connections.
+        assertTrue(practice.inspect("index-tuning").ready());
         // A wrong SQL must be caught even if a named index is created.
         when(i.sumSql()).thenReturn(
             "SELECT COALESCE(SUM(amount),0) AS total FROM practice_orders WHERE id = ?"

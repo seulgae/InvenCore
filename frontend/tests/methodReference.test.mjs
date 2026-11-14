@@ -22,6 +22,17 @@ test("여러 줄의 Mapper 파라미터와 애너테이션을 빠짐없이 읽�
   }
 });
 
+test("Mapper의 패키지 이름과 중첩 제네릭 반환 타입을 읽는다", () => {
+  const methods = extractMethods(`
+interface BenchmarkMapper {
+    /** 실행 계획을 반환합니다. */
+    java.util.List<String> explain(@Param("state") int state);
+    java.util.Map<String, java.util.List<Long>> grouped();
+}`, true);
+  assert.deepEqual(methods.map((method) => method.name), ["explain", "grouped"]);
+  assert.match(methods[0].params, /@Param\("state"\) int state/);
+});
+
 test("이름이 같은 메서드도 각 소스의 Javadoc을 우선 표시한다", () => {
   const source = `
 /** 첫 번째 원본의 버전을 조회합니다. */

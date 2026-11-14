@@ -12,7 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnExpression(
-    "${gw-sync.enabled:true} && '${gw-sync.mode:local}'.equalsIgnoreCase('external')"
+    "${gw-sync.enabled:true} && '${gw-sync.mode:external}'.equalsIgnoreCase('external')"
 )
 public class GwEventListener {
 

@@ -1,4 +1,4 @@
-# Independent from compose.yml (optional Kafka/Redis) and the existing PostgreSQL stack.
+# Connects to the existing Kafka/Redis stack through its external Docker network.
 services:
   backend:
     image: invencore-backend:${APP_IMAGE_TAG:-local}
@@ -10,14 +10,27 @@ services:
     cpus: 2
     environment:
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=65.0
+      DB_URL: ${DB_URL:?Set DB_URL to the existing PostgreSQL JDBC URL}
+      DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in an untracked environment file}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8081,http://127.0.0.1:8081,http://localhost:8082,http://127.0.0.1:8082,https://seulgae-server.tailac4b36.ts.net}
       GW_SYNC_ENABLED: ${GW_SYNC_ENABLED:-true}
-      GW_SYNC_MODE: local
+      GW_SYNC_MODE: ${GW_SYNC_MODE:-external}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:19092}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_USERNAME: ${REDIS_USERNAME:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       BENCHMARK_ROWS: ${BENCHMARK_ROWS:-300000}
       FILE_UPLOAD_DIR: /app/uploads
     volumes:
       - uploads:/app/uploads
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - infrastructure
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/api/health"]
       interval: 10s
@@ -47,5 +60,10 @@ services:
       start_period: 10s
 
 volumes:
-  # Attachments only. This does NOT persist H2 in-memory tables.
+  # Attachments only. PostgreSQL data is managed by the existing DB stack.
   uploads:
+
+networks:
+  infrastructure:
+    external: true
+    name: ${INFRA_NETWORK:-invencore-infra-net}

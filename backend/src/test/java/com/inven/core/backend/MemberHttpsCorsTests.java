@@ -17,11 +17,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
     properties = {
         "gw-sync.enabled=false",
         "benchmark.rows=1000",
-        "spring.datasource.url=jdbc:h2:mem:member-https-cors;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
         "spring.jpa.hibernate.ddl-auto=create-drop",
     }
 )
-class MemberHttpsCorsTests {
+class MemberHttpsCorsTests extends PostgreSqlIntegrationTest {
 
     private static final String HTTPS_ORIGIN = "https://seulgae-server.tailac4b36.ts.net";
     private static final String[] ORIGINS = {

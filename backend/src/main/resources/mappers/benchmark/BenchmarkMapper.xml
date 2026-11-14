@@ -30,7 +30,7 @@
     <insert id="seedPlain">
         INSERT INTO bench_plain
         SELECT X, MOD(X, 10000), MOD(FLOOR(X / 10000.0), 4), MOD(X * 7919, 100000)
-        FROM SYSTEM_RANGE(1, #{rows})
+        FROM generate_series(1::bigint, CAST(#{rows} AS bigint)) AS series(x)
     </insert>
 
     <!-- 인덱스 유무만 비교할 수 있도록 기준 테이블의 데이터를 그대로 복제합니다. -->
@@ -45,12 +45,12 @@
 
     <!-- 옵티마이저가 사용할 테이블 통계를 갱신합니다. -->
     <update id="analyze">
-        ANALYZE TABLE <include refid="table"/>
+        ANALYZE <include refid="table"/>
     </update>
 
-    <!-- 측정 환경에 표시할 H2 버전을 조회합니다. -->
+    <!-- 측정 환경에 표시할 PostgreSQL 버전을 조회합니다. -->
     <select id="databaseVersion" resultType="string">
-        SELECT H2VERSION()
+        SELECT version()
     </select>
 
     <!-- 고객 번호와 상태를 바인딩해 합계를 조회하며 빈 결과는 0으로 반환합니다. -->

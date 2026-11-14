@@ -1,12 +1,18 @@
-"""Ubuntu 호스트에서 실행합니다. 집계 수치만 JSON으로 원자적으로 교체합니다."""
+"""Ubuntu 호스트에 직접 질의할 때마다 새로 측정하는 로컬 조회 서비스입니다."""
 import argparse
 from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
 import shutil
-import tempfile
 import time
+import socket
+import socketserver
+import stat
+import signal
+import sys
+import threading
+import errno
 
 
 def cpu_sample(text):
@@ -44,23 +50,6 @@ def memory_usage(text):
     return total, total - available, available
 
 
-def atomic_write(destination, data):
-    destination = Path(destination)
-    # 디렉터리는 운영자가 준비합니다. 파일 교체 중에도 독자는 완성된 JSON만 읽습니다.
-    descriptor, temporary = tempfile.mkstemp(prefix=".capacity-", dir=destination.parent)
-    try:
-        with os.fdopen(descriptor, "w", encoding="utf-8") as output:
-            json.dump(data, output, allow_nan=False)
-            output.write("\n")
-            output.flush()
-            os.fsync(output.fileno())
-        os.chmod(temporary, 0o644)
-        os.replace(temporary, destination)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
-
-
 def collect():
     stat = Path("/proc/stat")
     before = cpu_sample(stat.read_text())
@@ -83,8 +72,98 @@ def collect():
     }
 
 
+class CapacityHandler(socketserver.StreamRequestHandler):
+    def handle(self):
+        self.request.settimeout(2)
+        try:
+            # 고정된 조회 명령만 허용합니다. 입력을 셸 명령으로 실행하지 않습니다.
+            if self.rfile.readline(65) != b"CAPACITY/1\n":
+                result = {"error": "INVALID_REQUEST"}
+            else:
+                try:
+                    result = self.server.measure()
+                except Exception:
+                    result = {"error": "UNAVAILABLE"}
+            self.wfile.write(json.dumps(result, allow_nan=False).encode() + b"\n")
+        except (OSError, ValueError):
+            pass  # 연결 종료가 다른 조회에 영향을 주지 않습니다.
+
+
+class HostQueryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    address_family = getattr(socket, "AF_UNIX", socket.AF_INET)
+    daemon_threads = True
+    request_queue_size = 8
+
+    def __init__(self, address, measure=collect):
+        self.measure = measure
+        self.slots = threading.BoundedSemaphore(4)
+        super().__init__(address, CapacityHandler)
+        if isinstance(address, str):
+            # 로컬 사용자에게 /proc와 같은 집계 정보 조회만 허용합니다.
+            os.chmod(address, 0o666)
+
+    def process_request(self, request, client_address):
+        if not self.slots.acquire(blocking=False):
+            try:
+                request.settimeout(1)
+                request.sendall(b'{"error":"BUSY"}\n')
+            finally:
+                self.shutdown_request(request)
+            return
+        try:
+            super().process_request(request, client_address)
+        except Exception:
+            self.slots.release()
+            raise
+
+    def process_request_thread(self, request, client_address):
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self.slots.release()
+
+
+def prepare_socket(path):
+    destination = Path(path)
+    if not destination.exists():
+        return
+    if not stat.S_ISSOCK(destination.lstat().st_mode):
+        raise ValueError("Refusing to replace a non-socket path")
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as probe:
+        probe.settimeout(1)
+        try:
+            probe.connect(path)
+        except OSError as error:
+            if error.errno not in (errno.ECONNREFUSED, errno.ENOENT):
+                raise
+            destination.unlink(missing_ok=True)
+        else:
+            raise ValueError("Host capacity service is already running")
+
+
+def serve(path):
+    prepare_socket(path)
+    stopped = threading.Event()
+    signal.signal(signal.SIGTERM, lambda *_: stopped.set())
+    signal.signal(signal.SIGINT, lambda *_: stopped.set())
+    with HostQueryServer(path) as server:
+        server.timeout = 0.5
+        try:
+            while not stopped.is_set():
+                server.handle_request()
+        finally:
+            Path(path).unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--socket")
+    mode.add_argument("--once", action="store_true")
     args = parser.parse_args()
-    atomic_write(args.output, collect())
+    if not sys.platform.startswith("linux"):
+        parser.error("Run on the Ubuntu host, not inside the application container")
+    if args.once:
+        print(json.dumps(collect(), allow_nan=False))
+    else:
+        serve(args.socket)

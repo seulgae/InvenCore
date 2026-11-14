@@ -1,7 +1,9 @@
 import importlib.util
 import json
+import socket
+import threading
+from unittest.mock import Mock
 from pathlib import Path
-import tempfile
 import unittest
 
 spec = importlib.util.spec_from_file_location("collector", Path(__file__).with_name("collect-host-capacity.py"))
@@ -27,13 +29,53 @@ class HostCapacityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             collector.memory_usage("MemTotal: 100 kB\nMemAvailable: 400 kB\n")
 
-    def test_atomic_replace_preserves_only_latest_snapshot(self):
-        with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "capacity.json"
-            collector.atomic_write(output, {"schemaVersion": 1})
-            collector.atomic_write(output, {"schemaVersion": 2})
-            self.assertEqual(json.loads(output.read_text()), {"schemaVersion": 2})
-            self.assertEqual(list(Path(directory).iterdir()), [output])
+
+class QueryServerTests(unittest.TestCase):
+    def setUp(self):
+        # Test handler semantics on a loopback socket on every platform.
+        class TestServer(collector.HostQueryServer):
+            address_family = socket.AF_INET
+        self.measure = Mock(side_effect=lambda: {"schemaVersion": 1, "sample": self.measure.call_count})
+        self.server = TestServer(("127.0.0.1", 0), self.measure)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=2)
+
+    def request(self, command=b"CAPACITY/1\n"):
+        with socket.create_connection(self.server.server_address, timeout=2) as connection:
+            connection.sendall(command)
+            with connection.makefile("rb") as response:
+                return json.loads(response.readline())
+
+    def test_only_requests_trigger_measurement_and_every_request_is_fresh(self):
+        self.measure.assert_not_called()
+        self.assertEqual(self.request()["sample"], 1)
+        self.assertEqual(self.request()["sample"], 2)
+        self.assertEqual(self.measure.call_count, 2)
+
+    def test_invalid_command_never_executes_collection(self):
+        self.assertEqual(self.request(b"rm -rf /\n"), {"error": "INVALID_REQUEST"})
+        self.assertEqual(self.request(b"X" * 100 + b"\n"), {"error": "INVALID_REQUEST"})
+        self.measure.assert_not_called()
+
+    def test_measurement_failure_returns_error_not_previous_success(self):
+        self.request()
+        self.measure.side_effect = OSError("read failed")
+        self.assertEqual(self.request(), {"error": "UNAVAILABLE"})
+
+    def test_busy_requests_are_bounded(self):
+        for _ in range(4):
+            self.server.slots.acquire()
+        try:
+            self.assertEqual(self.request(), {"error": "BUSY"})
+            self.measure.assert_not_called()
+        finally:
+            for _ in range(4):
+                self.server.slots.release()
 
 
 if __name__ == "__main__":

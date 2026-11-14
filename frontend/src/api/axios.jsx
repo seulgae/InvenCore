@@ -8,7 +8,7 @@ const isLoginRequest = (config) => /\/members\/(login|register)(?:\?|$)/.test(co
 
 /** 공개 게시판 API 요청인지 판별합니다. */
 const isPublicBoardRequest = (config) =>
-  /^\/(requestboards|comments|benchmarks|gw-sync|order-lab|practice)(?:\/|\?|$)/.test(
+  /^\/(guestbook|requestboards|comments|benchmarks|gw-sync|order-lab|practice)(?:\/|\?|$)/.test(
     config?.url || "",
   );
 

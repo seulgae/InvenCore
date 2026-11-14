@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 public interface OrderLabEventRepository extends JpaRepository<OrderLabEvent, Long> {
+    @Query("select coalesce(max(e.brokerOffset), -1) + 1 from OrderLabEvent e where e.brokerPartition=:partition")
+    long nextLocalOffset(@Param("partition") int partition);
+
     /**
      * 아직 발행 위치가 없는 주문 이벤트를 생성 순으로 최대 30개 조회합니다.
      */

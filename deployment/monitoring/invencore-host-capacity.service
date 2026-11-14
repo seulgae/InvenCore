@@ -1,13 +1,16 @@
 [Unit]
-Description=Collect InvenCore Ubuntu host capacity snapshot
+Description=InvenCore on-demand Ubuntu host capacity query service
 
 [Service]
-Type=oneshot
+Type=simple
 User=invencore-monitor
 Group=invencore-monitor
-StateDirectory=invencore-host-capacity
-StateDirectoryMode=0755
-ExecStart=/usr/bin/python3 /usr/local/lib/invencore-monitor/collect-host-capacity.py --output /var/lib/invencore-host-capacity/capacity.json
+RuntimeDirectory=invencore-host
+RuntimeDirectoryMode=0755
+RuntimeDirectoryPreserve=yes
+ExecStart=/usr/bin/python3 /usr/local/lib/invencore-monitor/collect-host-capacity.py --socket /run/invencore-host/capacity.sock
+Restart=on-failure
+RestartSec=2
 UMask=0022
 NoNewPrivileges=yes
 ProtectSystem=strict
@@ -17,3 +20,6 @@ PrivateDevices=yes
 RestrictAddressFamilies=AF_UNIX
 CapabilityBoundingSet=
 TimeoutStartSec=5
+
+[Install]
+WantedBy=multi-user.target

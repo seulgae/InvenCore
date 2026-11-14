@@ -22,12 +22,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "benchmark.rows=1000",
         "gw-sync.enabled=true",
         "gw-sync.mode=external",
-        "spring.datasource.url=jdbc:h2:mem:order-lab-kafka;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
     }
 )
 @EmbeddedKafka(partitions = 3, bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 @DirtiesContext
-class OrderLabKafkaTests {
+class OrderLabKafkaTests extends PostgreSqlIntegrationTest {
 
     @Autowired
     OrderLabStore store;

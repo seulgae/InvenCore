@@ -4,12 +4,18 @@ import { fileURLToPath } from "node:url";
 
 // Public implementation allowlist. Runtime config/keys are excluded; only sanitized deployment templates are listed.
 const allowedPaths = new Set([
+  "docs/SERVER_CICD.md",
+  "docs/POSTGRESQL.md",
+  "docs/KAFKA_REDIS_SERVER.md",
+  ".github/workflows/docker-publish.yml",
+  "compose.app.yml",
+  "compose.ghcr.yml",
+  "backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityClient.java",
   "backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java",
   "backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityService.java",
   "backend/src/main/java/com/inven/core/backend/api/serverCapacity/dto/HostCapacityDTO.java",
   "deployment/monitoring/collect-host-capacity.py",
   "deployment/monitoring/invencore-host-capacity.service",
-  "deployment/monitoring/invencore-host-capacity.timer",
   "compose.monitoring.yml",
 
   "docs/AWS_CICD.md",

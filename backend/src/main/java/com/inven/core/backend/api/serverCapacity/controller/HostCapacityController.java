@@ -20,7 +20,7 @@ public class HostCapacityController {
 
     private final HostCapacityService service;
 
-    /** 기존 인증 정책으로 보호되며 조회는 호스트 명령이나 파일 쓰기를 실행하지 않습니다. */
+    /** 기존 인증 정책을 유지하며 요청마다 Ubuntu 호스트 조회 서비스에 실제 측정을 요청합니다. */
     @GetMapping("/api/server-capacity/host")
     public ResponseEntity<?> getHostCapacity() {
         try {

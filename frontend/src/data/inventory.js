@@ -1,5 +1,5 @@
 import { inventoryPractice } from "./inventoryPractice";
-import { deploymentSources } from "./deploymentGuide";
+import { deploymentSources } from "./serverDeploymentGuide";
 // 소스 뷰어에는 명시적으로 선택한 구현 파일만 공개합니다.
 // 런타임 설정·인증정보·개인키는 가져오지 않으며 배포 예시는 민감정보가 없는 템플릿만 사용합니다.
 const backend = "../../../backend/src/main/java/com/inven/core/backend/";
@@ -334,6 +334,11 @@ const sources = {
   ],
   capacity: [
     source(
+      "backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityClient.java",
+      () =>
+        import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/service/HostCapacityClient.java"),
+    ),
+    source(
       "backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java",
       () =>
         import("virtual:inventory-source/backend/src/main/java/com/inven/core/backend/api/serverCapacity/controller/HostCapacityController.java"),
@@ -356,10 +361,6 @@ const sources = {
       "deployment/monitoring/invencore-host-capacity.service",
       () =>
         import("virtual:inventory-source/deployment/monitoring/invencore-host-capacity.service"),
-    ),
-    source(
-      "deployment/monitoring/invencore-host-capacity.timer",
-      () => import("virtual:inventory-source/deployment/monitoring/invencore-host-capacity.timer"),
     ),
     source(
       "compose.monitoring.yml",
@@ -411,7 +412,7 @@ export const inventory = [
     ],
     caveats: [
       "순서는 파티션 안에서만 보장됩니다. 오프셋은 업무 순번이 아니며 파티션 사이에서 비교할 수 없습니다.",
-      "기본 local 모드는 교육용 모형입니다. GW_SYNC_MODE=external일 때 실제 Kafka Admin 오프셋과 소비자 처리 기록을 사용합니다.",
+      "기본 external 모드는 서버 Kafka의 Admin 오프셋과 소비자 처리 기록을 사용합니다. local은 명시적으로 선택하는 교육용 모형입니다.",
       "게임의 재처리는 현재 주문이 시작된 오프셋부터 읽으므로 이후 기록도 함께 읽을 수 있습니다. DB와 오프셋은 하나의 트랜잭션이 아니며 정확히 한 번 처리를 보장하지 않습니다.",
     ],
     steps: [
@@ -441,24 +442,23 @@ export const inventory = [
     id: "gw-sync",
     number: "08",
     title: "GW 데이터 연동",
-    subtitle: "LOCAL DEMO / KAFKA / REDIS",
+    subtitle: "SERVER / KAFKA / REDIS",
     category: "메시징·데이터 연동",
     icon: "⇄",
     color: "blue",
-    tags: ["Local Demo", "JPA", "Kafka / Redis"],
+    tags: ["Kafka", "Redis", "PostgreSQL"],
     endpoint: "POST /api/gw-sync/items",
-    summary:
-      "외부 서버 없이 두 테이블과 형상 캐시를 연동하고, Kafka·Redis 모드로 전환할 수 있습니다.",
+    summary: "서버 Kafka로 두 테이블을 비동기 연동하고 Redis에서 최신 상태와 TTL을 확인합니다.",
     description:
-      "기본 로컬 모드는 Spring 내부 이벤트와 메모리 JSON 캐시로 동작합니다. 외부 모드는 Kafka와 Redis를 사용합니다. 두 모드 모두 원본의 발행 대기 버전과 대상 revision을 비교하고 DB 커밋 후 형상을 캐시합니다.",
+      "기본 external 모드는 서버 Kafka와 Redis를 사용합니다. 명시적으로 선택한 local 모드에서는 Spring 내부 이벤트와 메모리 JSON 캐시로 동작합니다. 두 모드 모두 원본의 발행 대기 버전과 대상 revision을 비교하고 DB 커밋 후 형상을 캐시합니다.",
     features: [
       "원본 생성·수정·삭제 이벤트와 대상 반영",
       "로컬 내부 이벤트 / 외부 Kafka · 버전 검증 · 재시도",
       "메모리 / Redis JSON 형상 · TTL · 외부 모드 DLT",
     ],
     caveats: [
-      "기본 local 모드는 별도 설치 없이 실행합니다. GW_SYNC_MODE=external일 때만 Kafka·Redis가 필요합니다.",
-      "최신 상태 연동 예제이며 빠른 변경은 합쳐질 수 있습니다. H2 데이터는 재시작 시 초기화됩니다.",
+      "기본 external 모드는 설치된 서버의 Kafka·Redis에 연결합니다. 접속 환경 변수와 Docker 공용 네트워크가 필요합니다.",
+      "최신 상태 연동 예제이며 빠른 변경은 합쳐질 수 있습니다. PostgreSQL 데이터는 유지되고 로컬 메모리 상태는 재시작 시 초기화됩니다.",
       "Redis는 최종적 일관성의 파생 캐시이며, 갱신 실패 시 TTL까지 이전 형상을 보관할 수 있습니다.",
     ],
     steps: [
@@ -543,7 +543,7 @@ export const inventory = [
     category: "성능 최적화",
     icon: "⌗",
     color: "blue",
-    tags: ["MyBatis", "H2", "EXPLAIN ANALYZE"],
+    tags: ["MyBatis", "PostgreSQL", "EXPLAIN ANALYZE"],
     endpoint: "POST /api/benchmarks/indexes",
     summary: "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
     description: "동일 데이터의 두 테이블에서 복합 인덱스 유무에 따른 조회 시간을 비교합니다.",
@@ -554,7 +554,7 @@ export const inventory = [
     ],
     caveats: [
       "두 테이블 모두 기본키 인덱스가 있고 한쪽에만 추가 복합 인덱스가 있습니다.",
-      "H2 메모리 DB의 워밍업 후 결과이며 운영 DB의 디스크 성능을 대표하지 않습니다.",
+      "PostgreSQL DB의 워밍업 후 결과이며 운영 DB의 디스크 성능을 대표하지 않습니다.",
     ],
     steps: [
       {
@@ -598,26 +598,26 @@ export const inventory = [
     tags: ["Ubuntu", "Docker", "Spring Boot"],
     endpoint: "GET /api/server-capacity/host",
     route: "/servercapacity",
-    summary: "Ubuntu 전체 자원 사용량을 한눈에.",
+    summary: "버튼 한 번으로 Ubuntu에 직접 조회.",
     description:
-      "Ubuntu 호스트의 CPU·메모리·루트 디스크를 수집하고, 읽기 전용 JSON을 통해 컨테이너의 인증된 API와 연결합니다. 수집 시각과 실제 사용률을 카드로 표시합니다.",
+      "조회 버튼 → 인증된 API → Ubuntu 로컬 조회 서비스 → CPU·메모리·디스크 실측 → 응답을 카드로 표시합니다. 이전 결과 파일이나 주기 수집은 사용하지 않습니다.",
     features: [
-      "CPU·메모리·디스크 사용률 카드",
-      "10초 자동 갱신과 수동 새로고침",
-      "수집 중단·오래된 결과 감지",
+      "버튼 요청마다 현재 자원 측정",
+      "CPU 0.5초 표본과 메모리·디스크 즉시 조회",
+      "연결 시간 제한·동시 조회 제한·인증 유지",
     ],
     caveats: [
-      "Ubuntu에 호스트 수집기와 타이머를 설치하고 compose.monitoring.yml을 함께 적용해야 합니다.",
+      "Ubuntu에 상주 조회 서비스를 설치하고 compose.monitoring.yml의 소켓 연결을 적용해야 합니다.",
       "Hyper-V Ubuntu VM 전체 기준입니다. Windows 전체나 개별 컨테이너 제한을 나타내지 않습니다.",
-      "로그인이 필요하며 30초 이상 오래된 결과는 503으로 처리합니다. 기본 호스트 모드에서는 JPA에 이력을 저장하지 않습니다.",
-      "기존 SSH·JPA 예제는 SERVER_CAPACITY_MODE=ssh로 별도 활성화합니다. 현재 화면은 호스트 모니터링용입니다.",
+      "로그인이 필요합니다. 자동 조회·결과 파일·DB 이력 저장 없이 클릭할 때만 측정합니다.",
+      "기존 SSH·JPA 예제는 SERVER_CAPACITY_MODE=ssh로 별도 활성화합니다.",
     ],
     steps: [
-      step("HOST", "collect-host-capacity.py", "Ubuntu /proc·루트 디스크 수집"),
-      step("TIMER", "systemd timer", "10초마다 집계 JSON 원자적 교체"),
-      step("MOUNT", "compose.monitoring.yml", "수집 디렉터리만 읽기 전용 공유"),
-      step("API", "HostCapacityService", "형식·수집 시각 검증 후 인증된 조회"),
-      step("CLIENT", "ServerCapacityPage", "사용률 카드와 수집 시각 표시"),
+      step("CLIENT", "ServerCapacityPage", "지금 조회 버튼 · 중복 클릭 방지"),
+      step("API", "HostCapacityController", "기존 JWT 인증 후 요청 전달"),
+      step("CLIENT", "HostCapacityClient", "고정 Unix 소켓에 제한 시간 내 직접 질의"),
+      step("HOST", "collect-host-capacity.py", "요청 수신 후 Ubuntu /proc·루트 디스크 실측"),
+      step("SERVICE", "HostCapacityService", "응답 수치·측정 시각 검증 · 캐시 없음"),
     ],
     tables: [],
     sources: sources.capacity,
@@ -752,36 +752,27 @@ export const inventory = [
   {
     id: "aws-cicd",
     number: "10",
-    title: "AWS CI/CD 배포 가이드",
-    subtitle: "DEPLOYMENT PLAYBOOK / REFERENCE",
+    title: "Ubuntu 서버 CI/CD 가이드",
+    subtitle: "SERVER · CI/CD · OPERATIONS",
     category: "배포·운영",
     kind: "guide",
-    icon: "↗",
+    icon: "🚀",
     color: "amber",
-    tags: ["AWS EC2", "GitHub Actions", "참고 템플릿"],
-    endpoint: "Amazon Linux 2023 · EC2 · Nginx · systemd",
-    summary: "기존 AWS 배포 이력부터 테스트·자동 배포·상태 확인·롤백까지.",
-    description:
-      "Git에서 찾은 기존 SSH 배포 이력을 정리하고, 다음 배포를 위한 OIDC·S3·SSM 기반 EC2 배포 가이드를 제공합니다. 명령어와 설정을 복사해 검토할 수 있으며, 지금 AWS에 연결하거나 자동 배포를 실행하지 않습니다.",
-    features: [
-      "기존 GitHub Actions 배포·비활성화 이력 확인",
-      "AWS 기본 설정·IAM·OIDC·SSM·Nginx·systemd 참고 구성",
-      "테스트·빌드·릴리스 패키징·상태 확인·자동/수동 롤백",
-    ],
-    caveats: [
-      "새 전용 Amazon Linux 2023 EC2를 가정한 참고 템플릿입니다. 기존 서버의 현재 구성과 실제 AWS 자원은 확인하지 않았습니다.",
-      "템플릿은 자동 실행 경로 밖에 있습니다. 실제 값 설정과 AWS 검증 후 활성화하며, 재시작 방식이므로 무중단 배포는 아닙니다.",
-      "현재 H2 메모리 DB는 재시작하면 계정·게시글·파일 메타데이터가 초기화됩니다. 운영 DB·HTTPS·백업·공개 범위는 별도 검토가 필요합니다.",
-    ],
+    tags: ["Ubuntu", "Docker", "GitHub Actions", "GHCR"],
+    endpoint: "GitHub Actions → GHCR → Ubuntu Docker Compose",
+    summary: "서버 설정부터 이미지 게시·수동 배포·HTTPS·장애 대응까지.",
+    description: "Ubuntu 설치 이후 실제 InvenCore 서버 구성을 단계별로 정리합니다. 앱과 PostgreSQL·Kafka·Redis 분리, 환경 변수, CI 검증, SHA 배포와 복구를 확인하세요.",
+    features: ["SSH·Docker·네트워크·환경 변수 설정", "GitHub Actions 테스트·GHCR 이미지 게시", "SHA 수동 배포·HTTPS·검증·롤백"],
+    caveats: ["CI는 이미지 게시까지 자동화되어 있습니다. 서버 배포는 수동입니다.", "최신 PostgreSQL·서버형 연동 이미지의 실제 서버 반영은 별도 확인이 필요합니다.", "실제 FRONTEND_PORT와 DB 네트워크를 확인하고 기존 비밀값·볼륨을 유지합니다."],
     steps: [
-      step("HISTORY", "Git history", "SSH 배포 및 비활성화 이력 확인"),
-      step("BUILD", "GitHub Actions", "테스트·빌드·동일 commit 릴리스 패키징"),
-      step("IDENTITY", "OIDC / IAM", "production 환경에 제한한 임시 역할"),
-      step("DELIVERY", "S3 / SSM", "비공개 산출물과 검토한 배포 문서"),
-      step("RUNTIME", "EC2 / systemd / Nginx", "릴리스 전환·API·정적 화면 제공"),
-      step("RECOVERY", "Health / Rollback", "상태 확인 실패 시 이전 코드 복구"),
+      step("SERVER", "Ubuntu / SSH", "접속·자원·Docker 확인"),
+      step("INFRA", "PostgreSQL / Kafka / Redis", "네트워크와 영속 데이터"),
+      step("CI", "GitHub Actions", "테스트·이미지 검증"),
+      step("REGISTRY", "GHCR", "동일 SHA 이미지 게시"),
+      step("DELIVERY", "Docker Compose", "수동 배포·HTTPS 연결"),
+      step("RECOVERY", "Health / Rollback", "기능 검증·이전 SHA 복구"),
     ],
-    tables: ["release.tar.gz", "S3 releases/", "EC2 releases/", "업로드 별도 보관"],
+    tables: ["PostgreSQL", "Kafka data", "Redis AOF", "uploads"],
     sources: deploymentSources,
   },
 ];

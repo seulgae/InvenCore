@@ -1,5 +1,7 @@
 # InvenCore AWS CI/CD 배포 가이드
 
+> DB 전환 후에는 DB_URL/DB_USERNAME/DB_PASSWORD 설정이 필수입니다. 후보 앱은 별도 PostgreSQL DB/스키마로 검증하세요. 이 문서의 과거 H2 동작 설명은 전환 전 기록입니다. 저장소의 docs/POSTGRESQL.md를 먼저 확인하세요.
+
 > 현재 상태: **설계·참고 템플릿, AWS 미연결**. 이 문서를 추가하면서 AWS 자원을 만들거나 기존 서버·자동 배포를 변경하지 않았습니다. `deployment/templates/ci-cd.yml`은 `.github/workflows/` 밖에 있어 자동 실행되지 않습니다. 실서버 검증 전 운영 완료로 보지 마세요.
 
 ## 1. 찾은 기존 배포 이력

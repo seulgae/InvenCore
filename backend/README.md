@@ -1,8 +1,8 @@
 # 백엔드 패키지 안내
 
-Java 17 · Spring Boot 4 · H2 메모리 DB를 사용하는 기술 인벤토리 예제입니다.
+Java 17 · Spring Boot 4 · PostgreSQL를 사용하는 기술 인벤토리 예제입니다.
 
-Docker의 `localhost:8081` Origin은 기본 CORS 목록에 포함합니다. 실제 컨테이너에서 `CORS_ORIGINS`를 설정하면 그 값이 기본 목록을 대체합니다. [Docker 배포와 403 재현·검증](../deployment/docker/README.md)을 참고하세요. PostgreSQL 전환은 아직 반영되어 있지 않습니다.
+Docker의 `localhost:8081` Origin은 기본 CORS 목록에 포함합니다. 실제 컨테이너에서 `CORS_ORIGINS`를 설정하면 그 값이 기본 목록을 대체합니다. [Docker 배포와 403 재현·검증](../deployment/docker/README.md)을 참고하세요. PostgreSQL 접속에 DB_URL, DB_USERNAME, DB_PASSWORD 환경변수가 필요합니다. 자세한 내용은 [전환 안내](../docs/POSTGRESQL.md)를 참고하세요.
 
 [전체 카드·실행 이미지 인덱스](../docs/EXAMPLES.md)
 

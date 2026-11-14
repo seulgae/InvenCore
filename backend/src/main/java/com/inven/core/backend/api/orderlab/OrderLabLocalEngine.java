@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
     prefix = "gw-sync",
     name = "mode",
     havingValue = "local",
-    matchIfMissing = true
+    matchIfMissing = false
 )
 public class OrderLabLocalEngine implements OrderLabEngine {
 
@@ -31,6 +31,14 @@ public class OrderLabLocalEngine implements OrderLabEngine {
     private final long[][] positions = new long[2][3];
     private final long[][] committed = new long[2][3];
     private final boolean[] paused = new boolean[2];
+
+    /** PostgreSQL keeps published records across application restarts. */
+    @jakarta.annotation.PostConstruct
+    public synchronized void restoreLogEnds() {
+        for (int partition = 0; partition < ends.length; partition++) {
+            ends[partition] = events.nextLocalOffset(partition);
+        }
+    }
 
     /**
      * 지정한 파티션의 로컬 로그 끝 위치를 증가시키고 배정된 위치를 반환합니다.

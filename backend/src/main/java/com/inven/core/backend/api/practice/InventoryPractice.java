@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class InventoryPractice {
 
+    private final javax.sql.DataSource dataSource;
     private final UserParallelCode parallel;
     private final UserIndexCode index;
     private final UserGwCode gw;
@@ -111,7 +112,7 @@ public class InventoryPractice {
                 })
             );
             case "index-tuning" -> List.of(
-                check("H2 실제 쿼리·인덱스 실행 계획", this::inspectIndex)
+                check("PostgreSQL 실제 쿼리·인덱스 실행 계획", this::inspectIndex)
             );
             case "gw-sync" -> List.of(
                 check("신규·중복·역전·삭제 후 이전 버전", () -> {
@@ -275,39 +276,43 @@ public class InventoryPractice {
     }
 
     /**
-     * 일회용 H2 DB에서 학습 SQL의 합계와 인덱스 사용 계획을 검증합니다.
+     * PostgreSQL 임시 테이블에서 학습 SQL의 합계와 인덱스 사용 계획을 검증합니다.
      */
     private void inspectIndex() throws Exception {
-        // 독립된 일회용 DB를 사용해 학습 SQL이 실제 서비스나 성능 비교 데이터에 영향을 주지 않게 합니다.
-        try (
-            var db = DriverManager.getConnection("jdbc:h2:mem:practice_" + UUID.randomUUID());
-            var statement = db.createStatement()
-        ) {
-            statement.execute(
-                "CREATE TABLE practice_orders(id BIGINT PRIMARY KEY,customer_id BIGINT,amount BIGINT)"
-            );
-            statement.execute(
-                "INSERT INTO practice_orders SELECT X, MOD(X,100), X FROM SYSTEM_RANGE(1,10000)"
-            );
-            String sql = index.sumSql();
-            long before = queryTotal(db, sql, 42);
-            expect(before == 499200, "customer_id=42의 합계는 499200입니다.");
-            expect(queryTotal(db, sql, -1) == 0, "결과가 없으면 합계는 0입니다.");
-            statement.execute(index.indexSql());
-            statement.execute("ANALYZE");
-            expect(queryTotal(db, sql, 42) == before, "인덱스 추가 전후 결과가 같아야 합니다.");
-            try (var explain = db.prepareStatement("EXPLAIN " + sql)) {
-                explain.setLong(1, 42);
-                try (var result = explain.executeQuery()) {
-                    result.next();
-                    expect(
-                        result
-                            .getString(1)
-                            .toUpperCase(Locale.ROOT)
-                            .contains("IDX_PRACTICE_CUSTOMER"),
-                        "EXPLAIN에서 customer_id 인덱스 사용을 확인하세요."
-                    );
+        // 임시 스키마와 롤백할 트랜잭션으로 실습 데이터를 분리합니다.
+        try (var db = dataSource.getConnection()) {
+            db.setAutoCommit(false);
+            try (var statement = db.createStatement()) {
+                statement.execute("SET LOCAL search_path TO pg_temp");
+                statement.execute("SET LOCAL statement_timeout = '3s'");
+                statement.execute(
+                    "CREATE TEMP TABLE practice_orders(id BIGINT PRIMARY KEY,customer_id BIGINT,amount BIGINT)"
+                );
+                statement.execute(
+                    "INSERT INTO practice_orders SELECT X, MOD(X,100), X FROM generate_series(1::bigint,10000::bigint) AS series(x)"
+                );
+                String sql = index.sumSql();
+                long before = queryTotal(db, sql, 42);
+                expect(before == 499200, "customer_id=42의 합계는 499200입니다.");
+                expect(queryTotal(db, sql, -1) == 0, "결과가 없으면 합계는 0입니다.");
+                statement.execute(index.indexSql());
+                statement.execute("ANALYZE practice_orders");
+                expect(queryTotal(db, sql, 42) == before, "인덱스 추가 전후 결과가 같아야 합니다.");
+                try (var explain = db.prepareStatement("EXPLAIN " + sql)) {
+                    explain.setLong(1, 42);
+                    try (var result = explain.executeQuery()) {
+                        StringBuilder plan = new StringBuilder();
+                        while (result.next()) plan.append(result.getString(1)).append("\n");
+                        expect(
+                            plan.toString()
+                                .toUpperCase(Locale.ROOT)
+                                .contains("IDX_PRACTICE_CUSTOMER"),
+                            "EXPLAIN에서 customer_id 인덱스 사용을 확인하세요."
+                        );
+                    }
                 }
+            } finally {
+                db.rollback();
             }
         }
     }

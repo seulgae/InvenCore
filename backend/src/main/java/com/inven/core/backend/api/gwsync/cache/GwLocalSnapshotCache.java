@@ -16,7 +16,7 @@ import tools.jackson.databind.ObjectMapper;
     prefix = "gw-sync",
     name = "mode",
     havingValue = "local",
-    matchIfMissing = true
+    matchIfMissing = false
 )
 public class GwLocalSnapshotCache implements GwCacheStore {
 

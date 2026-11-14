@@ -14,7 +14,7 @@ import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 @ConditionalOnExpression(
-    "${gw-sync.enabled:true} && '${gw-sync.mode:local}'.equalsIgnoreCase('external')"
+    "${gw-sync.enabled:true} && '${gw-sync.mode:external}'.equalsIgnoreCase('external')"
 )
 public class GwKafkaConfig {
 

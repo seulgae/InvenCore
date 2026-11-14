@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnExpression(
-    "${gw-sync.enabled:true} && '${gw-sync.mode:local}'.equalsIgnoreCase('local')"
+    "${gw-sync.enabled:true} && '${gw-sync.mode:external}'.equalsIgnoreCase('local')"
 )
 public class GwLocalEventPublisher {
 

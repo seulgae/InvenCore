@@ -16,10 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
         "gw-sync.enabled=true",
         "order-lab.publish-delay-ms=600000",
         "order-lab.consume-delay-ms=600000",
-        "spring.datasource.url=jdbc:h2:mem:order-lab-local;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
     }
 )
-class OrderLabLocalTests {
+class OrderLabLocalTests extends PostgreSqlIntegrationTest {
 
     @Autowired
     OrderLabStore store;

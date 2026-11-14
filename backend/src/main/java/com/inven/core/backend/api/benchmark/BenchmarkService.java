@@ -29,7 +29,7 @@ public class BenchmarkService {
     private volatile boolean ready;
     private List<Long> inputs;
     private double seedMillis;
-    private String database = "H2";
+    private String database = "PostgreSQL";
 
     /**
      * 측정 행 수를 검증하고 CPU 수에 맞춘 전용 ForkJoinPool을 생성합니다.
@@ -65,13 +65,13 @@ public class BenchmarkService {
         mapper.analyze(false);
         mapper.analyze(true);
         inputs = LongStream.rangeClosed(1, rows).boxed().toList();
-        database = "H2 " + mapper.databaseVersion();
+        database = mapper.databaseVersion();
         seedMillis = (System.nanoTime() - started) / 1_000_000.0;
         ready = true;
     }
 
     /**
-     * 실험 환경 조회입니다. 데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·H2 버전을
+     * 실험 환경 조회입니다. 데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·PostgreSQL 버전을
      * Status.builder()로 조립해 반환
      */
     public Status status() {
@@ -140,8 +140,8 @@ public class BenchmarkService {
      * 인덱스 비교입니다. 양쪽 EXPLAIN ANALYZE 수집 → 같은 조건의 집계 쿼리 배치를 공통 측정 함수로 비교
      */
     public Comparison indexes() {
-        String baselinePlan = mapper.explain(false, 100, 0);
-        String optimizedPlan = mapper.explain(true, 100, 0);
+        String baselinePlan = String.join("\n", mapper.explain(false, 100, 0));
+        String optimizedPlan = String.join("\n", mapper.explain(true, 100, 0));
         return measure(
             "indexes",
             "복합 인덱스 없음",

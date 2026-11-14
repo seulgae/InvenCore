@@ -14,11 +14,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
         "gw-sync.enabled=false",
-        "spring.datasource.url=jdbc:h2:mem:auth-regression;DB_CLOSE_DELAY=-1",
         "spring.jpa.hibernate.ddl-auto=create-drop",
     }
 )
-class RequestBoardAuthenticationTests {
+class RequestBoardAuthenticationTests extends PostgreSqlIntegrationTest {
 
     @LocalServerPort
     int port;

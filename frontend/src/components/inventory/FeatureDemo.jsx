@@ -302,7 +302,7 @@ function LiveFeatureDemo({ item }) {
       </div>
       {item.id === "capacity" && (
         <p className="demo-configuration-note">
-          Ubuntu 호스트 모니터 · 로그인 및 호스트 수집기 연결 필요 · 10초 주기 수집
+          Ubuntu 직접 조회 · 로그인 및 호스트 조회 서비스 연결 필요 · 버튼을 누를 때 실측
         </p>
       )}
       <JavaPracticePanel key={item.id} item={item} />

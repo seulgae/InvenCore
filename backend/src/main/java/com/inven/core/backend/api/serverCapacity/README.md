@@ -1,14 +1,14 @@
-# 현재 기본 기능: Ubuntu 호스트 모니터링
+# 현재 기본 기능: Ubuntu 직접 용량 조회
 
-2026-11-14부터 기본 실행은 **host 모드**입니다. `GET /api/server-capacity/host`에서 로그인한 사용자가 Ubuntu VM 전체 CPU·메모리·루트 디스크 집계를 읽습니다. 컨테이너 한도나 Windows 전체 사용량이 아닙니다.
+2026-11-14 기준 기본은 host 모드입니다. 로그인한 사용자가 버튼을 누르면 `GET /api/server-capacity/host`가 Ubuntu 조회 서비스에 직접 질의합니다. 이전 결과 파일·타이머·캐시는 사용하지 않습니다.
 
-- `HostCapacityController`: 인증된 읽기, no-store, 수집 실패 503.
-- `HostCapacityService`: 고정 JSON 경로, 스키마·바이트·사용률·수집 시각 검증. 30초 이상 오래된 결과 거부.
-- `HostCapacityDTO`: 집계 수치와 UTC 수집 시각. 내부 접속정보 없음.
-- Ubuntu 수집기는 전용 계정과 systemd timer로 실행하고, 집계 디렉터리만 컨테이너에 읽기 전용 공유합니다.
-- 기본 host 모드는 DB 이력 저장이나 일일 조회 제한이 없습니다. 이전 SSH 파싱 과제는 유지됩니다.
+- `HostCapacityController`: 기존 인증 유지, 요청별 측정, no-store, 실패 안내.
+- `HostCapacityClient`: 고정 Unix 소켓 질의, 총 5초 제한, 응답 8KiB 제한.
+- `HostCapacityService`: 응답 스키마·수치·이번 요청의 측정 시각 검증. 과부하 429, 연결·측정 실패 503.
+- `HostCapacityDTO`: Ubuntu VM 전체 자원 집계와 UTC 측정 시각. 접속정보 없음.
+- Ubuntu 상주 서비스는 고정 조회 요청만 처리하고 최대 4개 동시 측정으로 제한합니다.
 
-설치·계산식·안전 배포: [호스트 모니터링 안내](../../../../../../../../../../deployment/monitoring/README.md).
+[Ubuntu 설치·연결 안내](../../../../../../../../../../deployment/monitoring/README.md)
 
 ---
 
@@ -20,7 +20,7 @@
 
 [전체 예제·실행 준비·캡처 안내](../../../../../../../../../../docs/EXAMPLES.md) · [Java 실습 안내](../../../../../../../../../../docs/INVENTORY_PRACTICE.md)
 
-> 기준: 2026-11-13. 이미지는 별도 로컬 서버에서 샘플 데이터로 캡처했습니다. 기본 H2 메모리 데이터는 서버 종료 시 사라집니다.
+> 기준: 2026-11-13. 이미지는 별도 로컬 서버에서 샘플 데이터로 캡처했습니다. 현재 PostgreSQL 데이터는 앱 종료 후에도 유지됩니다. 이 문서의 기존 이미지는 전환 전 H2 환경에서 촬영했습니다.
 
 ## 현재 실행 범위
 

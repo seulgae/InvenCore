@@ -173,7 +173,7 @@ function connection(from, to, edge, width, height, index) {
 
 /** 기능 구조도와 단계 재생, 선택한 요소의 소스 연결을 표시합니다. */
 export default function ArchitectureView({ item, compact = false }) {
-  const [mode, setMode] = useState("local");
+  const [mode, setMode] = useState("external");
   const profile = useMemo(() => getArchitecture(item.id, mode), [item.id, mode]);
   const [selectedId, setSelectedId] = useState(profile.tour[0].id);
   const [step, setStep] = useState(0);

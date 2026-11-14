@@ -19,11 +19,11 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
+        "gw-sync.enabled=false",
         "benchmark.rows=2000",
-        "spring.datasource.url=jdbc:h2:mem:benchmark-tests;DB_CLOSE_DELAY=-1",
     }
 )
-class BenchmarkTests {
+class BenchmarkTests extends PostgreSqlIntegrationTest {
 
     @Autowired
     BenchmarkService service;
@@ -71,7 +71,7 @@ class BenchmarkTests {
         verify(comparison);
         assertTrue(comparison.optimizedPlan().toUpperCase().contains("IDX_BENCH_ACCOUNT_STATE"));
         assertFalse(comparison.baselinePlan().toUpperCase().contains("IDX_BENCH_ACCOUNT_STATE"));
-        assertTrue(comparison.baselinePlan().contains("scanCount"));
+        assertTrue(comparison.baselinePlan().contains("Execution Time"));
         assertEquals(8, comparison.operationsPerSample());
     }
 

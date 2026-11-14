@@ -4,7 +4,7 @@
 
 [전체 예제·실행 준비·캡처 안내](../../../../../../../../../../docs/EXAMPLES.md) · [Java 실습 안내](../../../../../../../../../../docs/INVENTORY_PRACTICE.md)
 
-> 기준: 2026-11-13. 이미지는 별도 로컬 서버에서 샘플 데이터로 캡처했습니다. 기본 H2 메모리 데이터는 서버 종료 시 사라집니다.
+> 기준: 2026-11-13. 이미지는 별도 로컬 서버에서 샘플 데이터로 캡처했습니다. 현재 PostgreSQL 데이터는 앱 종료 후에도 유지됩니다. 이 문서의 기존 이미지는 전환 전 H2 환경에서 촬영했습니다.
 
 ## 실행 순서
 
@@ -68,7 +68,7 @@ flowchart LR
 | 설정 | 기본값 / 의미 |
 | --- | --- |
 | `GW_SYNC_ENABLED` | `true` |
-| `GW_SYNC_MODE` | `local`; external은 실제 Kafka와 Redis 사용 |
+| `GW_SYNC_MODE` | 기본 `external`: 서버 Kafka와 Redis 사용. `local`은 명시적 실습 모드 |
 | `KAFKA_BOOTSTRAP_SERVERS` | 외부 모드의 브로커 주소 |
 | `REDIS_HOST`, `REDIS_PORT` | 외부 모드의 Redis 주소·포트 |
 | `gw-sync.cache-ttl-seconds` | 60초 |

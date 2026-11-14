@@ -15,7 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnExpression(
-    "${gw-sync.enabled:true} && '${gw-sync.mode:local}'.equalsIgnoreCase('external')"
+    "${gw-sync.enabled:true} && '${gw-sync.mode:external}'.equalsIgnoreCase('external')"
 )
 public class GwEventPublisher {
 

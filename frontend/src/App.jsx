@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import GuestbookPage from "./pages/GuestbookPage";
 import MainPage from "./pages/MainPage";
 import InventoryPage from "./pages/InventoryPage";
 import InventoryDetailPage from "./pages/InventoryDetailPage";
@@ -31,6 +32,7 @@ function App() {
           {/* ✅ MainPage가 레이아웃 역할을 하도록 중첩 구조로 변경 */}
           <Route path="/" element={<MainPage />}>
             <Route index element={<InventoryPage />} />
+            <Route path="guestbook" element={<GuestbookPage />} />
             <Route path="inventory/:itemId" element={<InventoryDetailPage />} />
             <Route path="requestboard" element={<RequestBoardList />} />
             <Route path="requestboard/regist" element={<RequestBoardRegist />} />

@@ -67,6 +67,7 @@ jobs:
         run: |
           umask 077
           printf 'JWT_SECRET=%s\n' "$(openssl rand -hex 48)" > "$RUNNER_TEMP/invencore-ci.env"
+          printf 'DB_URL=jdbc:postgresql://invencore-ci-postgres:5432/invencore\nDB_USERNAME=invencore\nDB_PASSWORD=ci-only-password\n' >> "$RUNNER_TEMP/invencore-ci.env"
           export APP_IMAGE_TAG="$GITHUB_SHA"
           docker compose --env-file "$RUNNER_TEMP/invencore-ci.env" -f compose.app.yml -f compose.ghcr.yml config --quiet
           docker compose --env-file "$RUNNER_TEMP/invencore-ci.env" -f compose.app.yml -f compose.ghcr.yml -f compose.monitoring.yml config --quiet
@@ -79,15 +80,57 @@ jobs:
           python3 deployment/docker/verify-proxy.py http://127.0.0.1:18082
           docker rm -f invencore-ci-frontend invencore-ci-probe
 
+      - name: Start Kafka and Redis for server-mode smoke test
+        run: |
+          docker run -d --name invencore-ci-redis --network invencore-ci redis:8-alpine
+          docker run -d --name invencore-ci-kafka --network invencore-ci \
+            -e KAFKA_NODE_ID=1 -e KAFKA_PROCESS_ROLES=broker,controller \
+            -e KAFKA_LISTENERS=PLAINTEXT://:19092,CONTROLLER://:9093 \
+            -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://invencore-ci-kafka:19092 \
+            -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+            -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+            -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@invencore-ci-kafka:9093 \
+            -e KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT \
+            -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+            -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
+            -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
+            -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 apache/kafka:4.1.2
+          for attempt in $(seq 1 30); do
+            if docker exec invencore-ci-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server invencore-ci-kafka:19092 --list; then break; fi
+            sleep 2
+          done
+          docker exec invencore-ci-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server invencore-ci-kafka:19092 --list
+          docker exec invencore-ci-redis redis-cli ping
+
       - name: Smoke-test both images before publishing
         run: |
+          mkdir -p "$RUNNER_TEMP/invencore-host"
+          chmod 755 "$RUNNER_TEMP/invencore-host"
+          python3 deployment/monitoring/collect-host-capacity.py --socket "$RUNNER_TEMP/invencore-host/capacity.sock" > "$RUNNER_TEMP/invencore-host-query.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/invencore-host-query.pid"
+          for attempt in {1..20}; do
+            if python3 deployment/monitoring/query-host-capacity.py --socket "$RUNNER_TEMP/invencore-host/capacity.sock" --quiet 2>/dev/null; then break; fi
+            sleep 0.25
+          done
+          python3 deployment/monitoring/query-host-capacity.py --socket "$RUNNER_TEMP/invencore-host/capacity.sock" --quiet
+          docker run -d --name invencore-ci-postgres --network invencore-ci \
+            -e POSTGRES_DB=invencore -e POSTGRES_USER=invencore -e POSTGRES_PASSWORD=ci-only-password \
+            --health-cmd='pg_isready -U invencore -d invencore' --health-interval=2s --health-retries=30 postgres:18-alpine
+          for attempt in $(seq 1 30); do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' invencore-ci-postgres)" = healthy ]; then break; fi
+            sleep 2
+          done
+          test "$(docker inspect -f '{{.State.Health.Status}}' invencore-ci-postgres)" = healthy
           docker run -d --name invencore-ci-backend --network invencore-ci --network-alias backend \
             --memory 768m --cpus 2 --env-file "$RUNNER_TEMP/invencore-ci.env" \
-            -e JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=65.0 -e GW_SYNC_ENABLED=false \
+            -e JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=65.0 -e GW_SYNC_ENABLED=true -e GW_SYNC_MODE=external \
+            -e KAFKA_BOOTSTRAP_SERVERS=invencore-ci-kafka:19092 -e REDIS_HOST=invencore-ci-redis \
+            -v "$RUNNER_TEMP/invencore-host:/run/invencore-host:ro" \
             -e BENCHMARK_ROWS=1000 "$BACKEND_IMAGE:$GITHUB_SHA"
           docker run -d --name invencore-ci-frontend --network invencore-ci \
             -p 127.0.0.1:18082:80 "$FRONTEND_IMAGE:$GITHUB_SHA"
-          python3 deployment/docker/verify-http.py http://127.0.0.1:18082
+          python3 deployment/docker/verify-http.py http://127.0.0.1:18082 --host-query
+          python3 deployment/docker/verify-external.py http://127.0.0.1:18082
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -119,6 +162,9 @@ jobs:
       - name: Clean up CI containers and temporary credentials
         if: always()
         run: |
-          docker rm -f invencore-ci-frontend invencore-ci-backend invencore-ci-probe 2>/dev/null || true
+          docker rm -f invencore-ci-frontend invencore-ci-backend invencore-ci-probe invencore-ci-postgres invencore-ci-kafka invencore-ci-redis 2>/dev/null || true
           docker network rm invencore-ci 2>/dev/null || true
           rm -f "$RUNNER_TEMP/invencore-ci.env"
+          if [[ -f "$RUNNER_TEMP/invencore-host-query.pid" ]]; then
+            kill "$(cat "$RUNNER_TEMP/invencore-host-query.pid")" 2>/dev/null || true
+          fi

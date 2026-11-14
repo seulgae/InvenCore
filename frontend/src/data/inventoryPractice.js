@@ -22,7 +22,7 @@ export const inventoryPractice = {
   "index-tuning": exercise(
     "UserIndexCode",
     "인덱스 전후 실행 계획",
-    "직접 작성한 SQL을 별도 H2에 실행해 집계와 인덱스 사용을 확인합니다.",
+    "직접 작성한 SQL을 별도 PostgreSQL 임시 테이블에 실행해 집계와 인덱스 사용을 확인합니다.",
     [
       "sumSql: customer_id = ? 합계 작성",
       "indexSql: customer_id 인덱스 DDL 작성",

@@ -1,5 +1,7 @@
 # Hyper-V Ubuntu · Docker 앱 배포
 
+> DB 전환 후에는 DB_URL/DB_USERNAME/DB_PASSWORD 설정이 필수입니다. 후보 앱은 별도 PostgreSQL DB/스키마로 검증하세요. 이 문서의 과거 H2 동작 설명은 전환 전 기록입니다. 저장소의 docs/POSTGRESQL.md를 먼저 확인하세요.
+
 Tailscale HTTPS Origin 수정과 GHCR SHA 고정 배포는 [HTTPS Funnel 안내](HTTPS_FUNNEL.md)를 먼저 확인하세요. 해당 절차는 기존 `.env.docker`와 H2 컨테이너를 유지한 병행 검증을 제공합니다.
 
 2026-11-14 기준입니다. 회원가입 CORS 수정과 새 앱 배포 파일을 다룹니다. 기존 `docker run` 컨테이너와 PostgreSQL 스택을 유지한 채 별도 Compose 프로젝트를 먼저 검증합니다. 이 문서의 명령은 안내이며 원격 서버에서 자동 실행하지 않았습니다.
@@ -36,7 +38,7 @@ CORS_ORIGINS=http://localhost:8081,http://127.0.0.1:8081
 | 루트 `compose.yml` | 기존 선택적 Kafka·Redis 스택. 이번 변경에서 유지 |
 | PostgreSQL `postgres-postgres-1` | 사용자 제공 정보상 별도 설치. 이 앱에서 연결하지 않음 |
 
-새 앱 Compose도 **H2 메모리 DB**로 실행합니다. PostgreSQL에 연결하거나 기존 `homeserver` DB·데이터·볼륨을 수정하지 않습니다. 앱용 `uploads` 볼륨은 첨부파일만 보존하며 H2 테이블 보존을 의미하지 않습니다. `GW_SYNC_MODE=local`은 외부 Kafka·Redis를 사용하지 않습니다. 환경 예제의 `GW_SYNC_ENABLED=true`는 로컬 GW·게임 실행을 허용하며 기존처럼 끄려면 false로 변경합니다.
+앱 Compose는 PostgreSQL과 기존 서버의 Kafka·Redis를 사용합니다. DB_* 설정을 유지하고 GW_SYNC_MODE=external, KAFKA_BOOTSTRAP_SERVERS=kafka:19092, REDIS_HOST=redis를 사용합니다. 백엔드는 invencore-infra-net에 연결됩니다. 자세한 전환 절차는 [서버 연결 안내](../../docs/KAFKA_REDIS_SERVER.md)를 참고하세요.
 
 PostgreSQL 18 컨테이너가 healthy라는 사실만으로 앱이 그 DB를 사용하는 것은 아닙니다. 실제 전환에는 PostgreSQL JDBC 드라이버, URL·사용자·비밀번호, Docker 네트워크 연결과 스키마·데이터 이관이 필요합니다. 현재 시작 시 실행되는 벤치마크 SQL에는 `SYSTEM_RANGE`, `H2VERSION()`, `ANALYZE TABLE` 등 H2 전용 구문도 있으므로 URL만 바꾸면 안 됩니다. 독립 인덱스 과제의 일회용 H2는 별도의 학습용 DB입니다. PostgreSQL 전환은 이번 403 수정과 분리해 검증해야 합니다.
 

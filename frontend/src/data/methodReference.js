@@ -1,7 +1,7 @@
 export const methodNotes = {
   getHostCapacity: [
     "Ubuntu 전체 자원 조회",
-    "인증된 요청 → 고정 수집 파일 검증 → 최신 집계 응답 · 캐시 저장 금지",
+    "인증된 요청 → Ubuntu 소켓 직접 질의 → 현재 측정 수치 검증 → 캐시 없이 응답",
   ],
   selectPartition: [
     "직접 구현하는 파티션 선택",
@@ -125,11 +125,11 @@ export const methodNotes = {
   createTable: ["비교 테이블 생성", "XML의 indexed 분기로 고정된 테이블 선택 → 동일 스키마 생성"],
   countRows: ["데이터 수 확인", "COUNT(*)로 현재 행 수 조회 → 재생성 필요 여부 판단"],
   clearTable: ["실험 데이터 초기화", "크기를 변경할 때 실험 전용 테이블 데이터만 삭제"],
-  seedPlain: ["결정적 데이터 생성", "행 수를 바인딩해 SYSTEM_RANGE로 같은 규칙의 데이터 생성"],
+  seedPlain: ["결정적 데이터 생성", "행 수를 바인딩해 generate_series로 같은 규칙의 데이터 생성"],
   copyIndexed: ["동일 데이터 복제", "기준 테이블의 모든 행을 인덱스 비교 테이블로 복제"],
   createIndex: ["복합 인덱스 생성", "bench_indexed에만 (account_id, state) 복합 인덱스 생성"],
-  analyze: ["통계 갱신", "ANALYZE TABLE로 옵티마이저 통계 갱신"],
-  databaseVersion: ["DB 버전 조회", "H2VERSION() 결과를 측정 환경 정보에 표시"],
+  analyze: ["통계 갱신", "ANALYZE로 옵티마이저 통계 갱신"],
+  databaseVersion: ["DB 버전 조회", "version() 결과를 측정 환경 정보에 표시"],
   sumAmount: [
     "동일 조건 집계",
     "고정 테이블 분기 → accountId·state 바인딩 → SUM(amount) 반환. MyBatis 결과 캐시 미사용",
@@ -141,7 +141,7 @@ export const methodNotes = {
   ],
   status: [
     "실험 환경 조회",
-    "데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·H2 버전을 Status.builder()로 조립해 반환",
+    "데이터 준비 여부·행 수·논리 CPU·전용 풀 작업자 수·Java·PostgreSQL 버전을 Status.builder()로 조립해 반환",
   ],
   score: [
     "동일 CPU 연산",
@@ -360,7 +360,7 @@ export function extractMethods(text, java) {
     }));
   }
   if (java && /\binterface\s+BenchmarkMapper\b/.test(text)) {
-    return [...text.matchAll(/^[ \t]*(?:void|long|String)\s+(\w+)\s*\(([\s\S]*?)\);/gm)].map(
+    return [...text.matchAll(/^[ \t]*[\w.$]+(?:<[^();\n]+>)?(?:\[\])*\s+(\w+)\s*\(([\s\S]*?)\);/gm)].map(
       (match) => ({
         name: match[1],
         params: match[2].trim() || "없음",

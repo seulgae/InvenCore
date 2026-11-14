@@ -22,7 +22,7 @@ public class GwSyncProperties {
     private boolean enabled = true;
 
     @NotNull
-    private Mode mode = Mode.LOCAL;
+    private Mode mode = Mode.EXTERNAL;
 
     @NotBlank
     private String topic = "invencore.gw.changed.v1";

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 @EnabledIfSystemProperty(named = "inventory.practice", matches = "true")
 class InventoryPracticeContractTests {
 
-    private final InventoryPractice practice = new InventoryPractice(
+    private final InventoryPractice practice = new InventoryPractice(PostgreSqlIntegrationTest.dataSource(),
         new UserParallelCode(),
         new UserIndexCode(),
         new UserGwCode(),

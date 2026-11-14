@@ -16,11 +16,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
     properties = {
         "gw-sync.enabled=false",
         "benchmark.rows=1000",
-        "spring.datasource.url=jdbc:h2:mem:member-cors;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
         "spring.jpa.hibernate.ddl-auto=create-drop",
     }
 )
-class MemberCorsTests {
+class MemberCorsTests extends PostgreSqlIntegrationTest {
 
     @LocalServerPort
     int port;

@@ -21,7 +21,7 @@ public interface BenchmarkMapper {
     void clearTable(@Param("indexed") boolean indexed);
 
     /**
-     * 결정적 데이터 생성입니다. 행 수를 바인딩해 SYSTEM_RANGE로 같은 규칙의 데이터 생성
+     * 결정적 데이터 생성입니다. 행 수를 바인딩해 generate_series로 같은 규칙의 데이터 생성
      */
     void seedPlain(@Param("rows") int rows);
 
@@ -36,12 +36,12 @@ public interface BenchmarkMapper {
     void createIndex();
 
     /**
-     * 통계 갱신입니다. ANALYZE TABLE로 옵티마이저 통계 갱신
+     * 통계 갱신입니다. ANALYZE로 옵티마이저 통계 갱신
      */
     void analyze(@Param("indexed") boolean indexed);
 
     /**
-     * DB 버전 조회입니다. H2VERSION() 결과를 측정 환경 정보에 표시
+     * DB 버전 조회입니다. version() 결과를 측정 환경 정보에 표시
      */
     String databaseVersion();
 
@@ -58,7 +58,7 @@ public interface BenchmarkMapper {
     /**
      * 실제 실행 계획 조회입니다. 동일 집계 SQL에 EXPLAIN ANALYZE 적용 → 인덱스·스캔 수 확인
      */
-    String explain(
+    java.util.List<String> explain(
         @Param("indexed") boolean indexed,
         @Param("accountId") int accountId,
         @Param("state") int state

@@ -1,13 +1,13 @@
-# Optional Ubuntu host snapshot mount. Install the host collector before enabling.
+# On-demand Unix socket connection to the Ubuntu host query service.
 services:
   backend:
     environment:
       FEATURE_SERVER_CAPACITY_ENABLED: "true"
       SERVER_CAPACITY_MODE: host
-      HOST_CAPACITY_FILE: /run/invencore-host/capacity.json
+      HOST_CAPACITY_SOCKET: /run/invencore-host/capacity.sock
     volumes:
       - type: bind
-        source: /var/lib/invencore-host-capacity
+        source: /run/invencore-host
         target: /run/invencore-host
         read_only: true
         bind:

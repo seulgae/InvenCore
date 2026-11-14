@@ -32,7 +32,6 @@ import tools.jackson.databind.ObjectMapper;
         "gw-sync.enabled=true",
         "gw-sync.mode=external",
         "gw-sync.publish-delay-ms=100",
-        "spring.datasource.url=jdbc:h2:mem:gw-tests;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
     }
 )
 @EmbeddedKafka(
@@ -41,7 +40,7 @@ import tools.jackson.databind.ObjectMapper;
     bootstrapServersProperty = "spring.kafka.bootstrap-servers"
 )
 @DirtiesContext
-class GwSyncIntegrationTests {
+class GwSyncIntegrationTests extends PostgreSqlIntegrationTest {
 
     @Autowired
     GwSourceService sources;

@@ -27,15 +27,17 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD:}
       connect-timeout: 1s
       timeout: 1s
       repositories:
         enabled: false
   datasource:
-    url: jdbc:h2:mem:invencore;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password: ""
-    driver-class-name: org.h2.Driver
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/invencore}
+    username: ${DB_USERNAME:invencore}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
     show-sql: ${JPA_SHOW_SQL:false}
@@ -66,19 +68,19 @@ app:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8081,http://127.0.0.1:8081,http://localhost:8082,http://127.0.0.1:8082,https://seulgae-server.tailac4b36.ts.net}
 
 jwt:
-  secret: ${JWT_SECRET:v3ryS3cr3tK3yF0rInv3nC0r3B4ck3ndS3rv1c3MustB3L0ng3rThanTh1s}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:1800000}
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
-# Host snapshots are collected on Ubuntu; SSH remains an explicit optional mode.
+# On-demand Ubuntu host queries; SSH remains an explicit optional mode.
 feature:
   server-capacity:
     enabled: ${FEATURE_SERVER_CAPACITY_ENABLED:true}
 server-capacity:
   mode: ${SERVER_CAPACITY_MODE:host}
-  host-file: ${HOST_CAPACITY_FILE:/run/invencore-host/capacity.json}
+  host-socket: ${HOST_CAPACITY_SOCKET:/run/invencore-host/capacity.sock}
   pem-file: ${SSH_PEM_FILE:}
   servers: ${MONITORED_SERVERS:}
 
@@ -87,7 +89,7 @@ benchmark:
 
 gw-sync:
   enabled: ${GW_SYNC_ENABLED:true}
-  mode: ${GW_SYNC_MODE:local}
+  mode: ${GW_SYNC_MODE:external}
   topic: invencore.gw.changed.v1
   group-id: invencore-gw-projection-v1
   cache-ttl-seconds: 60

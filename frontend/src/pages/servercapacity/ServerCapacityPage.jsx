@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import apiClient from "../../api/axios";
 import "../../styles/ServerCapacity.css";
 
@@ -20,54 +20,42 @@ function ResourceCard({ icon, title, value, detail, usage, footer }) {
   );
 }
 
-/** Ubuntu 호스트 수집 결과를 읽습니다. 컨테이너 내부 수치로 대체하지 않습니다. */
+/** 버튼 요청마다 Ubuntu 호스트에 직접 측정을 요청하고 응답을 표시합니다. */
 export default function ServerCapacityPage() {
   const [snapshot, setSnapshot] = useState(null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [automatic, setAutomatic] = useState(true);
-  const [revision, setRevision] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const pending = useRef(null);
 
-  useEffect(() => {
+  useEffect(() => () => pending.current?.abort(), []);
+
+  /** 이전 결과 파일 조회가 아니라, 현재 요청에서 새로 측정합니다. */
+  const refresh = async () => {
+    if (pending.current) return;
     const controller = new AbortController();
-    let timer;
-    let active = true;
-    const refresh = async () => {
-      setLoading(true);
-      try {
-        const { data } = await apiClient.get("/server-capacity/host", {
-          signal: controller.signal,
-        });
-        if (active) {
-          setSnapshot(data);
-          setError("");
-        }
-      } catch (failure) {
-        if (active && failure.code !== "ERR_CANCELED") {
-          const status = failure.response?.status;
-          setError(
-            status === 401
-              ? "로그인 후 서버 사용량을 확인할 수 있습니다."
-              : status === 404
-                ? "호스트 모니터링 API가 활성화되어 있지 않습니다. 서버 설정을 확인해 주세요."
-                : failure.response?.data?.message ||
-                  "Ubuntu 사용량을 불러오지 못했습니다. 수집기와 서버 연결을 확인해 주세요.",
-          );
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-          if (automatic) timer = setTimeout(refresh, 10000);
-        }
+    pending.current = controller;
+    setLoading(true);
+    setError("");
+    try {
+      const { data } = await apiClient.get("/server-capacity/host", { signal: controller.signal });
+      if (!controller.signal.aborted) setSnapshot(data);
+    } catch (failure) {
+      if (!controller.signal.aborted) {
+        const status = failure.response?.status;
+        setError(
+          status === 401
+            ? "로그인 후 서버 사용량을 조회할 수 있습니다."
+            : status === 404
+              ? "호스트 조회 API가 활성화되어 있지 않습니다. 서버 설정을 확인해 주세요."
+              : failure.response?.data?.message ||
+                "Ubuntu 실시간 조회에 실패했습니다. 호스트 조회 서비스 연결을 확인해 주세요.",
+        );
       }
-    };
-    refresh();
-    return () => {
-      active = false;
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [automatic, revision]);
+    } finally {
+      if (!controller.signal.aborted) setLoading(false);
+      if (pending.current === controller) pending.current = null;
+    }
+  };
 
   return (
     <section className="capacity-container" aria-busy={loading}>
@@ -77,26 +65,21 @@ export default function ServerCapacityPage() {
           <h1>서버 용량 조사</h1>
           <p>InvenCore가 실행되는 Ubuntu 서버 전체의 사용량을 확인합니다.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setRevision((current) => current + 1)}
-          disabled={loading}
-        >
-          {loading ? "조회 중…" : "↻ 새로고침"}
+        <button type="button" onClick={refresh} disabled={loading}>
+          {loading ? "Ubuntu 측정 중…" : "↻ 지금 조회"}
         </button>
       </header>
       <div className="capacity-status">
         <span role="status">
-          {error ? "● 연결 확인 필요" : snapshot ? "● 호스트 수집 연결됨" : "● 연결 확인 중"}
+          {loading
+            ? "● 호스트에 직접 조회 중"
+            : error
+              ? "● 조회 실패"
+              : snapshot
+                ? "● 요청 시점 측정 완료"
+                : "● 조회 대기 중"}
         </span>
-        <label>
-          <input
-            type="checkbox"
-            checked={automatic}
-            onChange={(event) => setAutomatic(event.target.checked)}
-          />
-          10초마다 새로고침
-        </label>
+        <span>버튼을 누를 때 새로 측정 · CPU 측정 약 0.5초</span>
       </div>
       {error && (
         <div className="capacity-error" role="alert">
@@ -133,7 +116,7 @@ export default function ServerCapacityPage() {
             />
           </div>
           <p className="capacity-timestamp">
-            수집 시각{" "}
+            측정 시각{" "}
             <time dateTime={snapshot.measuredAt}>
               {new Date(snapshot.measuredAt).toLocaleString("ko-KR")}
             </time>
@@ -142,7 +125,7 @@ export default function ServerCapacityPage() {
       ) : (
         !loading && (
           <div className="capacity-empty">
-            아직 수집 결과가 없습니다. Ubuntu 호스트 수집기를 연결하면 실제 사용량이 표시됩니다.
+            ‘지금 조회’를 누르면 Ubuntu 서버에 요청을 보내 현재 사용량을 측정합니다.
           </div>
         )
       )}

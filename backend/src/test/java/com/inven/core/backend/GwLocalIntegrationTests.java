@@ -25,10 +25,9 @@ import tools.jackson.databind.ObjectMapper;
         "gw-sync.publish-delay-ms=100",
         "spring.kafka.bootstrap-servers=localhost:1",
         "spring.data.redis.port=1",
-        "spring.datasource.url=jdbc:h2:mem:gw-local-tests;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
     }
 )
-class GwLocalIntegrationTests {
+class GwLocalIntegrationTests extends PostgreSqlIntegrationTest {
 
     @LocalServerPort
     int port;

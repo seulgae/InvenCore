@@ -253,7 +253,7 @@ export default function BenchmarkPage({ kind = "streams" }) {
           <li>
             {isStream
               ? "병렬 스트림은 최대 4개 작업자의 전용 ForkJoinPool에서 실행합니다. 작업은 숫자당 64회 변환·합계이며 DB·대기 시간은 포함하지 않습니다."
-              : "H2 메모리 DB의 MyBatis 조회 실험입니다. 연결 획득·Mapper 호출·SQL 실행·집계 시간이 포함됩니다. MyBatis 2차 캐시는 끄고 1차 캐시는 STATEMENT 범위로 제한합니다. 운영 DB 성능과 같지 않습니다."}
+              : "PostgreSQL DB의 MyBatis 조회 실험입니다. 연결 획득·Mapper 호출·SQL 실행·집계 시간이 포함됩니다. MyBatis 2차 캐시는 끄고 1차 캐시는 STATEMENT 범위로 제한합니다. 운영 DB 성능과 같지 않습니다."}
           </li>
           <li>
             CPU 수·JIT·GC·서버 부하·DB 캐시에 따라 결과가 달라집니다. 병렬화나 인덱스가 항상 더

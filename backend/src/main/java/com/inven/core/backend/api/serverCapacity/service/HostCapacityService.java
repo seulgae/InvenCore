@@ -1,11 +1,7 @@
 package com.inven.core.backend.api.serverCapacity.service;
 
 import com.inven.core.backend.api.serverCapacity.dto.HostCapacityDTO;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,32 +11,43 @@ import tools.jackson.databind.ObjectMapper;
 public class HostCapacityService {
 
     private final ObjectMapper json;
-    private final Path snapshot;
+    private final HostCapacityClient client;
 
-    public HostCapacityService(
-        ObjectMapper json,
-        @Value("${server-capacity.host-file:/run/invencore-host/capacity.json}") String file
-    ) {
+    public HostCapacityService(ObjectMapper json, HostCapacityClient client) {
         this.json = json;
-        this.snapshot = Path.of(file);
+        this.client = client;
     }
 
-    /** 고정된 읽기 전용 파일만 읽고, 누락·오래된·잘못된 결과는 성공으로 위장하지 않습니다. */
+    /** 요청마다 호스트에 직접 측정을 요청합니다. 이전 결과를 읽거나 캐시하지 않습니다. */
     public HostCapacityDTO read() {
+        Instant requestedAt = Instant.now();
         final HostCapacityDTO value;
         try {
-            if (Files.size(snapshot) > 8192) throw new IllegalArgumentException();
-            value = json.readValue(Files.readString(snapshot), HostCapacityDTO.class);
+            var response = json.readTree(client.request());
+            if (response.has("error")) {
+                if ("BUSY".equals(response.path("error").asText())) {
+                    throw new ResponseStatusException(
+                        HttpStatus.TOO_MANY_REQUESTS,
+                        "서버가 다른 용량 조회를 처리 중입니다. 잠시 후 다시 조회해 주세요."
+                    );
+                }
+                throw new IllegalArgumentException("Host measurement failed");
+            }
+            value = json.treeToValue(response, HostCapacityDTO.class);
+        } catch (ResponseStatusException busy) {
+            throw busy;
         } catch (Exception error) {
             throw unavailable(
-                "Ubuntu 수집 결과가 없습니다. 호스트 수집기와 읽기 전용 마운트를 확인해 주세요."
+                "Ubuntu 실시간 조회에 연결하지 못했습니다. 호스트 조회 서비스와 소켓 연결을 확인해 주세요."
             );
         }
         if (!valid(value)) throw unavailable("호스트 수집 결과 형식이 올바르지 않습니다.");
-        long age = Duration.between(value.measuredAt(), Instant.now()).getSeconds();
-        if (age > 30 || age < -5) {
+        if (
+            value.measuredAt().isBefore(requestedAt.minusSeconds(2)) ||
+            value.measuredAt().isAfter(Instant.now().plusSeconds(5))
+        ) {
             throw unavailable(
-                "호스트 수집이 중단되었거나 시간이 맞지 않습니다. 수집기 상태를 확인해 주세요."
+                "현재 요청의 측정값이 아니거나 서버 시간이 맞지 않습니다. 호스트 조회 서비스를 확인해 주세요."
             );
         }
         return value;

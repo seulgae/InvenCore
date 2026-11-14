@@ -261,11 +261,8 @@ export default function GwSyncPage() {
       {configuration && !configuration.enabled && (
         <div className="gw-setup">
           <strong>GW 연동 기능이 비활성화되어 있습니다</strong>
-          <pre>{"GW_SYNC_ENABLED=true\nGW_SYNC_MODE=local\n# 환경 변수 지정 후 백엔드 재실행"}</pre>
-          <p>
-            로컬 모드는 외부 서비스 없이 사용할 수 있습니다. 실제 Kafka·Redis를 사용하려면
-            GW_SYNC_MODE=external로 지정하세요.
-          </p>
+          <pre>{"GW_SYNC_ENABLED=true\nGW_SYNC_MODE=external\n# Kafka / Redis 접속 환경 변수 지정 후 백엔드 재실행"}</pre>
+          <p>기본 모드는 서버의 Kafka·Redis를 사용합니다. Kafka·Redis 접속 환경 변수를 설정하세요.</p>
         </div>
       )}
       {error && (
@@ -429,8 +426,7 @@ export default function GwSyncPage() {
             표시하며 DB 조회 성능 비교 화면은 아닙니다.
           </li>
           <li>
-            현재는 같은 H2 메모리 DB의 두 테이블을 연결하는 로컬 예제입니다. 서버 재시작 시 DB와
-            메모리 캐시는 초기화됩니다. 외부 모드에서 이전 Kafka 이벤트의 원본이 없으면 건너뜁니다.
+            같은 PostgreSQL DB의 두 테이블을 Kafka로 연결하고 Redis에 캐시합니다. DB는 유지되며 캐시는 TTL에 따라 만료됩니다. 외부 모드에서 이전 Kafka 이벤트의 원본이 없으면 건너뜁니다.
           </li>
         </ul>
       </details>

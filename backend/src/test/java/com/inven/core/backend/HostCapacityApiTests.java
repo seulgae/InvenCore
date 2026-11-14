@@ -24,11 +24,10 @@ import org.springframework.web.server.ResponseStatusException;
         "benchmark.rows=1000",
         "feature.server-capacity.enabled=true",
         "server-capacity.mode=host",
-        "spring.datasource.url=jdbc:h2:mem:host-capacity-test",
     }
 )
 @AutoConfigureMockMvc
-class HostCapacityApiTests {
+class HostCapacityApiTests extends PostgreSqlIntegrationTest {
 
     @Autowired
     MockMvc mvc;
