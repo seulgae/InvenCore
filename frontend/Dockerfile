@@ -9,6 +9,11 @@ COPY backend/src/main/resources/mappers/ /workspace/backend/src/main/resources/m
 COPY backend/build.gradle /workspace/backend/build.gradle
 COPY docs/AWS_CICD.md /workspace/docs/AWS_CICD.md
 COPY deployment/templates/ /workspace/deployment/templates/
+# Public source viewer assets for the Ubuntu host monitoring card.
+COPY deployment/monitoring/collect-host-capacity.py /workspace/deployment/monitoring/collect-host-capacity.py
+COPY deployment/monitoring/invencore-host-capacity.service /workspace/deployment/monitoring/invencore-host-capacity.service
+COPY deployment/monitoring/invencore-host-capacity.timer /workspace/deployment/monitoring/invencore-host-capacity.timer
+COPY compose.monitoring.yml /workspace/compose.monitoring.yml
 RUN npm run lint && npm test && npm run build
 
 FROM nginx:stable-alpine
